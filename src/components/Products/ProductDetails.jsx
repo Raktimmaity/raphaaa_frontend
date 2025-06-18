@@ -157,10 +157,10 @@ const ProductDetails = () => {
                 {selectedProduct.name}
               </h1>
               <div className="text-gray-500 line-through">
-                ${selectedProduct.originalPrice}
+                ₹{selectedProduct.originalPrice}
               </div>
               <div className="text-2xl font-semibold text-sky-700 mb-4">
-                ${selectedProduct.price}
+                ₹{selectedProduct.price}
               </div>
               <p className="text-gray-600 mb-6">{selectedProduct.description}</p>
 

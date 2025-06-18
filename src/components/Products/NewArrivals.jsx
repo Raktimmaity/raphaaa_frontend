@@ -227,7 +227,7 @@ const NewArrivals = () => {
                 <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
                   {product.name}
                 </h4>
-                <p className="mt-1 text-gray-600">${product.price}</p>
+                <p className="mt-1 text-gray-600">₹{product.price}</p>
               </Link>
             </div>
           </div>
