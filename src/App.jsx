@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import ExclusiveDrop from "./pages/ExclusiveDrop";
+import DropDetail from "./pages/DropDetail";
 
 const App = () => {
   return (
@@ -17,6 +19,11 @@ const App = () => {
           <Route path="login" element={<Login/>}/>
           <Route path="register" element={<Register/>}/>
           <Route path="profile" element={<Profile/>}/>
+
+          {/* extra added */}
+          <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
+          <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
+
             {/* User Layout */}
           </Route>
           <Route>{/* Admin Layout */}</Route>
