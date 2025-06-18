@@ -92,13 +92,13 @@ const ProductDetails = () => {
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
       toast.error("Please select a size and color before adding to cart.", {
-        duration: 1000,
+        duration: 1500,
       });
       return;
     }
     setIsButtonDisabled(true);
     setTimeout(() => {
-      toast.success("Product added to cart!", { duration: 1000 });
+      toast.success("Product added to cart!", { duration: 1500 });
       setIsButtonDisabled(false);
     }, 500);
   };
