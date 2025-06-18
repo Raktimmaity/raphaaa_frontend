@@ -134,7 +134,7 @@ const Navbar = () => {
             </Link>
           </nav>
           {/* Footer for mobile menu */}
-          <div className="mt-8 border-t pt-4">
+          <div className="mt-8 pt-4 absolute bottom-0 pb-8">
             <h3 className="text-sm font-semibold text-gray-700 mb-2">
               Follow Us
             </h3>
