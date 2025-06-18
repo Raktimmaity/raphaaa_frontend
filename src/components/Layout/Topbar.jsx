@@ -18,8 +18,19 @@ const Topbar = () => {
             </a>
         </div>
         <div className="text-sm text-center flex-grow">
-            <span>We ship worldwide - Fast and reliable shipping!!</span>
-        </div>
+  {/* Show marquee only on small screens */}
+  <div className="block md:hidden">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+      <span className="font-semibold">We ship worldwide - Fast and reliable shipping!!</span>
+    </marquee>
+  </div>
+
+  {/* Show static text on md and larger */}
+  <div className="hidden md:block">
+    <span className="font-normal">We ship worldwide - Fast and reliable shipping!!</span>
+  </div>
+</div>
+
         <div className="text-sm hidden md:block">
             <a href="#" className='hover:text-gray-300'>+91 949615691161</a>
         </div>
