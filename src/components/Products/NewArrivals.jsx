@@ -209,30 +209,31 @@ const NewArrivals = () => {
 
       {/* Scrollable Product Cards */}
       <div
-        ref={scrollRef}
-        className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth scrollbar-hide px-2"
-      >
-        {newArrivals.map((product) => (
-          <div
-            key={product._id}
-            className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-white shadow-md rounded-xl border border-gray-100 relative group transition-all duration-300 hover:shadow-xl"
-          >
-            <img
-              src={product.images[0]?.url}
-              alt={product.images[0]?.altText || product.name}
-              className="h-80 w-full object-cover rounded-t-xl"
-            />
-            <div className="p-4 text-left">
-              <Link to={`/product/${product._id}`} className="block">
-                <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
-                  {product.name}
-                </h4>
-                <p className="mt-1 text-gray-600">₹{product.price}</p>
-              </Link>
-            </div>
-          </div>
-        ))}
+  ref={scrollRef}
+  className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth px-2 pb-6 custom-scrollbar"
+>
+  {newArrivals.map((product) => (
+    <div
+      key={product._id}
+      className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-white shadow-md rounded-xl border border-gray-100 relative group transition-all duration-300 hover:shadow-xl"
+    >
+      <img
+        src={product.images[0]?.url}
+        alt={product.images[0]?.altText || product.name}
+        className="h-80 w-full object-cover rounded-t-xl"
+      />
+      <div className="p-4 text-left">
+        <Link to={`/product/${product._id}`} className="block">
+          <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
+            {product.name}
+          </h4>
+          <p className="mt-1 text-gray-600">₹{product.price}</p>
+        </Link>
       </div>
+    </div>
+  ))}
+</div>
+
     </section>
   );
 };

@@ -96,12 +96,12 @@ const MyOrders = () => {
           <input
             type="text"
             placeholder="Search orders..."
-            className="border px-3 py-2 rounded text-sm outline-0"
+            className="border px-3 py-2 rounded text-sm outline-0 bg-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <select
-            className="border px-3 py-2 rounded text-sm outline-0"
+            className="border px-3 py-2 rounded text-sm outline-0 bg-white"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
