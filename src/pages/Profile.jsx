@@ -89,7 +89,7 @@ const Profile = () => {
             <p className="text-lg text-gray-600 mb-4">john@example.com</p>
 
             {/* Logout Button */}
-            <button className="w-full bg-gradient-to-r from-red-300 to-red-600 text-white py-2 px-4 rounded hover:bg-red-600 transition flex items-center justify-center gap-2">
+            <button className="w-full bg-gradient-to-r from-red-400 to-red-700 text-white py-2 px-4 rounded hover:bg-red-600 transition flex items-center justify-center gap-2">
               <AiOutlineLogout className="text-lg" />
               Logout
             </button>
