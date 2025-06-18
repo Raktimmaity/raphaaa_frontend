@@ -4,9 +4,10 @@ import heroImg from "../../assets/hero_img.png";
 
 const Hero = () => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8">
+    <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8">
       {/* Hero Left Side */}
-      <div className="w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0 
+      <div
+        className="w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0 
         bg-white/70 backdrop-blur-lg border border-white/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-2xl"
       >
         <div className="text-[#414141]">
@@ -35,7 +36,7 @@ const Hero = () => {
           src={heroImg}
           alt="Hero"
           className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
-                     rounded-full sm:rounded-r-full"
+             rounded-full md:rounded-l-none md:rounded-r-full"
         />
       </div>
     </div>
