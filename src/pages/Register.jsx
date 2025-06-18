@@ -15,7 +15,8 @@ const Register = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    // <div className="flex min-h-screen">
+    <div className="flex h-[80vh]">
       {/* Left form */}
       {/* <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12"> */}
       <div className="w-full md:w-full flex flex-col justify-center items-center p-6 sm:p-12">
@@ -30,7 +31,7 @@ const Register = () => {
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center w-fit">
               <h2 className="text-3xl font-bold text-gray-800">Register</h2>{" "}
-              <span className="h-0.5 w-16 bg-blue-600 ml-3"></span>
+              <span className="h-1 w-16 ml-3 bg-gradient-to-r from-blue-600 to-sky-400 rounded-full"></span>
             </div>
           </div>
           {/* <p className="text-center text-gray-500 mb-8 text-sm">
