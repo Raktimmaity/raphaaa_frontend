@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import menImg from "../../assets/mens-collection.jpg";
 import womenImg from "../../assets/womens-collection.jpg";
+import product1 from "../../assets/product1.jpg";
+import product2 from "../../assets/product2.jpg";
 
 const GenderCollectionSection = () => {
   return (
@@ -15,7 +17,7 @@ const GenderCollectionSection = () => {
           className="relative flex-1 group overflow-hidden rounded-xl shadow-lg"
         >
           <img
-            src={womenImg}
+            src={product1}
             alt="Women-collection-img"
             className="w-full h-[500px] md:h-[600px] lg:h-[500px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />
@@ -42,7 +44,7 @@ const GenderCollectionSection = () => {
           className="relative flex-1 group overflow-hidden rounded-xl shadow-lg"
         >
           <img
-            src={menImg}
+            src={product2}
             alt="Men-collection-img"
             className="w-full h-[500px] md:h-[600px] lg:h-[500px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />

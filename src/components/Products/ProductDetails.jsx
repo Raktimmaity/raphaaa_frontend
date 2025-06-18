@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ProductGrid from "./ProductGrid";
 import { HiOutlineShoppingBag } from "react-icons/hi";
+import product1 from "../../assets/product1.jpg";
+import product2 from "../../assets/product2.jpg";
 
 const selectedProduct = {
   name: "Stylish Jacket",
@@ -14,13 +16,21 @@ const selectedProduct = {
   colors: ["Black", "Brown", "Blue"],
   images: [
     {
-      url: "https://picsum.photos/500/500?random=1",
+      url: product1,
       altText: "Stylish Jacket Front View",
     },
     {
-      url: "https://picsum.photos/500/500?random=2",
+      url: product2,
       altText: "Stylish Jacket Side View",
     },
+    // {
+    //   url: "https://picsum.photos/500/500?random=1",
+    //   altText: "Stylish Jacket Front View",
+    // },
+    // {
+    //   url: "https://picsum.photos/500/500?random=2",
+    //   altText: "Stylish Jacket Side View",
+    // },
   ],
 };
 
@@ -91,7 +101,7 @@ const ProductDetails = () => {
     <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100 min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-8 md:p-12">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Left Thumbnails */}
+          {/* Left Thumbnails - Desktop */}
           <div className="hidden md:flex flex-col space-y-4">
             {selectedProduct.images.map((image, index) => (
               <img
@@ -109,12 +119,29 @@ const ProductDetails = () => {
           </div>
 
           {/* Main Image */}
-          <div className="md:w-1/2">
+          <div className="md:w-1/2 w-full">
             <img
               src={mainImage}
               alt="Main Product"
               className="w-full h-auto object-cover rounded-2xl shadow-xl transition-all duration-500"
             />
+
+            {/* Thumbnails for mobile */}
+            <div className="flex md:hidden mt-4 space-x-4 overflow-x-auto scrollbar-hide">
+              {selectedProduct.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image.url}
+                  alt={image.altText || `Thumbnail ${index}`}
+                  className={`w-20 h-20 rounded-xl cursor-pointer border transition-all duration-300 ${
+                    mainImage === image.url
+                      ? "border-sky-600 shadow-lg scale-105"
+                      : "border-gray-300 hover:border-sky-400"
+                  }`}
+                  onClick={() => setMainImage(image.url)}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Product Info */}
@@ -129,9 +156,7 @@ const ProductDetails = () => {
               <div className="text-2xl font-semibold text-sky-700 mb-4">
                 ${selectedProduct.price}
               </div>
-              <p className="text-gray-600 mb-6">
-                {selectedProduct.description}
-              </p>
+              <p className="text-gray-600 mb-6">{selectedProduct.description}</p>
 
               {/* Colors */}
               <div className="mb-6">
@@ -208,7 +233,6 @@ const ProductDetails = () => {
                   )}
                   {isButtonDisabled ? "Adding..." : "ADD TO CART"}
                 </span>
-
                 {!isButtonDisabled && (
                   <span className="absolute inset-0 bg-white opacity-10 group-hover:animate-ping rounded-full z-0" />
                 )}
