@@ -43,7 +43,7 @@ const Profile = () => {
       <div className="flex-grow container mx-auto p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
           {/* left section */}
-          <div className="w-full md:w-1/3 lg:w-1/4 shadow-md rounded-lg p-6 flex flex-col items-center text-center bg-gradient-to-br from-sky-200 to-blue-400 relative">
+          <div className="w-full md:w-1/3 lg:w-1/4 shadow-md rounded-lg p-6 flex flex-col items-center text-center bg-white relative">
             {/* Profile Icon/Image Wrapper */}
             <div
               className="relative cursor-pointer group"
