@@ -61,31 +61,44 @@ const placeholderProducts = [
 const Home = () => {
   return (
     <div>
+      {/* Hero section */}
       <Hero />
+
+      {/* Gender collection section */}
       <GenderCollectionSection />
+
+      {/* New arrivals section */}
       <NewArrivals />
+
+      {/* Features section */}
+      <FeaturesSection />
+
       {/* Best Sellers */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 pt-8">
         <h2 className="text-3xl font-bold inline-block relative">
           Best Seller
           <div className="mt-2 h-1 w-24 mx-auto bg-gradient-to-r from-blue-500 to-blue-200 rounded-full" />
         </h2>
       </div>
 
+      {/* Product details */}
       <ProductDetails />
 
+      {/* Top wears for women */}
       <div className="container mx-auto">
-        <div className="text-center mb-8 pt-4">
+        <div className="text-center mb-8 pt-8">
           <h2 className="text-3xl font-bold inline-block relative">
             Top Wears for Women
             <div className="mt-2 h-1 w-28 mx-auto bg-gradient-to-r from-blue-500 to-sky-200 rounded-full" />
           </h2>
         </div>
 
+        {/* Products */}
         <ProductGrid products={placeholderProducts} />
       </div>
+
+      {/* Feature collections */}
       <FeaturedCollection />
-      <FeaturesSection />
     </div>
   );
 };
