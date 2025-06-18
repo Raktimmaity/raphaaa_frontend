@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import featuredImg from "../../assets/featured.jpg";
+import product7 from "../../assets/product7.jpeg";
 
 const FeaturedCollection = () => {
   return (
@@ -22,7 +23,8 @@ const FeaturedCollection = () => {
         </div>
         {/* right content */}
         <div className="lg:w-1/2">
-            <img src={featuredImg} alt="Featured Collection" className="w-full h-full object-cover lg:rounded-tr-3xl lg:rounded-br-3xl" />
+            {/* <img src={featuredImg} alt="Featured Collection" className="w-full h-full object-cover lg:rounded-tr-3xl lg:rounded-br-3xl" /> */}
+            <img src={product7} alt="Featured Collection" className="w-full h-full object-cover lg:rounded-tr-3xl lg:rounded-br-3xl" />
         </div>
       </div>
     </section>

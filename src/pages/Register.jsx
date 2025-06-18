@@ -15,55 +15,66 @@ const Register = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen">
       {/* Left form */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12">
-        <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
-          <div className="flex justify-center mb-6">
+      {/* <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12"> */}
+      <div className="w-full md:w-full flex flex-col justify-center items-center p-6 sm:p-12">
+        {/* <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-200"> */}
+        <form onSubmit={handleSubmit} className="w-full max-w-md p-8">
+          {/* <div className="flex justify-center mb-6">
             <img src={logo} alt="register-logo" className="w-28" />
-          </div>
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
+          </div> */}
+          {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
             Create Account
-          </h2>
-          <p className="text-center text-gray-500 mb-8 text-sm">
+          </h2> */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center w-fit">
+              <h2 className="text-3xl font-bold text-gray-800">Register</h2>{" "}
+              <span className="h-0.5 w-16 bg-blue-600 ml-3"></span>
+            </div>
+          </div>
+          {/* <p className="text-center text-gray-500 mb-8 text-sm">
             Enter your details to register a new account
-          </p>
+          </p> */}
 
           <div className="mb-5">
-            <label htmlFor="name" className="block text-sm font-semibold mb-1 text-gray-700">
+            {/* <label htmlFor="name" className="block text-sm font-semibold mb-1 text-gray-700">
               Name
-            </label>
+            </label> */}
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              // className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
               placeholder="Enter your name"
             />
           </div>
 
           <div className="mb-5">
-            <label htmlFor="email" className="block text-sm font-semibold mb-1 text-gray-700">
+            {/* <label htmlFor="email" className="block text-sm font-semibold mb-1 text-gray-700">
               Email
-            </label>
+            </label> */}
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              // className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
               placeholder="Enter your email address"
             />
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-semibold mb-1 text-gray-700">
+            {/* <label htmlFor="password" className="block text-sm font-semibold mb-1 text-gray-700">
               Password
-            </label>
+            </label> */}
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              // className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
               placeholder="Enter your password"
             />
           </div>
@@ -85,7 +96,7 @@ const Register = () => {
       </div>
 
       {/* Right image */}
-      <div className="hidden md:block w-1/2">
+      {/* <div className="hidden md:block w-1/2">
         <div className="h-[100vh] flex items-center justify-center">
           <img
             src={register}
@@ -93,7 +104,7 @@ const Register = () => {
             className="h-full w-full object-cover rounded-l-3xl"
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

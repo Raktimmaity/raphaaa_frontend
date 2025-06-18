@@ -4,6 +4,8 @@ import ProductGrid from "./ProductGrid";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import product1 from "../../assets/product1.jpg";
 import product2 from "../../assets/product2.jpg";
+import product3 from "../../assets/product3.jpg";
+import product4 from "../../assets/product4.jpg";
 
 const selectedProduct = {
   name: "Stylish Jacket",
@@ -39,25 +41,29 @@ const similarProducts = [
     _id: 1,
     name: "Product 1",
     price: 100,
-    images: [{ url: "https://picsum.photos/500/500?random=3" }],
+    // images: [{ url: "https://picsum.photos/500/500?random=3" }],
+    images: [{ url: product1 }],
   },
   {
     _id: 2,
     name: "Product 2",
     price: 100,
-    images: [{ url: "https://picsum.photos/500/500?random=4" }],
+    // images: [{ url: "https://picsum.photos/500/500?random=4" }],
+    images: [{ url: product2 }],
   },
   {
     _id: 3,
     name: "Product 3",
     price: 100,
-    images: [{ url: "https://picsum.photos/500/500?random=5" }],
+    // images: [{ url: "https://picsum.photos/500/500?random=5" }],
+    images: [{ url: product3 }],
   },
   {
     _id: 4,
     name: "Product 4",
     price: 100,
-    images: [{ url: "https://picsum.photos/500/500?random=6" }],
+    // images: [{ url: "https://picsum.photos/500/500?random=6" }],
+    images: [{ url: product4 }],
   },
 ];
 
