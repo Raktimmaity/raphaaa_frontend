@@ -1,5 +1,5 @@
 import { IoIosClose } from "react-icons/io";
-import CartContents from "../Cart/cartContents";
+import CartContents from "../Cart/CartContents";
 
 const CartDrawer = ({drawerOpen, toggleCartDrawer}) => {
 
