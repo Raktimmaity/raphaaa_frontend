@@ -6,6 +6,9 @@ import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
 import { IoIosClose } from "react-icons/io";
 import logo from "../../assets/logo1.png";
+import {TbBrandMeta} from 'react-icons/tb';
+import {IoLogoInstagram} from 'react-icons/io5';
+import {RiTwitterXLine} from 'react-icons/ri';
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -95,6 +98,13 @@ const Navbar = () => {
           <h2 className="text-xl font-semibold mb-4">Menu</h2>
           <nav className="space-y-4">
             <Link
+              to="/"
+              onClick={toggleNavDrawer}
+              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
+            >
+              Home
+            </Link>
+            <Link
               to="#"
               onClick={toggleNavDrawer}
               className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
@@ -123,6 +133,41 @@ const Navbar = () => {
               Bottom Wear
             </Link>
           </nav>
+          {/* Footer for mobile menu */}
+          <div className="mt-8 border-t pt-4">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              Follow Us
+            </h3>
+            <div className="flex space-x-4 mb-4">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <TbBrandMeta className='h-5 w-5 text-blue-600 inline' />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <IoLogoInstagram className="h-5 w-5 inline text-[#E1306C]" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <RiTwitterXLine className='h-4 w-4 inline' />
+              </a>
+            </div>
+
+            <h3 className="text-sm font-semibold text-gray-700 mb-1">
+              Contact
+            </h3>
+            <p className="text-xs text-gray-600">support@raphaa.com</p>
+            <p className="text-xs text-gray-600">+91 98765 43210</p>
+          </div>
         </div>
       </div>
     </>
