@@ -2,20 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
   ],
+  base: '/', // ensures correct path in production
   server: {
     host: true,
+    // NOTE: Vite does not use `historyApiFallback`. It’s for webpack.
   },
-  base: '/',
   build: {
     outDir: 'dist',
   },
-  server: {
-    historyApiFallback: true,
-  }
 })
