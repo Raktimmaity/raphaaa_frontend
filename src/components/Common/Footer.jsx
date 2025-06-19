@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IoCall, IoLogoInstagram } from 'react-icons/io5'
 import { RiTwitterXLine } from 'react-icons/ri'
 import { TbBrandMeta, TbFilePhone } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
 
 const Footer = () => {
+  const [subscribe, setSubscribe] = useState("");
   return (
     <footer className="py-12">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4 lg:px-0">
@@ -22,10 +23,12 @@ const Footer = () => {
               type="email"
               placeholder="Enter your email"
               className="p-3 w-full text-sm border bg-white border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+              value={subscribe}
+              onChange={(e) => setSubscribe(e.target.value)}
             />
             <button
               type="submit"
-              className="bg-black text-white px-6 py-3 text-sm rounded-r-md hover:bg-gray-800 transition-all"
+              className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 text-sm rounded-r-md hover:bg-gray-800 transition-all"
             >
               Subscribe
             </button>
