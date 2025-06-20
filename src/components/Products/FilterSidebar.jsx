@@ -19,10 +19,37 @@ const FilterSidebar = () => {
   const [priceRange, setPriceRange] = useState([0, 100]);
 
   const categories = ["Top Wear", "Bottom Wear"];
-  const colors = ["Red", "Blue", "Black", "Green", "Yellow", "Gray", "White", "Pink", "Beige", "Navy"];
+  const colors = [
+    "Red",
+    "Blue",
+    "Black",
+    "Green",
+    "Yellow",
+    "Gray",
+    "White",
+    "Pink",
+    "Beige",
+    "Navy",
+  ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const materials = ["Cotton", "Wool", "Denim", "Polyester", "Silk", "Linen", "Viscose", "Fleece"];
-  const brands = ["Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "fashionista", "ChicStyle"];
+  const materials = [
+    "Cotton",
+    "Wool",
+    "Denim",
+    "Polyester",
+    "Silk",
+    "Linen",
+    "Viscose",
+    "Fleece",
+  ];
+  const brands = [
+    "Urban Threads",
+    "Modern Fit",
+    "Street Style",
+    "Beach Breeze",
+    "fashionista",
+    "ChicStyle",
+  ];
   const genders = ["Men", "Women"];
 
   useEffect(() => {
@@ -80,22 +107,25 @@ const FilterSidebar = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg space-y-6">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-2">Filters</h3>
+    <div className="p-6 bg-white shadow-xl rounded-2xl space-y-8 border border-blue-100">
+      <h3 className="text-3xl font-bold text-blue-800 mb-4">Filters</h3>
 
       {/* Category */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Category</p>
-        <div className="space-y-1">
+        <p className="text-blue-700 font-semibold mb-2">Category</p>
+        <div className="space-y-2">
           {categories.map((category) => (
-            <label key={category} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 hover:text-blue-600">
+            <label
+              key={category}
+              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-blue-600"
+            >
               <input
                 type="radio"
                 name="category"
                 checked={filters.category === category}
                 value={category}
                 onChange={handleFilterChange}
-                className="text-blue-500 focus:ring-2"
+                className="accent-blue-500 w-4 h-4 rounded-full"
               />
               {category}
             </label>
@@ -105,17 +135,20 @@ const FilterSidebar = () => {
 
       {/* Gender */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Gender</p>
-        <div className="space-y-1">
+        <p className="text-blue-700 font-semibold mb-2">Gender</p>
+        <div className="space-y-2">
           {genders.map((gender) => (
-            <label key={gender} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 hover:text-blue-600">
+            <label
+              key={gender}
+              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-blue-600"
+            >
               <input
                 type="radio"
                 name="gender"
                 checked={filters.gender === gender}
                 value={gender}
                 onChange={handleFilterChange}
-                className="text-blue-500 focus:ring-2"
+                className="accent-blue-500 w-4 h-4 rounded-full"
               />
               {gender}
             </label>
@@ -125,16 +158,18 @@ const FilterSidebar = () => {
 
       {/* Color */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Color</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="text-blue-700 font-semibold mb-2">Color</p>
+        <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
             <button
               key={color}
               name="color"
               value={color}
               onClick={handleFilterChange}
-              className={`w-8 h-8 rounded-full border-2 transition duration-150 ${
-                filters.color === color ? "ring-2 ring-blue-500" : "border-gray-300"
+              className={`w-8 h-8 rounded-full border-2 shadow-sm transition duration-150 hover:scale-105 ${
+                filters.color === color
+                  ? "ring-2 ring-blue-400"
+                  : "border-blue-200"
               }`}
               style={{ backgroundColor: color.toLowerCase() }}
             />
@@ -144,17 +179,20 @@ const FilterSidebar = () => {
 
       {/* Size */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Size</p>
-        <div className="grid grid-cols-3 gap-2">
+        <p className="text-blue-700 font-semibold mb-2">Size</p>
+        <div className="grid grid-cols-3 gap-3">
           {sizes.map((size) => (
-            <label key={size} className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600">
+            <label
+              key={size}
+              className="flex items-center gap-2 text-sm text-blue-800 hover:text-blue-600"
+            >
               <input
                 type="checkbox"
                 name="size"
                 checked={filters.size.includes(size)}
                 value={size}
                 onChange={handleFilterChange}
-                className="text-blue-500"
+                className="accent-blue-500 w-4 h-4"
               />
               {size}
             </label>
@@ -164,17 +202,20 @@ const FilterSidebar = () => {
 
       {/* Material */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Material</p>
-        <div className="space-y-1">
+        <p className="text-blue-700 font-semibold mb-2">Material</p>
+        <div className="space-y-2">
           {materials.map((material) => (
-            <label key={material} className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600">
+            <label
+              key={material}
+              className="flex items-center gap-3 text-sm text-blue-800 hover:text-blue-600"
+            >
               <input
                 type="checkbox"
                 name="material"
                 checked={filters.material.includes(material)}
                 value={material}
                 onChange={handleFilterChange}
-                className="text-blue-500"
+                className="accent-blue-500 w-4 h-4"
               />
               {material}
             </label>
@@ -184,17 +225,20 @@ const FilterSidebar = () => {
 
       {/* Brand */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Brand</p>
-        <div className="space-y-1">
+        <p className="text-blue-700 font-semibold mb-2">Brand</p>
+        <div className="space-y-2">
           {brands.map((brand) => (
-            <label key={brand} className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600">
+            <label
+              key={brand}
+              className="flex items-center gap-3 text-sm text-blue-800 hover:text-blue-600"
+            >
               <input
                 type="checkbox"
                 name="brand"
                 checked={filters.brand.includes(brand)}
                 value={brand}
                 onChange={handleFilterChange}
-                className="text-blue-500"
+                className="accent-blue-500 w-4 h-4"
               />
               {brand}
             </label>
@@ -204,7 +248,7 @@ const FilterSidebar = () => {
 
       {/* Price */}
       <div>
-        <p className="text-gray-700 font-medium mb-2">Price Range</p>
+        <p className="text-blue-700 font-semibold mb-2">Price Range</p>
         <input
           type="range"
           name="priceRange"
@@ -212,9 +256,9 @@ const FilterSidebar = () => {
           onChange={handlePriceChange}
           min={0}
           max={100}
-          className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+          className="w-full h-2 bg-blue-300 rounded-lg appearance-none cursor-pointer"
         />
-        <div className="flex justify-between text-sm text-gray-600 mt-1">
+        <div className="flex justify-between text-sm text-blue-700 mt-1">
           <span>₹0</span>
           <span>₹{priceRange[1]}</span>
         </div>
