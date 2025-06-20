@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MyOrders from "./MyOrders";
+import MyOrders from "./MyOrdersPage";
 import { FaUserCircle } from "react-icons/fa";
 import { toast, Toaster } from "sonner"; // ← Import sonner
 import { AiOutlineLogout } from "react-icons/ai";

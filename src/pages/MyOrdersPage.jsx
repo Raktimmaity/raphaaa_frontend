@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +89,10 @@ const MyOrders = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentOrders = sortedOrders.slice(indexOfFirstItem, indexOfLastItem);
 
+  const handleRowClick = (orderId) => {
+    navigate(`/order/${orderId}`);
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -135,6 +141,7 @@ const MyOrders = () => {
               currentOrders.map((order) => (
                 <tr
                   key={order._id}
+                  onClick={()=> handleRowClick(order._id)}
                   className="hover:bg-gray-50 transition-colors duration-200"
                 >
                   <td className="py-3 px-4">

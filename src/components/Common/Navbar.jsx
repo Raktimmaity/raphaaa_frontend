@@ -32,6 +32,12 @@ const Navbar = () => {
         {/* Center navigation links */}
         <div className="hidden md:flex space-x-6">
           <Link
+            to="/collections/all"
+            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
+          >
+            Collections
+          </Link>
+          <Link
             to="#"
             className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
           >
