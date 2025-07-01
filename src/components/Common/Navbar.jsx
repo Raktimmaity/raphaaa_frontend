@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import SearchBar from "./SearchBar";
@@ -16,6 +16,8 @@ const Navbar = () => {
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   const { cart } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
 
   const cartItemCount =
     cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
@@ -41,34 +43,63 @@ const Navbar = () => {
         <div className="hidden md:flex space-x-6">
           <Link
             to="/collections/all"
-            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
+            className={`text-sm font-extrabold uppercase ${
+              isActive("/collections/all")
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
             Collections
           </Link>
           <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
+            to="/about"
+            className={`text-sm font-extrabold uppercase ${
+              isActive("/about")
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
-            MEN
+            About
+          </Link>
+
+          <Link
+            to="/contact-us"
+            className={`text-sm font-extrabold uppercase ${
+              isActive("/contact-us")
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
+                : "text-gray-700 hover:text-black"
+            }`}
+          >
+            CONTACT US
           </Link>
           <Link
+            to="/privacy-policy"
+            className={`text-sm font-extrabold uppercase ${
+              isActive("/privacy-policy")
+                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
+                : "text-gray-700 hover:text-black"
+            }`}
+          >
+            Privacy & Policy
+          </Link>
+          {/* <Link
             to="#"
             className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
           >
             WOMEN
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             to="#"
             className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
           >
             Top Wear
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             to="#"
             className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
           >
             Bottom Wear
-          </Link>
+          </Link> */}
         </div>
         {/* right icons */}
         <div className="flex items-center space-x-4">

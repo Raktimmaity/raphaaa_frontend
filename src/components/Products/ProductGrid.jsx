@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const ProductGrid = ({ products, loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 8; // updated to 8
+  const productsPerPage = 9; // updated to 8
 
   // Pagination Logic
   const indexOfLast = currentPage * productsPerPage;
@@ -42,28 +42,46 @@ const ProductGrid = ({ products, loading, error }) => {
     return <p className="text-center text-red-500">Error: {error}</p>;
   }
 
+  if (!loading && products.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-96 text-center">
+        <img
+          src="https://i.gifer.com/7VE.gif" // Replace this with any GIF URL you like
+          alt="No products found"
+          className="w-64 h-64 object-contain mb-4"
+        />
+        <p className="text-2xl font-semibold text-gray-600">
+         🤧 Oops! No products found
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Try adjusting your filters and search again.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
         {currentProducts.map((product, index) => (
           <Link
             key={index}
             to={`/product/${product._id}`}
             className="block group transition-transform transform hover:-translate-y-1"
           >
-            <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-4 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-sky-200">
-              <div className="w-full h-72 sm:h-80 md:h-72 mb-4 overflow-hidden rounded-xl">
+            <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
+              <div className="w-full h-60 sm:h-64 md:h-60 mb-3 overflow-hidden rounded-lg">
                 <img
                   src={product.images[0].url}
                   alt={product.images[0].altText || product.name}
-                  className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="px-1">
-                <h3 className="text-lg font-semibold text-blue-900 mb-1 truncate">
+              <div className="px-0.5">
+                <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
                   {product.name}
                 </h3>
-                <p className="text-blue-700 font-bold text-base tracking-wide">
+                <p className="text-blue-700 font-bold text-sm tracking-wide">
                   ₹ {product.price}
                 </p>
               </div>
@@ -92,6 +110,6 @@ const ProductGrid = ({ products, loading, error }) => {
       )}
     </>
   );
-}
+};
 
 export default ProductGrid;

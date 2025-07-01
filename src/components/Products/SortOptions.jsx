@@ -10,7 +10,7 @@ const SortOptions = () => {
     setSearchParams(searchParams);
   }
   return (
-    <div className='mb-4 flex items-center justify-end'>
+    <div className='ml-6 mb-4 flex items-center justify-end'>
       <select onChange={handleSortChange} value={searchParams.get("sortBy") || ""} name="" id="sort" className='border p-2 rounded-md focus:outline-none bg-white'>
         <option value="">Default</option>
         <option value="priceAsc">Price: Low to High</option>

@@ -24,6 +24,9 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
 import AddProduct from "./components/Admin/AddProduct";
+import About from "./components/Common/About";
+import Contact from "./components/Common/Contact";
+import PrivacyPolicy from "./components/Common/PrivacyPolicy";
 
 const App = () => {
   return (
@@ -42,6 +45,9 @@ const App = () => {
           <Route path="order-confirmation" element={<OrderConfirmationPage/>}/>
           <Route path="order/:id" element={<OrderDetailsPage/>}/>
           <Route path="/my-orders" element={<MyOrders/>}/>
+          <Route path="/about" element={<About/>}/>
+          <Route path="/contact-us" element={<Contact/>}/>
+          <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
           
 
           {/* extra added */}

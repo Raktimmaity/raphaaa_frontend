@@ -107,17 +107,19 @@ const FilterSidebar = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-xl rounded-2xl space-y-8 border border-blue-100">
-      <h3 className="text-3xl font-bold text-blue-800 mb-4">Filters</h3>
+    <div className="p-6 bg-white/60 backdrop-blur-md shadow-2xl rounded-2xl space-y-10 border border-blue-200">
+      <h3 className="text-2xl font-extrabold text-gradient-to-r from-blue-600 to-sky-500 mb-6">
+        Filters
+      </h3>
 
       {/* Category */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Category</p>
+        <p className="text-blue-800 font-semibold mb-2">Category</p>
         <div className="space-y-2">
           {categories.map((category) => (
             <label
               key={category}
-              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-blue-600"
+              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-sky-600"
             >
               <input
                 type="radio"
@@ -125,7 +127,7 @@ const FilterSidebar = () => {
                 checked={filters.category === category}
                 value={category}
                 onChange={handleFilterChange}
-                className="accent-blue-500 w-4 h-4 rounded-full"
+                className="accent-sky-600 w-4 h-4"
               />
               {category}
             </label>
@@ -135,12 +137,12 @@ const FilterSidebar = () => {
 
       {/* Gender */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Gender</p>
+        <p className="text-blue-800 font-semibold mb-2">Gender</p>
         <div className="space-y-2">
           {genders.map((gender) => (
             <label
               key={gender}
-              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-blue-600"
+              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-sky-600"
             >
               <input
                 type="radio"
@@ -148,7 +150,7 @@ const FilterSidebar = () => {
                 checked={filters.gender === gender}
                 value={gender}
                 onChange={handleFilterChange}
-                className="accent-blue-500 w-4 h-4 rounded-full"
+                className="accent-sky-600 w-4 h-4"
               />
               {gender}
             </label>
@@ -158,7 +160,7 @@ const FilterSidebar = () => {
 
       {/* Color */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Color</p>
+        <p className="text-blue-800 font-semibold mb-2">Color</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
             <button
@@ -166,10 +168,10 @@ const FilterSidebar = () => {
               name="color"
               value={color}
               onClick={handleFilterChange}
-              className={`w-8 h-8 rounded-full border-2 shadow-sm transition duration-150 hover:scale-105 ${
+              className={`w-8 h-8 rounded-full border-2 shadow-md transition transform duration-200 hover:scale-110 ${
                 filters.color === color
-                  ? "ring-2 ring-blue-400"
-                  : "border-blue-200"
+                  ? "ring-2 ring-sky-500 border-white"
+                  : "border-blue-100"
               }`}
               style={{ backgroundColor: color.toLowerCase() }}
             />
@@ -179,12 +181,12 @@ const FilterSidebar = () => {
 
       {/* Size */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Size</p>
+        <p className="text-blue-800 font-semibold mb-2">Size</p>
         <div className="grid grid-cols-3 gap-3">
           {sizes.map((size) => (
             <label
               key={size}
-              className="flex items-center gap-2 text-sm text-blue-800 hover:text-blue-600"
+              className="flex items-center gap-2 text-sm text-blue-800 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -192,7 +194,7 @@ const FilterSidebar = () => {
                 checked={filters.size.includes(size)}
                 value={size}
                 onChange={handleFilterChange}
-                className="accent-blue-500 w-4 h-4"
+                className="accent-sky-500 w-4 h-4"
               />
               {size}
             </label>
@@ -202,12 +204,12 @@ const FilterSidebar = () => {
 
       {/* Material */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Material</p>
+        <p className="text-blue-800 font-semibold mb-2">Material</p>
         <div className="space-y-2">
           {materials.map((material) => (
             <label
               key={material}
-              className="flex items-center gap-3 text-sm text-blue-800 hover:text-blue-600"
+              className="flex items-center gap-3 text-sm text-blue-800 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -215,7 +217,7 @@ const FilterSidebar = () => {
                 checked={filters.material.includes(material)}
                 value={material}
                 onChange={handleFilterChange}
-                className="accent-blue-500 w-4 h-4"
+                className="accent-sky-500 w-4 h-4"
               />
               {material}
             </label>
@@ -225,12 +227,12 @@ const FilterSidebar = () => {
 
       {/* Brand */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Brand</p>
+        <p className="text-blue-800 font-semibold mb-2">Brand</p>
         <div className="space-y-2">
           {brands.map((brand) => (
             <label
               key={brand}
-              className="flex items-center gap-3 text-sm text-blue-800 hover:text-blue-600"
+              className="flex items-center gap-3 text-sm text-blue-800 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -238,7 +240,7 @@ const FilterSidebar = () => {
                 checked={filters.brand.includes(brand)}
                 value={brand}
                 onChange={handleFilterChange}
-                className="accent-blue-500 w-4 h-4"
+                className="accent-sky-500 w-4 h-4"
               />
               {brand}
             </label>
@@ -248,7 +250,7 @@ const FilterSidebar = () => {
 
       {/* Price */}
       <div>
-        <p className="text-blue-700 font-semibold mb-2">Price Range</p>
+        <p className="text-blue-800 font-semibold mb-2">Price Range</p>
         <input
           type="range"
           name="priceRange"
@@ -256,7 +258,7 @@ const FilterSidebar = () => {
           onChange={handlePriceChange}
           min={0}
           max={100}
-          className="w-full h-2 bg-blue-300 rounded-lg appearance-none cursor-pointer"
+          className="w-full h-2 bg-gradient-to-r from-sky-400 to-blue-500 rounded-lg appearance-none cursor-pointer"
         />
         <div className="flex justify-between text-sm text-blue-700 mt-1">
           <span>₹0</span>
