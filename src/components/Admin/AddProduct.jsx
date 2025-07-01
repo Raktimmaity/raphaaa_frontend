@@ -3,6 +3,7 @@ import { addProduct } from "./api"; // ✅ Replace with your actual API helper
 import { useSelector } from "react-redux";
 
 const AddProductForm = () => {
+  const token = localStorage.getItem("userToken");
   const { userInfo } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -49,7 +50,7 @@ const AddProductForm = () => {
         weight: Number(formData.weight),
       };
 
-      await addProduct(payload, userInfo.token);
+      await addProduct(payload, token);
       alert("Product added successfully!");
 
       setFormData({

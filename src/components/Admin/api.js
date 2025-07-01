@@ -4,7 +4,7 @@ export const addProduct = async (formData, token) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("userToken")}`, // send admin token
+      Authorization: `Bearer ${token}`, // send admin token
     },
   };
 
