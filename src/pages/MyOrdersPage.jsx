@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { fetchUserOrders } from "../redux/slices/orderSlice";
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState([]);
+  // const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -14,40 +16,49 @@ const MyOrders = () => {
 
   const itemsPerPage = 5;
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const mockOrders = [
+  //       {
+  //         _id: "12345",
+  //         createdAt: new Date(),
+  //         shippingAddress: { city: "New York", country: "USA" },
+  //         orderItems: [
+  //           {
+  //             name: "Product 1",
+  //             image: "https://picsum.photos/500/500?random=1",
+  //           },
+  //         ],
+  //         totalPrice: 100,
+  //         isPaid: true,
+  //       },
+  //       {
+  //         _id: "3457",
+  //         createdAt: new Date(),
+  //         shippingAddress: { city: "Los Angeles", country: "USA" },
+  //         orderItems: [
+  //           {
+  //             name: "Product 2",
+  //             image: "https://picsum.photos/500/500?random=2",
+  //           },
+  //         ],
+  //         totalPrice: 200,
+  //         isPaid: false,
+  //       },
+  //       // Add more mock orders as needed
+  //     ];
+  //     setOrders(mockOrders);
+  //   }, 1000);
+  // }, []);
+  const dispatch = useDispatch();
+  const { orders, loading, error } = useSelector((state) => state.orders);
+
   useEffect(() => {
-    setTimeout(() => {
-      const mockOrders = [
-        {
-          _id: "12345",
-          createdAt: new Date(),
-          shippingAddress: { city: "New York", country: "USA" },
-          orderItems: [
-            {
-              name: "Product 1",
-              image: "https://picsum.photos/500/500?random=1",
-            },
-          ],
-          totalPrice: 100,
-          isPaid: true,
-        },
-        {
-          _id: "3457",
-          createdAt: new Date(),
-          shippingAddress: { city: "Los Angeles", country: "USA" },
-          orderItems: [
-            {
-              name: "Product 2",
-              image: "https://picsum.photos/500/500?random=2",
-            },
-          ],
-          totalPrice: 200,
-          isPaid: false,
-        },
-        // Add more mock orders as needed
-      ];
-      setOrders(mockOrders);
-    }, 1000);
-  }, []);
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -134,6 +145,7 @@ const MyOrders = () => {
               <th className="py-3 px-4">Items</th>
               <th className="py-3 px-4">Price</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Delivery Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -141,7 +153,7 @@ const MyOrders = () => {
               currentOrders.map((order) => (
                 <tr
                   key={order._id}
-                  onClick={()=> handleRowClick(order._id)}
+                  onClick={() => handleRowClick(order._id)}
                   className="hover:bg-gray-50 transition-colors duration-200"
                 >
                   <td className="py-3 px-4">
@@ -161,7 +173,8 @@ const MyOrders = () => {
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    {order.shippingAddress.city}, {order.shippingAddress.country}
+                    {order.shippingAddress.city},{" "}
+                    {order.shippingAddress.country}
                   </td>
                   <td className="py-3 px-4">{order.orderItems.length}</td>
                   <td className="py-3 px-4 font-semibold">
@@ -176,6 +189,31 @@ const MyOrders = () => {
                       } px-3 py-1 rounded-full text-xs font-semibold`}
                     >
                       {order.isPaid ? "Paid" : "Pending"}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 space-y-1">
+                    <span
+                      className={`${
+                        order.isPaid
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      } px-3 py-1 rounded-full text-xs font-semibold inline-block`}
+                    >
+                      {order.isPaid ? "Paid" : "Pending"}
+                    </span>
+                    <br />
+                    <span
+                      className={`${
+                        order.status === "Delivered"
+                          ? "bg-blue-100 text-blue-700"
+                          : order.status === "Shipped"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : order.status === "Cancelled"
+                          ? "bg-red-200 text-red-800"
+                          : "bg-gray-100 text-gray-700"
+                      } px-3 py-1 rounded-full text-xs font-semibold inline-block`}
+                    >
+                      {order.status}
                     </span>
                   </td>
                 </tr>

@@ -1,17 +1,41 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate  } from "react-router-dom";
 import register from "../assets/register.jpg";
 import logo from "../assets/logo1.png";
+import { registerUser } from "../redux/slices/authSlice";
+import { useDispatch, useSelector  } from "react-redux";
+import { mergecart } from "../redux/slices/cartSlice";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {user, guestId, loading} = useSelector((state) => state.auth);
+  const { cart } = useSelector((state) => state.cart);
+
+  // Get redirect parameter and check if it's checkout or something
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const isCheckoutRedirect = redirect.includes("checkout");
+
+  useEffect(() => {
+    if(user) {
+      if (cart?.products.length > 0 && guestId) {
+        dispatch(mergecart({ guestId, user })).then(() => {
+          navigate(isCheckoutRedirect ? "/checkout" : "/");
+        })
+      } else {
+        navigate(isCheckoutRedirect ? "/checkout" : "/");
+      }
+    }
+  }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("User registered: ",{name, email, password});
-    
+    // console.log("User registered: ",{name, email, password});
+    dispatch(registerUser({ name, email, password }));
   }
 
   return (
@@ -84,12 +108,12 @@ const Register = () => {
             type="submit"
             className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white p-2.5 rounded-lg font-semibold hover:opacity-90 transition duration-300"
           >
-            Register
+            { loading ? "Registering..." : "Register"}
           </button>
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-sky-600 font-medium hover:underline">
+            <Link to={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-sky-600 font-medium hover:underline">
               Login
             </Link>
           </p>

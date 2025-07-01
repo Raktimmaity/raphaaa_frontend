@@ -5,134 +5,151 @@ import product3 from "../../assets/product3.jpg";
 import product4 from "../../assets/product4.jpg";
 import product5 from "../../assets/product5.jpg";
 import product6 from "../../assets/product6.jpg";
+import axios from "axios";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const newArrivals = [
-    {
-      _id: "1",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product3,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=1",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "2",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product4,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=2",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "3",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product5,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=3",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "4",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product6,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=4",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "5",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product3,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=5",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "6",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product4,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=6",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "7",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product5,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=7",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-    {
-      _id: "8",
-      name: "Stylish Jacket",
-      price: 120,
-      images: [
-        {
-          url: product6,
-          altText: "Stylish Jacket Front View",
-        },
-        // {
-        //   url: "https://picsum.photos/500/500?random=8",
-        //   altText: "Stylish Jacket Front View",
-        // },
-      ],
-    },
-  ];
+  // const newArrivals = [
+  //   {
+  //     _id: "1",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product3,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=1",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "2",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product4,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=2",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "3",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product5,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=3",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "4",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product6,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=4",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "5",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product3,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=5",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "6",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product4,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=6",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "7",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product5,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=7",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  //   {
+  //     _id: "8",
+  //     name: "Stylish Jacket",
+  //     price: 120,
+  //     images: [
+  //       {
+  //         url: product6,
+  //         altText: "Stylish Jacket Front View",
+  //       },
+  //       // {
+  //       //   url: "https://picsum.photos/500/500?random=8",
+  //       //   altText: "Stylish Jacket Front View",
+  //       // },
+  //     ],
+  //   },
+  // ];
+
+  const [newArrivals, setNewArrivals] = useState([]);
+
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+        );
+        setNewArrivals(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchNewArrivals();
+  }, []);
 
   const scroll = (direction) => {
     const container = scrollRef.current;
@@ -166,7 +183,7 @@ const NewArrivals = () => {
       container.removeEventListener("scroll", updateScrollButtons);
       window.removeEventListener("resize", updateScrollButtons);
     };
-  }, []);
+  }, [newArrivals]);
 
   return (
     <section className="py-16 px-4 lg:px-0">

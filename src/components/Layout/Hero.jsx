@@ -21,7 +21,7 @@ const Hero = () => {
           </h1>
           <div className="flex items-center gap-2">
             <Link
-              to="/collection"
+              to="/collections/all"
               className="font-semibold text-sm md:text-base bg-[#414141] text-white p-2"
             >
               SHOP NOW

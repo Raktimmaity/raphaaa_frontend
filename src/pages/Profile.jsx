@@ -3,10 +3,29 @@ import MyOrders from "./MyOrdersPage";
 import { FaUserCircle } from "react-icons/fa";
 import { toast, Toaster } from "sonner"; // ← Import sonner
 import { AiOutlineLogout } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../redux/slices/authSlice";
+import { clearCart } from "../redux/slices/cartSlice";
 
 const Profile = () => {
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [profileImage, setProfileImage] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    if(!user){
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(clearCart());
+    navigate("/login");
+  }
 
   const handleIconClick = () => {
     alert("Open profile settings or image upload!");
@@ -84,12 +103,12 @@ const Profile = () => {
 
             {/* User Info */}
             <h1 className="text-2xl md:text-3xl font-bold mt-2 mb-2">
-              John Doe
+              {user?.name}
             </h1>
-            <p className="text-lg text-gray-600 mb-4">john@example.com</p>
+            <p className="text-lg text-gray-600 mb-4">{user?.email}</p>
 
             {/* Logout Button */}
-            <button className="w-full bg-gradient-to-r from-red-400 to-red-700 text-white py-2 px-4 rounded hover:bg-red-600 transition flex items-center justify-center gap-2">
+            <button onClick={handleLogout} className="w-full bg-gradient-to-r from-red-400 to-red-700 text-white py-2 px-4 rounded hover:bg-red-600 transition flex items-center justify-center gap-2">
               <AiOutlineLogout className="text-lg" />
               Logout
             </button>

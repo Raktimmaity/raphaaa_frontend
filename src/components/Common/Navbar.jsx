@@ -6,13 +6,21 @@ import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
 import { IoIosClose } from "react-icons/io";
 import logo from "../../assets/logo1.png";
-import {TbBrandMeta} from 'react-icons/tb';
-import {IoLogoInstagram} from 'react-icons/io5';
-import {RiTwitterXLine} from 'react-icons/ri';
+import { TbBrandMeta } from "react-icons/tb";
+import { IoLogoInstagram } from "react-icons/io5";
+import { RiTwitterXLine } from "react-icons/ri";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth);
+
+  const cartItemCount =
+    cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
+    0;
+
   const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
   };
@@ -64,7 +72,15 @@ const Navbar = () => {
         </div>
         {/* right icons */}
         <div className="flex items-center space-x-4">
-          <Link to="/admin" className="block bg-black px-2 rounded text-sm text-white">Admin</Link>
+          {user && user.role === "admin" && (
+            <Link
+              to="/admin"
+              className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
+            >
+              Admin
+            </Link>
+          )}
+
           <Link to="/profile" className="hover:text-black">
             <HiOutlineUser className="h-6 w-6 text-gray-700" />
           </Link>
@@ -73,9 +89,11 @@ const Navbar = () => {
             className="relative hover:text-black"
           >
             <HiOutlineShoppingBag className="h-6 w-6 text-gray-700" />
-            <span className="absolute -top-1 bg-sky-500 text-white text-xs rounded-full px-2 py-0.5">
-              4
-            </span>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 bg-sky-500 text-white text-xs rounded-full px-2 py-0.5">
+                {cartItemCount}
+              </span>
+            )}
           </button>
           {/* Search icons */}
           <div className="overflow-hidden">
@@ -151,7 +169,7 @@ const Navbar = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <TbBrandMeta className='h-5 w-5 text-blue-600 inline' />
+                <TbBrandMeta className="h-5 w-5 text-blue-600 inline" />
               </a>
               <a
                 href="https://instagram.com"
@@ -165,7 +183,7 @@ const Navbar = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <RiTwitterXLine className='h-4 w-4 inline' />
+                <RiTwitterXLine className="h-4 w-4 inline" />
               </a>
             </div>
 

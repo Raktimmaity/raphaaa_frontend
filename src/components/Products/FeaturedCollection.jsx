@@ -17,7 +17,7 @@ const FeaturedCollection = () => {
             Exclusive Drop
           </h2>
           <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-pink-600 via-red-500 to-yellow-400 text-transparent bg-clip-text">
-            Football Icons x Raphaa Collection
+            Football Icons x Raphaaa Collection
           </h2>
           <p className="text-lg text-gray-700 mb-6 leading-relaxed">
             Step into the spotlight with our electrifying collab featuring world

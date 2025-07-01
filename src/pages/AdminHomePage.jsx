@@ -50,9 +50,9 @@ const [products, setProducts] = useState(0);
     }, 30);
   };
 
-  animateValue(0, setRevenue, 10000);
-  animateValue(0, setOrderCount, 200);
-  animateValue(0, setProducts, 100);
+  animateValue(0, setRevenue, 0);
+  animateValue(0, setOrderCount, 0);
+  animateValue(0, setProducts, );
 }, []);
 
 
@@ -66,7 +66,7 @@ const [products, setProducts] = useState(0);
           <FaChartLine className="text-3xl text-blue-600" />
           <h2 className="text-lg font-semibold text-gray-600">Revenue</h2>
         </div>
-        <p className="text-3xl font-bold text-blue-700">${revenue.toLocaleString()}</p>
+        <p className="text-3xl font-bold text-blue-700">₹{revenue.toLocaleString()}</p>
       </div>
 
       {/* Orders */}

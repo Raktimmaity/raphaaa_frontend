@@ -19,7 +19,7 @@ const GenderCollectionSection = () => {
           <img
             src={product1}
             alt="Women-collection-img"
-            className="w-full h-[500px] md:h-[600px] lg:h-[500px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
+            className="w-full h-[500px] md:h-[600px] lg:h-[700px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
@@ -28,7 +28,7 @@ const GenderCollectionSection = () => {
               Women's Collection
             </h2>
             <Link
-              to="/collections/all?gender=women"
+              to="/collections/all?gender=Women"
               className="inline-block px-5 py-2 bg-white text-black font-medium rounded hover:bg-gray-100 transition"
             >
               Shop Now
@@ -46,7 +46,7 @@ const GenderCollectionSection = () => {
           <img
             src={product2}
             alt="Men-collection-img"
-            className="w-full h-[500px] md:h-[600px] lg:h-[500px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
+            className="w-full h-[500px] md:h-[600px] lg:h-[800px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
@@ -55,7 +55,7 @@ const GenderCollectionSection = () => {
               Men's Collection
             </h2>
             <Link
-              to="/collections/all?gender=men"
+              to="/collections/all?gender=Men"
               className="inline-block px-5 py-2 bg-white text-black font-medium rounded hover:bg-gray-100 transition"
             >
               Shop Now
