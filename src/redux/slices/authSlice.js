@@ -117,7 +117,7 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (userData, {re
         
         // Store with consistent keys
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        localStorage.setItem('userToken', response.data.token); // Changed from 'userToken' to 'token'
+        localStorage.setItem('token', response.data.token); // Changed from 'userToken' to 'token'
         
         return {
             user: response.data.user,
@@ -136,7 +136,7 @@ export const registerUser = createAsyncThunk("auth/registerUser", async (userDat
         
         // Store with consistent keys
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        localStorage.setItem('userToken', response.data.token);
+        localStorage.setItem('token', response.data.token);
         
         return {
             user: response.data.user,
