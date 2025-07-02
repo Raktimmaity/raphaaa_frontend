@@ -27,10 +27,13 @@ import AddProduct from "./components/Admin/AddProduct";
 import About from "./components/Common/About";
 import Contact from "./components/Common/Contact";
 import PrivacyPolicy from "./components/Common/PrivacyPolicy";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   return (
     <Provider store={store}>
+       <ToastContainer position="top-right" autoClose={2000} />
       <Toaster position="top-right"/>
       <BrowserRouter>
         <Routes>

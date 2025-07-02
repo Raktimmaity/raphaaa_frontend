@@ -105,10 +105,15 @@
 
 // export default OrderManagement;
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchAllOrders, updateOrderStatus, deleteOrder, clearError } from "../../redux/slices/adminOrderSlice";
+import {
+  fetchAllOrders,
+  updateOrderStatus,
+  deleteOrder,
+  clearError,
+} from "../../redux/slices/adminOrderSlice";
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -117,32 +122,31 @@ const OrderManagement = () => {
   const { user } = useSelector((state) => state.auth);
   const { orders, loading, error } = useSelector((state) => state.adminOrders);
 
-  useEffect(() => {
-    console.log('User:', user);
-    console.log('Orders:', orders);
-    console.log('Loading:', loading);
-    console.log('Error:', error);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 10;
 
-    if(!user) {
+  useEffect(() => {
+    if (!user) {
       navigate("/login");
       return;
     }
-    
-    if(user.role !== "admin") {
+
+    if (user.role !== "admin") {
       navigate("/");
       return;
     }
-    
+
     dispatch(fetchAllOrders());
   }, [dispatch, user, navigate]);
 
   const handleStatusChange = (orderId, status) => {
-    console.log('Updating order:', { id: orderId, status });
     dispatch(updateOrderStatus({ id: orderId, status }));
   };
 
   const handleDeleteOrder = (orderId) => {
-    if (window.confirm('Are you sure you want to delete this order?')) {
+    if (window.confirm("Are you sure you want to delete this order?")) {
       dispatch(deleteOrder(orderId));
     }
   };
@@ -151,46 +155,82 @@ const OrderManagement = () => {
     dispatch(clearError());
   };
 
-  if(loading) return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <p className="mt-2">Loading orders...</p>
-      </div>
-    </div>
+  const filteredOrders = orders
+    .filter((order) =>
+      order._id.toLowerCase().includes(search.toLowerCase()) ||
+      order.user?.name?.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((order) =>
+      statusFilter ? order.status === statusFilter : true
+    );
+
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage
   );
 
-  if(error) return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <div className="flex justify-between items-center">
-          <span>Error: {typeof error === 'string' ? error : error.message || 'Something went wrong'}</span>
-          <button 
-            onClick={clearErrorHandler}
-            className="text-red-700 hover:text-red-900"
-          >
-            ×
-          </button>
+  if (loading)
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <p className="mt-2">Loading orders...</p>
         </div>
       </div>
-      <button 
-        onClick={() => dispatch(fetchAllOrders())}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Retry
-      </button>
-    </div>
-  );
+    );
+
+  if (error)
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="flex justify-between items-center">
+            <span>
+              Error: {typeof error === "string" ? error : error.message || "Something went wrong"}
+            </span>
+            <button onClick={clearErrorHandler} className="text-red-700 hover:text-red-900">
+              ×
+            </button>
+          </div>
+        </div>
+        <button
+          onClick={() => dispatch(fetchAllOrders())}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Order Management</h2>
-        <div className="text-sm text-gray-600">
-          Total Orders: {orders.length}
-        </div>
+        <div className="text-sm text-gray-600">Total Orders: {filteredOrders.length}</div>
       </div>
-      
+
+      {/* Search and Filter */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by ID or customer"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md bg-white outline-0"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="w-full md:w-1/4 px-4 py-2 border border-gray-300 rounded-md bg-white outline-0"
+        >
+          <option value="">All Statuses</option>
+          <option value="Processing">Processing</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100 text-xs uppercase text-gray-600">
@@ -205,8 +245,8 @@ const OrderManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.length > 0 ? (
-              orders.map((order) => (
+            {paginatedOrders.length > 0 ? (
+              paginatedOrders.map((order) => (
                 <tr
                   key={order._id}
                   className="hover:bg-gray-50 transition-all duration-200 border-b"
@@ -214,16 +254,12 @@ const OrderManagement = () => {
                   <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
                     #{order._id.slice(-8)}
                   </td>
-                  <td className="py-4 px-6">
-                    {order.user?.name || 'Unknown User'}
-                  </td>
-                  <td className="py-4 px-6">₹{order.totalPrice?.toFixed(2) || '0.00'}</td>
+                  <td className="py-4 px-6">{order.user?.name || "Unknown User"}</td>
+                  <td className="py-4 px-6">₹{order.totalPrice?.toFixed(2) || "0.00"}</td>
                   <td className="py-4 px-6">
                     <select
                       value={order.status}
-                      onChange={(e) =>
-                        handleStatusChange(order._id, e.target.value)
-                      }
+                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
                     >
                       <option value="Processing">Processing</option>
@@ -233,7 +269,7 @@ const OrderManagement = () => {
                     </select>
                   </td>
                   <td className="py-4 px-6 capitalize">
-                    {order.paymentMethod?.replace('_', ' ') || 'N/A'}
+                    {order.paymentMethod?.replace("_", " ") || "N/A"}
                   </td>
                   <td className="py-4 px-6">
                     {new Date(order.createdAt).toLocaleDateString()}
@@ -258,10 +294,7 @@ const OrderManagement = () => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={7}
-                  className="p-6 text-center text-gray-500 italic"
-                >
+                <td colSpan={7} className="p-6 text-center text-gray-500 italic">
                   No orders found
                 </td>
               </tr>
@@ -269,6 +302,23 @@ const OrderManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 gap-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 rounded-md border ${
+                page === currentPage ? "bg-blue-500 text-white" : "bg-white text-gray-700"
+              } hover:bg-blue-100`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

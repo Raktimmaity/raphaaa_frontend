@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addUser, deleteUser, fetchUsers, updateUser } from "../../redux/slices/adminSlice";
+import {
+  addUser,
+  deleteUser,
+  fetchUsers,
+  updateUser,
+} from "../../redux/slices/adminSlice";
+import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { RiFileExcel2Line } from "react-icons/ri";
+
+// toast.configure();
 
 const UserManagement = () => {
   const dispatch = useDispatch();
@@ -10,14 +21,19 @@ const UserManagement = () => {
   const { user } = useSelector((state) => state.auth);
   const { users, loading, error } = useSelector((state) => state.admin);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+
   useEffect(() => {
-    if(user && user.role !== "admin") {
+    if (user && user.role !== "admin") {
       navigate("/");
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    if(user && user.role === "admin"){
+    if (user && user.role === "admin") {
       dispatch(fetchUsers());
     }
   }, [dispatch, user]);
@@ -26,7 +42,7 @@ const UserManagement = () => {
     name: "",
     email: "",
     password: "",
-    role: "customer", // default role
+    role: "customer",
   });
 
   const handleChange = (e) => {
@@ -40,7 +56,6 @@ const UserManagement = () => {
     e.preventDefault();
     dispatch(addUser(formData));
 
-    // Reset after form submission
     setFormData({
       name: "",
       email: "",
@@ -50,16 +65,26 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = (userId, newRole) => {
-    // Find the user to get their current name and email
-    const userToUpdate = users.find(u => u._id === userId);
-    
-    if (userToUpdate) {
-      dispatch(updateUser({
-        id: userId, 
-        name: userToUpdate.name,
-        email: userToUpdate.email,
-        role: newRole
-      }));
+    const userToUpdate = users.find((u) => u._id === userId);
+    if (userToUpdate && userToUpdate.role !== newRole) {
+      if (
+        window.confirm(
+          `Are you sure you want to change ${userToUpdate.name}'s role to ${newRole}?`
+        )
+      ) {
+        dispatch(
+          updateUser({
+            id: userId,
+            name: userToUpdate.name,
+            email: userToUpdate.email,
+            role: newRole,
+          })
+        );
+        toast.success(`${userToUpdate.name}'s role updated to ${newRole}`, {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+        });
+      }
     }
   };
 
@@ -69,18 +94,43 @@ const UserManagement = () => {
     }
   };
 
+  const exportToExcel = () => {
+    const data = filteredUsers.map(({ name, email, role, createdAt }) => ({
+      Name: name,
+      Email: email,
+      Role: role,
+      CreatedAt: new Date(createdAt).toLocaleString(),
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+    XLSX.writeFile(workbook, "Users.xlsx");
+  };
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (roleFilter ? u.role === roleFilter : true)
+  );
+
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4"> User Management</h2>
-      {loading && <p>Loading...</p> }
-      {error && <p className="text-red-500">Error: {error}</p> }
-      
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>}
+
       {/* Add new user form */}
+      {/* ... unchanged add user form ... */}
       <div className="p-6 bg-white shadow-md rounded-lg mb-6">
         <h3 className="text-lg font-bold mb-6">Add New User</h3>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Name */}
             <div>
               <label
                 htmlFor="name"
@@ -97,8 +147,6 @@ const UserManagement = () => {
                 required
               />
             </div>
-
-            {/* Email */}
             <div>
               <label
                 htmlFor="email"
@@ -115,8 +163,6 @@ const UserManagement = () => {
                 required
               />
             </div>
-
-            {/* Password */}
             <div>
               <label
                 htmlFor="password"
@@ -133,8 +179,6 @@ const UserManagement = () => {
                 required
               />
             </div>
-
-            {/* Role */}
             <div>
               <label
                 htmlFor="role"
@@ -160,7 +204,7 @@ const UserManagement = () => {
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded shadow"
               disabled={loading}
             >
-              {loading ? 'Adding...' : 'Add User'}
+              {loading ? "Adding..." : "Add User"}
             </button>
           </div>
         </form>
@@ -169,6 +213,31 @@ const UserManagement = () => {
       {/* user list management */}
       <div className="bg-white shadow-md rounded-lg p-6 mt-8">
         <h3 className="text-lg font-bold mb-6">Manage Existing Users</h3>
+        <div className="mb-6 flex flex-col md:flex-row gap-4 items-center">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="md:w-3/5 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="md:w-40 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">All Roles</option>
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button
+            onClick={exportToExcel}
+            className="w-1/2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            <RiFileExcel2Line className="inline" size={26} /> Export to Excel
+          </button>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-gray-500">
             <thead className="bg-gray-100 text-xs uppercase text-gray-700">
@@ -176,43 +245,93 @@ const UserManagement = () => {
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Role</th>
+                <th className="py-3 px-4">Change Role</th>
+                <th className="py-3 px-4">Created At</th>
                 <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="p-4 font-medium text-gray-900 whitespace-nowrap">
-                    {user.name}
-                  </td>
-                  <td className="p-4">{user.email}</td>
-                  <td className="p-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) =>
-                        handleRoleChange(user._id, e.target.value)
-                      }
-                      className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      disabled={loading}
-                    >
-                      <option value="customer">Customer</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleDeleteUser(user._id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
-                      disabled={loading}
-                    >
-                      Delete
-                    </button>
+              {paginatedUsers.length > 0 ? (
+                paginatedUsers.map((u) => (
+                  <tr key={u._id} className="hover:bg-gray-50">
+                    <td className="p-4 font-medium text-gray-900 whitespace-nowrap">
+                      {u.name}
+                    </td>
+                    <td className="p-4">{u.email}</td>
+                    <td className="p-4">
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${
+                            u.role === "admin"
+                              ? "bg-gradient-to-r from-purple-500 to-indigo-500"
+                              : "bg-gradient-to-r from-green-400 to-blue-400"
+                          }`}
+                        >
+                          {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <select
+                          value={u.role}
+                          onChange={(e) =>
+                            handleRoleChange(u._id, e.target.value)
+                          }
+                          className="p-1 border text-xs rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          disabled={loading}
+                        >
+                          <option value="customer">Customer</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                    </td>
+                    <td className="p-4">
+                      {new Date(u.createdAt).toLocaleString()}
+                    </td>
+                    <td className="p-4">
+                      {u._id !== user._id && (
+                        <button
+                          onClick={() => handleDeleteUser(u._id)}
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+                          disabled={loading}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center py-6 text-gray-500 italic"
+                  >
+                    No users found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6 gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-md border ${
+                  page === currentPage
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-700"
+                } hover:bg-blue-100`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
