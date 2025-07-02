@@ -14,6 +14,7 @@ import { logout } from "../../redux/slices/authSlice";
 import { clearCart } from "../../redux/slices/cartSlice";
 import { useSelector } from "react-redux";
 import icon from "../../assets/man.png";
+import { HiPlusCircle } from "react-icons/hi"; // Add this import
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -102,17 +103,18 @@ const AdminSidebar = () => {
           <span>Users</span>
         </NavLink>
 
-        <NavLink
-          to="/admin/add-product"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
-          <FaBoxOpen />
-          <span>Add Products</span>
-        </NavLink>
+        
+<NavLink
+  to="/admin/add-product"
+  className={({ isActive }) =>
+    isActive
+      ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+      : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+  }
+>
+  <HiPlusCircle className="text-lg" />
+  <span>Add Products</span>
+</NavLink>
 
         <NavLink
           to="/admin/products"

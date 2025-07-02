@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { createProduct } from "../../redux/slices/adminProductSlice";
+
 
 const AddProduct = () => {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -31,6 +34,9 @@ const AddProduct = () => {
     },
     weight: ""
   });
+  const { loading, error } = useSelector(state => state.adminProducts);
+  const dispatch = useDispatch();
+
 
   const handleProductChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -75,7 +81,7 @@ const AddProduct = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
+      // setLoading(true);
 
       // Transform data to match backend schema
       const transformedData = {
@@ -103,12 +109,14 @@ const AddProduct = () => {
       // Get token from localStorage
       const token = localStorage.getItem("userToken");
       
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, transformedData, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-      });
+      // await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, transformedData, {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${token}`
+      //   },
+      // });
+      dispatch(createProduct(transformedData));
+
 
       // Reset form
       setProductData({
@@ -145,7 +153,7 @@ const AddProduct = () => {
       console.error("Error adding product:", err);
       alert(`Failed to add product: ${err.response?.data?.message || err.message}`);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
