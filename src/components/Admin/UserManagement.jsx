@@ -194,6 +194,7 @@ const UserManagement = () => {
               >
                 <option value="customer">Customer</option>
                 <option value="admin">Admin</option>
+                <option value="merchantise">Merchantise</option>
               </select>
             </div>
           </div>
@@ -264,6 +265,8 @@ const UserManagement = () => {
                           className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${
                             u.role === "admin"
                               ? "bg-gradient-to-r from-purple-500 to-indigo-500"
+                              : u.role === "merchantise"
+                              ? "bg-gradient-to-r from-orange-400 to-pink-500"
                               : "bg-gradient-to-r from-green-400 to-blue-400"
                           }`}
                         >
@@ -271,18 +274,20 @@ const UserManagement = () => {
                         </span>
                       </div>
                     </td>
+
                     <td className="p-4">
                       <select
-                          value={u.role}
-                          onChange={(e) =>
-                            handleRoleChange(u._id, e.target.value)
-                          }
-                          className="p-1 border text-xs rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          disabled={loading}
-                        >
-                          <option value="customer">Customer</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                        value={u.role}
+                        onChange={(e) =>
+                          handleRoleChange(u._id, e.target.value)
+                        }
+                        className="p-1 border text-xs rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        disabled={loading}
+                      >
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                        <option value="merchantise">Merchantise</option>
+                      </select>
                     </td>
                     <td className="p-4">
                       {new Date(u.createdAt).toLocaleString()}

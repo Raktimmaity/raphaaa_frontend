@@ -6,6 +6,7 @@ import ProductGrid from "../components/Products/ProductGrid";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsByFilters } from "../redux/slices/productsSlice";
+import { ImCross } from "react-icons/im";
 
 const CollectionPage = () => {
   const { collection } = useParams();
@@ -75,7 +76,7 @@ const CollectionPage = () => {
               onClick={handleClearFilters}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
             >
-              Clear All Filters
+             <ImCross className="inline" /> Clear All Filters
             </button>
           )}
         </div>

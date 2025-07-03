@@ -9,6 +9,9 @@ import {
   fetchSimilarProducts,
 } from "../../redux/slices/productsSlice";
 import { addToCart } from "../../redux/slices/cartSlice";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 
 const ProductDetails = ({ productId }) => {
   const { id } = useParams();
@@ -73,7 +76,8 @@ const ProductDetails = ({ productId }) => {
       });
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <ProductDetailsSkeleton />;
+
   if (error) return <p>Error: {error}</p>;
 
   const calculateOriginalPrice = () => {
@@ -332,5 +336,52 @@ const ProductDetails = ({ productId }) => {
     </div>
   );
 };
+const ProductDetailsSkeleton = () => {
+  return (
+    <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-8 md:p-12 animate-pulse">
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="hidden md:flex flex-col space-y-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} width={80} height={80} circle />
+          ))}
+        </div>
+
+        <div className="md:w-1/2 w-full">
+          <Skeleton height={400} className="rounded-3xl" />
+          <div className="flex md:hidden mt-4 space-x-4 overflow-x-auto scrollbar-hide">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} width={80} height={80} circle />
+            ))}
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <Skeleton height={20} width={150} />
+            <Skeleton height={80} />
+          </div>
+        </div>
+
+        <div className="md:w-1/2 space-y-4">
+          <Skeleton height={40} width={`80%`} />
+          <Skeleton height={20} width={`60%`} />
+          <Skeleton height={30} width={`30%`} />
+          <Skeleton height={60} />
+          <Skeleton height={20} width={`40%`} />
+          <Skeleton count={3} height={20} />
+          <Skeleton height={45} width={`100%`} className="rounded-full" />
+        </div>
+      </div>
+
+      <div className="mt-20">
+        <Skeleton height={30} width={200} className="mx-auto mb-6" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} height={250} className="rounded-xl" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 export default ProductDetails;

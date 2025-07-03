@@ -40,16 +40,16 @@ const Footer = () => {
           <h3 className="text-lg text-gray-800 mb-4">Shop</h3>
           <ul className="space-y-2 text-gray-600">
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Men's top wear</Link>
+              <Link to="/collections/all?category=Top+Wear&gender=Men" className="hover:text-gray-500 transition-colors">Men's top wear</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Women's top wear</Link>
+              <Link to="/collections/all?category=Top+Wear&gender=Women" className="hover:text-gray-500 transition-colors">Women's top wear</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Men's bottom wear</Link>
+              <Link to="/collections/all?category=Bottom+Wear&gender=Men" className="hover:text-gray-500 transition-colors">Men's bottom wear</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Women's bottom wear</Link>
+              <Link to="/collections/all?category=Bottom+Wear&gender=Women" className="hover:text-gray-500 transition-colors">Women's bottom wear</Link>
             </li>
           </ul>
         </div>
@@ -58,16 +58,16 @@ const Footer = () => {
           <h3 className="text-lg text-gray-800 mb-4">Support</h3>
           <ul className="space-y-2 text-gray-600">
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Contact Us</Link>
+              <Link to="/collections/all" className="hover:text-gray-500 transition-colors">All Collections</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">FAQ</Link>
+              <Link to="/about" className="hover:text-gray-500 transition-colors">About Us</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Return Policy</Link>
+              <Link to="/contact-us" className="hover:text-gray-500 transition-colors">Contact Us</Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-500 transition-colors">Features</Link>
+              <Link to="/privacy-policy" className="hover:text-gray-500 transition-colors">Privacy & Policy</Link>
             </li>
           </ul>
         </div>
@@ -75,15 +75,15 @@ const Footer = () => {
         <div>
             <h3 className="text-lg text-gray-800 mb-4">Follow Us</h3>
             <div className="flex items-center space-x-4 mb-6">
-                <a href="https://www.facebook.com" target="_blank" rel='noopener noreferrer' className="hover:text-gray-300">
+                <a href="https://www.facebook.com/Raphaaa.Store/" target="_blank" rel='noopener noreferrer' className="hover:text-sky-500">
                     <TbBrandMeta className='h-5 w-5'/>
                 </a>
-                <a href="https://www.instagram.com" target="_blank" rel='noopener noreferrer' className="hover:text-gray-300">
+                <a href="https://www.instagram.com/raphaaaofficial/" target="_blank" rel='noopener noreferrer' className="hover:text-sky-500">
                     <IoLogoInstagram className='h-5 w-5'/>
                 </a>
-                <a href="https://www.twitter.com" target="_blank" rel='noopener noreferrer' className="hover:text-gray-300">
+                {/* <a href="https://www.twitter.com" target="_blank" rel='noopener noreferrer' className="hover:text-gray-300">
                     <RiTwitterXLine className='h-5 w-5'/>
-                </a>
+                </a> */}
             </div>
             <p className='text-gray-500'>Call Us</p>
             <p>

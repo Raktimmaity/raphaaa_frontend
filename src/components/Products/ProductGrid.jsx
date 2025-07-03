@@ -62,53 +62,55 @@ const ProductGrid = ({ products, loading, error }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
-        {currentProducts.map((product, index) => (
-          <Link
-            key={index}
-            to={`/product/${product._id}`}
-            className="block group transition-transform transform hover:-translate-y-1"
-          >
-            <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
-              <div className="w-full h-60 sm:h-64 md:h-60 mb-3 overflow-hidden rounded-lg">
-                <img
-                  src={product.images[0].url}
-                  alt={product.images[0].altText || product.name}
-                  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="px-0.5">
-                <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
-                  {product.name}
-                </h3>
-                <p className="text-blue-700 font-bold text-sm tracking-wide">
-                  ₹ {product.price}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6 space-x-2">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                currentPage === i + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
+    {currentProducts.map((product, index) => (
+      <Link
+        key={index}
+        to={`/product/${product._id}`}
+        className="block group transition-transform transform hover:-translate-y-1"
+      >
+        <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
+          {/* ✅ Increased card height */}
+          <div className="w-full h-[300px] mb-3 overflow-hidden rounded-lg">
+            <img
+              src={product.images[0].url}
+              alt={product.images[0].altText || product.name}
+              className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div className="px-0.5">
+            <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
+              {product.name}
+            </h3>
+            <p className="text-blue-700 font-bold text-sm tracking-wide">
+              ₹ {product.price}
+            </p>
+          </div>
         </div>
-      )}
-    </>
+      </Link>
+    ))}
+  </div>
+
+  {/* Pagination */}
+  {totalPages > 1 && (
+    <div className="flex justify-center mt-6 space-x-2">
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i + 1)}
+          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+            currentPage === i + 1
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
+  )}
+</>
+
   );
 };
 

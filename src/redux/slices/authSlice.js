@@ -92,6 +92,7 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { toast } from "sonner"; // ✅ Add this
 
 // Retrieve user info and token from localStorage if available
 const userFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
@@ -124,6 +125,8 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (userData, {re
             token: response.data.token
         };
     } catch (error) {
+        const message = error.response?.data?.message || "Login failed. Please check your credentials.";
+        toast.error(message); // ✅ Sonner error toast
         console.error('Login error:', error);
         return rejectWithValue(error.response?.data || { message: 'Login failed' });
     }
@@ -137,12 +140,15 @@ export const registerUser = createAsyncThunk("auth/registerUser", async (userDat
         // Store with consistent keys
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
         localStorage.setItem('userToken', response.data.token);
+        toast.success("Registered successfully! 🎉"); // ✅ Success toast
         
         return {
             user: response.data.user,
             token: response.data.token
         };
     } catch (error) {
+        const errMsg = error.response?.data?.message || "Registration failed";
+        toast.error(errMsg); // ✅ Error toast
         console.error('Registration error:', error);
         return rejectWithValue(error.response?.data || { message: 'Registration failed' });
     }

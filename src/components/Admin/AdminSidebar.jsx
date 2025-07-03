@@ -14,7 +14,7 @@ import { logout } from "../../redux/slices/authSlice";
 import { clearCart } from "../../redux/slices/cartSlice";
 import { useSelector } from "react-redux";
 import icon from "../../assets/man.png";
-import { HiPlusCircle } from "react-icons/hi"; // Add this import
+import { HiPlusCircle } from "react-icons/hi";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -54,14 +54,11 @@ const AdminSidebar = () => {
 
         {user && (
           <div className="flex items-center justify-center gap-4 bg-gray-800 p-3 rounded-lg">
-            {/* Profile Image */}
             <img
-              src={icon} // fallback avatar
+              src={icon}
               alt="Profile"
               className="w-12 h-12 rounded-full object-cover border-2 border-white"
             />
-
-            {/* User Info */}
             <div className="text-left text-sm text-gray-200">
               <p className="font-semibold">{user.name}</p>
               <p className="text-xs text-gray-400">{user.email}</p>
@@ -78,6 +75,7 @@ const AdminSidebar = () => {
       </div>
 
       <nav className="flex flex-col space-y-2">
+        {/* Dashboard - Visible to all */}
         <NavLink
           to="/admin"
           end
@@ -91,55 +89,66 @@ const AdminSidebar = () => {
           <span>Dashboard</span>
         </NavLink>
 
-        <NavLink
-          to="/admin/users"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
-          <FaUser />
-          <span>Users</span>
-        </NavLink>
+        {/* Only for admin */}
+        {user?.role === "admin" && (
+          <NavLink
+            to="/admin/users"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <FaUser />
+            <span>Users</span>
+          </NavLink>
+        )}
 
-        
-<NavLink
-  to="/admin/add-product"
-  className={({ isActive }) =>
-    isActive
-      ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-      : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-  }
->
-  <HiPlusCircle className="text-lg" />
-  <span>Add Products</span>
-</NavLink>
+        {/* Visible to both admin and merchantise */}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <>
+            <NavLink
+              to="/admin/add-product"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+              }
+            >
+              <HiPlusCircle className="text-lg" />
+              <span>Add Products</span>
+            </NavLink>
 
-        <NavLink
-          to="/admin/products"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
-          <FaBoxOpen />
-          <span>Products</span>
-        </NavLink>
+            <NavLink
+              to="/admin/products"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+              }
+            >
+              <FaBoxOpen />
+              <span>Products</span>
+            </NavLink>
+          </>
+        )}
 
-        <NavLink
-          to="/admin/orders"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
-          <FaClipboardList />
-          <span>Orders</span>
-        </NavLink>
+        {/* Only for admin */}
+        {user?.role === "admin" && (
+          <NavLink
+            to="/admin/orders"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <FaClipboardList />
+            <span>Orders</span>
+          </NavLink>
+        )}
 
+        {/* Shop Link - Visible to all */}
         <NavLink
           to="/"
           className={({ isActive }) =>

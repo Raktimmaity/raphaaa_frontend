@@ -34,7 +34,7 @@ const App = () => {
   return (
     <Provider store={store}>
        <ToastContainer position="top-right" autoClose={2000} />
-      <Toaster position="top-right"/>
+      <Toaster position="top-right" richColors/>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<UserLayout />}>

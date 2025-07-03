@@ -103,7 +103,7 @@ const Navbar = () => {
         </div>
         {/* right icons */}
         <div className="flex items-center space-x-4">
-          {user && user.role === "admin" && (
+          {(user && (user.role === "admin" || user.role === "merchantise")) && (
             <Link
               to="/admin"
               className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
@@ -161,32 +161,32 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              to="#"
+              to="/collections/all"
               onClick={toggleNavDrawer}
               className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
             >
-              Men
+              Collections
             </Link>
             <Link
-              to="#"
+              to="/about"
               onClick={toggleNavDrawer}
               className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
             >
-              Women
+              About Us
             </Link>
             <Link
-              to="#"
+              to="/contact-us"
               onClick={toggleNavDrawer}
               className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
             >
-              Top Wear
+              Contact Us
             </Link>
             <Link
-              to="#"
+              to="privacy-policy"
               onClick={toggleNavDrawer}
               className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
             >
-              Bottom Wear
+              Privacy & Policy
             </Link>
           </nav>
           {/* Footer for mobile menu */}
@@ -196,26 +196,26 @@ const Navbar = () => {
             </h3>
             <div className="flex space-x-4 mb-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/Raphaaa.Store/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <TbBrandMeta className="h-5 w-5 text-blue-600 inline" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/raphaaaofficial/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <IoLogoInstagram className="h-5 w-5 inline text-[#E1306C]" />
               </a>
-              <a
+              {/* <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <RiTwitterXLine className="h-4 w-4 inline" />
-              </a>
+              </a> */}
             </div>
 
             <h3 className="text-sm font-semibold text-gray-700 mb-1">

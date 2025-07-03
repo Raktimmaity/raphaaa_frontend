@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserOrders } from "../redux/slices/orderSlice";
 
+// ... imports remain the same
+
 const MyOrders = () => {
-  // const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -16,40 +17,6 @@ const MyOrders = () => {
 
   const itemsPerPage = 5;
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const mockOrders = [
-  //       {
-  //         _id: "12345",
-  //         createdAt: new Date(),
-  //         shippingAddress: { city: "New York", country: "USA" },
-  //         orderItems: [
-  //           {
-  //             name: "Product 1",
-  //             image: "https://picsum.photos/500/500?random=1",
-  //           },
-  //         ],
-  //         totalPrice: 100,
-  //         isPaid: true,
-  //       },
-  //       {
-  //         _id: "3457",
-  //         createdAt: new Date(),
-  //         shippingAddress: { city: "Los Angeles", country: "USA" },
-  //         orderItems: [
-  //           {
-  //             name: "Product 2",
-  //             image: "https://picsum.photos/500/500?random=2",
-  //           },
-  //         ],
-  //         totalPrice: 200,
-  //         isPaid: false,
-  //       },
-  //       // Add more mock orders as needed
-  //     ];
-  //     setOrders(mockOrders);
-  //   }, 1000);
-  // }, []);
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.orders);
 
@@ -57,7 +24,7 @@ const MyOrders = () => {
     dispatch(fetchUserOrders());
   }, [dispatch]);
 
-  if (loading) return <p>Loading...</p>;
+  // if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   const handleSort = (key) => {
@@ -67,7 +34,6 @@ const MyOrders = () => {
     }));
   };
 
-  // Filter + Search + Sort
   const filteredOrders = orders
     .filter((order) => {
       if (statusFilter === "all") return true;
@@ -129,7 +95,7 @@ const MyOrders = () => {
         </div>
       </div>
 
-      <div className="relative shadow-md sm:rounded-lg overflow-x-auto ">
+      <div className="relative shadow-md sm:rounded-lg overflow-x-auto">
         <table className="min-w-full text-sm text-left text-gray-700 bg-white">
           <thead className="bg-gray-50 text-xs uppercase text-gray-700">
             <tr>
@@ -139,7 +105,7 @@ const MyOrders = () => {
                 className="py-3 px-4 cursor-pointer hover:underline"
                 onClick={() => handleSort("createdAt")}
               >
-                Created At
+                Ordered At
               </th>
               <th className="py-3 px-4">Shipping Address</th>
               <th className="py-3 px-4">Items</th>
@@ -178,7 +144,7 @@ const MyOrders = () => {
                   </td>
                   <td className="py-3 px-4">{order.orderItems.length}</td>
                   <td className="py-3 px-4 font-semibold">
-                    ${order.totalPrice}
+                    ₹{order.totalPrice}
                   </td>
                   <td className="py-3 px-4">
                     <span
@@ -191,17 +157,7 @@ const MyOrders = () => {
                       {order.isPaid ? "Paid" : "Pending"}
                     </span>
                   </td>
-                  <td className="py-3 px-4 space-y-1">
-                    <span
-                      className={`${
-                        order.isPaid
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      } px-3 py-1 rounded-full text-xs font-semibold inline-block`}
-                    >
-                      {order.isPaid ? "Paid" : "Pending"}
-                    </span>
-                    <br />
+                  <td className="py-3 px-4">
                     <span
                       className={`${
                         order.status === "Delivered"
@@ -211,16 +167,16 @@ const MyOrders = () => {
                           : order.status === "Cancelled"
                           ? "bg-red-200 text-red-800"
                           : "bg-gray-100 text-gray-700"
-                      } px-3 py-1 rounded-full text-xs font-semibold inline-block`}
+                      } px-3 py-1 rounded-full text-xs font-semibold`}
                     >
-                      {order.status}
+                      {order.status || "Processing"}
                     </span>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-6 px-4 text-center text-gray-500">
+                <td colSpan={8} className="py-6 px-4 text-center text-gray-500">
                   No orders found
                 </td>
               </tr>

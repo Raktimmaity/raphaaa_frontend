@@ -104,7 +104,7 @@ const Home = () => {
       </div> */}
 
       {/* Feature collections */}
-      <FeaturedCollection />
+      {/* <FeaturedCollection /> */}
     </div>
   );
 };

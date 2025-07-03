@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { deleteProduct, fetchAdminProducts } from "../../redux/slices/adminProductSlice";
 import { FiEdit } from "react-icons/fi";
+import { FaTrash } from "react-icons/fa";
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
@@ -124,7 +125,7 @@ const ProductManagement = () => {
                         onClick={() => handleDelete(product._id)}
                         className="inline-block bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-600"
                       >
-                        Delete
+                       <FaTrash className="inline" /> Delete
                       </button>
                     </td>
                   </tr>
@@ -147,7 +148,7 @@ const ProductManagement = () => {
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`px-4 py-2 rounded ${
+                className={`px-4 py-2 rounded-full ${
                   currentPage === i + 1
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
