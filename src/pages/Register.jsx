@@ -67,8 +67,10 @@ const Register = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) return toast.error("Enter a valid email");
     if (!password.trim()) return toast.error("Password is required");
-    if (password.length < 6) return toast.error("Password must be at least 6 characters");
-    if (password !== confirmPassword) return toast.error("Passwords do not match");
+    if (password.length < 6)
+      return toast.error("Password must be at least 6 characters");
+    if (password !== confirmPassword)
+      return toast.error("Passwords do not match");
 
     dispatch(registerUser({ name, email, password }));
   };
@@ -115,26 +117,27 @@ const Register = () => {
           </div>
 
           {/* ✅ Password Strength Meter */}
-{password.length > 0 && (
-  <div className="mb-2 flex items-center justify-between">
-    <span className="text-sm text-gray-600">Strength: {strengthLabel}</span>
-    <div className="w-2/3 h-2 rounded-full bg-gray-200 overflow-hidden ml-3">
-      <div
-        className="h-full transition-all duration-300"
-        style={{
-          width: `${passwordStrength}%`,
-          background:
-            passwordStrength < 40
-              ? "linear-gradient(to right, #f87171, #ef4444)"
-              : passwordStrength < 80
-              ? "linear-gradient(to right, #facc15, #fbbf24)"
-              : "linear-gradient(to right, #4ade80, #22c55e)",
-        }}
-      ></div>
-    </div>
-  </div>
-)}
-
+          {password.length > 0 && (
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm text-gray-600">
+                Strength: {strengthLabel}
+              </span>
+              <div className="w-2/3 h-2 rounded-full bg-gray-200 overflow-hidden ml-3">
+                <div
+                  className="h-full transition-all duration-300"
+                  style={{
+                    width: `${passwordStrength}%`,
+                    background:
+                      passwordStrength < 40
+                        ? "linear-gradient(to right, #f87171, #ef4444)"
+                        : passwordStrength < 80
+                        ? "linear-gradient(to right, #facc15, #fbbf24)"
+                        : "linear-gradient(to right, #4ade80, #22c55e)",
+                  }}
+                ></div>
+              </div>
+            </div>
+          )}
 
           {/* ✅ Confirm Password Field */}
           <div className="mb-6">

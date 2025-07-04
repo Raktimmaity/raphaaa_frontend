@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const FilterSidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,38 +18,30 @@ const FilterSidebar = () => {
   });
 
   const [priceRange, setPriceRange] = useState([0, 100]);
+  const [expandedSections, setExpandedSections] = useState({
+     category: true, 
+  });
+
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
 
   const categories = ["Top Wear", "Bottom Wear"];
   const colors = [
-    "Red",
-    "Blue",
-    "Black",
-    "Green",
-    "Yellow",
-    "Gray",
-    "White",
-    "Pink",
-    "Beige",
-    "Navy",
+    "Red", "Blue", "Black", "Green", "Yellow",
+    "Gray", "White", "Pink", "Beige", "Navy"
   ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const materials = [
-    "Cotton",
-    "Wool",
-    "Denim",
-    "Polyester",
-    "Silk",
-    "Linen",
-    "Viscose",
-    "Fleece",
+    "Cotton", "Wool", "Denim", "Polyester", "Silk",
+    "Linen", "Viscose", "Fleece"
   ];
   const brands = [
-    "Urban Threads",
-    "Modern Fit",
-    "Street Style",
-    "Beach Breeze",
-    "fashionista",
-    "ChicStyle",
+    "Urban Threads", "Modern Fit", "Street Style",
+    "Beach Breeze", "fashionista", "ChicStyle"
   ];
   const genders = ["Men", "Women"];
 
@@ -106,20 +99,38 @@ const FilterSidebar = () => {
     updateURLParams(newFilters);
   };
 
-  return (
-    <div className="p-6 bg-white/60 backdrop-blur-md shadow-2xl rounded-2xl space-y-10 border border-blue-200">
-      <h3 className="text-2xl font-extrabold text-gradient-to-r from-blue-600 to-sky-500 mb-6">
-        Filters
-      </h3>
+  const Section = ({ label, sectionKey, children }) => (
+    <div className="border-t border-gray-200 pt-4">
+      <div
+        onClick={() => toggleSection(sectionKey)}
+        className="flex justify-between items-center cursor-pointer mb-2"
+      >
+        <p className="text-sm font-semibold text-gray-700">{label}</p>
+        {expandedSections[sectionKey] ? (
+          <FaChevronUp className="text-gray-500 text-xs" />
+        ) : (
+          <FaChevronDown className="text-gray-500 text-xs" />
+        )}
+      </div>
+      {expandedSections[sectionKey] && children}
+    </div>
+  );
 
-      {/* Category */}
+  return (
+    <div className="p-6 bg-white rounded-xl shadow border border-gray-200 space-y-6">
       <div>
-        <p className="text-blue-800 font-semibold mb-2">Category</p>
+        <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          Filters
+        </h3>
+        <p className="text-xs text-gray-400">1000+ Products</p>
+      </div>
+
+      <Section label="Category" sectionKey="category">
         <div className="space-y-2">
           {categories.map((category) => (
             <label
               key={category}
-              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-sky-600"
+              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
             >
               <input
                 type="radio"
@@ -133,16 +144,14 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Gender */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Gender</p>
+      <Section label="Gender" sectionKey="gender">
         <div className="space-y-2">
           {genders.map((gender) => (
             <label
               key={gender}
-              className="flex items-center gap-3 cursor-pointer text-sm text-blue-800 hover:text-sky-600"
+              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
             >
               <input
                 type="radio"
@@ -156,11 +165,9 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Color */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Color</p>
+      <Section label="Color" sectionKey="color">
         <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
             <button
@@ -177,16 +184,14 @@ const FilterSidebar = () => {
             />
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Size */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Size</p>
+      <Section label="Size" sectionKey="size">
         <div className="grid grid-cols-3 gap-3">
           {sizes.map((size) => (
             <label
               key={size}
-              className="flex items-center gap-2 text-sm text-blue-800 hover:text-sky-600"
+              className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -200,16 +205,14 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Material */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Material</p>
+      <Section label="Fabric" sectionKey="material">
         <div className="space-y-2">
           {materials.map((material) => (
             <label
               key={material}
-              className="flex items-center gap-3 text-sm text-blue-800 hover:text-sky-600"
+              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -223,16 +226,14 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Brand */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Brand</p>
+      <Section label="Brand" sectionKey="brand">
         <div className="space-y-2">
           {brands.map((brand) => (
             <label
               key={brand}
-              className="flex items-center gap-3 text-sm text-blue-800 hover:text-sky-600"
+              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
             >
               <input
                 type="checkbox"
@@ -246,11 +247,9 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
-      {/* Price */}
-      <div>
-        <p className="text-blue-800 font-semibold mb-2">Price Range</p>
+      <Section label="Price Range" sectionKey="price">
         <input
           type="range"
           name="priceRange"
@@ -264,7 +263,7 @@ const FilterSidebar = () => {
           <span>₹0</span>
           <span>₹{priceRange[1]}</span>
         </div>
-      </div>
+      </Section>
     </div>
   );
 };

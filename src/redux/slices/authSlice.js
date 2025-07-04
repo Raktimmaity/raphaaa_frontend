@@ -140,7 +140,7 @@ export const registerUser = createAsyncThunk("auth/registerUser", async (userDat
         // Store with consistent keys
         localStorage.setItem('userInfo', JSON.stringify(response.data.user));
         localStorage.setItem('userToken', response.data.token);
-        toast.success("Registered successfully! 🎉"); // ✅ Success toast
+        toast.success("Registered successfully!"); // ✅ Success toast
         
         return {
             user: response.data.user,

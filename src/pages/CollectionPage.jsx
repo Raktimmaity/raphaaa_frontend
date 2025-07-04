@@ -59,13 +59,13 @@ const CollectionPage = () => {
         ref={sidebarRef}
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 z-50 left-0 w-64 bg-white overflow-y-auto transition-transform duration-300 lg:static lg:translate-x-0 rounded-2xl`}
+        } fixed inset-y-0 z-50 left-0 w-64 md:w-[300px] overflow-y-auto transition-transform duration-300 lg:static lg:translate-x-0 rounded-2xl`}
       >
         <FilterSidebar />
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow p-4">
+      <div className="flex-grow px-4 md:px-6 lg:pl-10">
         <h2 className="text-2xl uppercase mb-4">All collections</h2>
 
         {/* Sort + Clear Filters Row */}
@@ -76,7 +76,7 @@ const CollectionPage = () => {
               onClick={handleClearFilters}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
             >
-             <ImCross className="inline" /> Clear All Filters
+              <ImCross className="inline" /> Clear All Filters
             </button>
           )}
         </div>

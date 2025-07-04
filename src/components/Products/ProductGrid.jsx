@@ -72,15 +72,23 @@ const ProductGrid = ({ products, loading, error }) => {
             <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
               {/* ✅ Increased card height */}
               {/* <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg"> */}
-              <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg">
+              {/* <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg"> */}
+              <div className="w-full h-[220px] md:h-[160px] lg:h-[200px] mb-3 relative overflow-hidden rounded-lg">
                 <img
                   src={product.images[0].url}
                   alt={product.images[0].altText || product.name}
                   className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
+                {/* 🟡 NEW Badge if created within last 2 days */}
+                {new Date() - new Date(product.createdAt) <
+                  2 * 24 * 60 * 60 * 1000 && (
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
+                    New
+                  </div>
+                )}
 
                 {/* 🛒 Stock Badge */}
-                <div className="absolute bottom-2 right-2 bg-white/80 text-blue-900 text-xs font-semibold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
+                <div className="absolute bottom-2 right-2 bg-white text-blue-900 text-xs font-semibold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
                   {product.countInStock === 0 ? (
                     <span className="text-red-600">Out of Stock</span>
                   ) : product.countInStock < 10 ? (
@@ -103,8 +111,8 @@ const ProductGrid = ({ products, loading, error }) => {
 
                 {/* ⭐️ Product Rating */}
                 <div className="flex items-center space-x-1 mt-1">
-                  <span className="text-lg bg-green-600 p-0.5 rounded-xl text-white px-2">
-                    {product.rating}
+                  <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">
+                    {product.rating} ★
                   </span>
                   <span className="text-xs text-gray-500 ml-1">
                     {product.numReviews} Reviews
@@ -123,10 +131,10 @@ const ProductGrid = ({ products, loading, error }) => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-transform duration-200 ${
                 currentPage === i + 1
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105"
               }`}
             >
               {i + 1}

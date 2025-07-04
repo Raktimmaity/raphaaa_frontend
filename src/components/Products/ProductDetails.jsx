@@ -202,7 +202,7 @@ const ProductDetails = ({ productId }) => {
                       ))}
                     </div> */}
                     <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
-                      ★ {selectedProduct.rating}
+                      {selectedProduct.rating} ★
                     </span>
                     <span className="text-sm text-gray-600">
                       {/* {selectedProduct.rating.toFixed(1)} •{" "} */}
