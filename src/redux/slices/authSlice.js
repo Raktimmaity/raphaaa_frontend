@@ -98,7 +98,7 @@ import { toast } from "sonner"; // ✅ Add this
 const userFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
   : null;
-const tokenFromStorage = localStorage.getItem("token"); // Use consistent key
+const tokenFromStorage = localStorage.getItem("userInfo"); // Use consistent key
 
 // Check for an existing guest ID in the localstorage or generate a new one
 const initialGuestId = localStorage.getItem("guestId") || `guest_${Date.now()}`;
