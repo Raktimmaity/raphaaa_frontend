@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserOrders } from "../redux/slices/orderSlice";
 
-// ... imports remain the same
-
 const MyOrders = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +22,6 @@ const MyOrders = () => {
     dispatch(fetchUserOrders());
   }, [dispatch]);
 
-  // if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   const handleSort = (key) => {
@@ -53,12 +50,8 @@ const MyOrders = () => {
     const aVal = a[sortConfig.key];
     const bVal = b[sortConfig.key];
     return sortConfig.direction === "asc"
-      ? new Date(aVal) > new Date(bVal)
-        ? 1
-        : -1
-      : new Date(aVal) < new Date(bVal)
-      ? 1
-      : -1;
+      ? new Date(aVal) > new Date(bVal) ? 1 : -1
+      : new Date(aVal) < new Date(bVal) ? 1 : -1;
   });
 
   const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
@@ -68,6 +61,22 @@ const MyOrders = () => {
 
   const handleRowClick = (orderId) => {
     navigate(`/order/${orderId}`);
+  };
+
+  // Fix: Handle review navigation properly
+  const handleWriteReview = (e, order) => {
+    e.stopPropagation(); // Prevent row click
+
+    // Get the first product from the order to review
+    const firstProduct = order.orderItems[0];
+    
+    if (firstProduct && firstProduct.product) {
+      // Navigate to review page with product ID
+      navigate(`/review/${firstProduct.product}`);
+    } else {
+      // Fallback: use the order ID and handle it in the review component
+      navigate(`/review-order/${order._id}`);
+    }
   };
 
   return (
@@ -120,7 +129,7 @@ const MyOrders = () => {
                 <tr
                   key={order._id}
                   onClick={() => handleRowClick(order._id)}
-                  className="hover:bg-gray-50 transition-colors duration-200"
+                  className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
                 >
                   <td className="py-3 px-4">
                     <img
@@ -130,7 +139,7 @@ const MyOrders = () => {
                     />
                   </td>
                   <td className="py-3 px-4 font-medium text-gray-900 whitespace-nowrap">
-                    #{order._id}
+                    #{order._id.slice(-8)}
                   </td>
                   <td className="py-3 px-4">
                     {new Date(order.createdAt).toLocaleDateString()} <br />
@@ -171,6 +180,18 @@ const MyOrders = () => {
                     >
                       {order.status || "Processing"}
                     </span>
+
+                    {/* Fixed Review Link */}
+                    {order.status === "Delivered" && (
+                      <div className="mt-2">
+                        <button
+                          onClick={(e) => handleWriteReview(e, order)}
+                          className="text-sky-600 hover:text-sky-800 hover:underline text-xs font-medium bg-sky-50 px-2 py-1 rounded border border-sky-200 transition-colors"
+                        >
+                          Write Review
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))

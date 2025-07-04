@@ -23,9 +23,19 @@ const ProductDetails = ({ productId }) => {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  // const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(
+    selectedProduct?.countInStock === 0
+  );
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const productFetchId = productId || id;
+
+  useEffect(() => {
+    if (selectedProduct) {
+      setIsButtonDisabled(selectedProduct.countInStock === 0);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     if (productFetchId) {
@@ -57,6 +67,7 @@ const ProductDetails = ({ productId }) => {
       return;
     }
     setIsButtonDisabled(true);
+    setIsAddingToCart(true); // <- start loading
     dispatch(
       addToCart({
         productId: productFetchId,
@@ -72,6 +83,7 @@ const ProductDetails = ({ productId }) => {
       })
       .finally(() => {
         setIsButtonDisabled(false);
+        setIsAddingToCart(false); // <- stop loading
       });
   };
 
@@ -117,7 +129,7 @@ const ProductDetails = ({ productId }) => {
                 <img
                   src={mainImage}
                   alt="Main Product"
-                  className="w-full h-[400px] object-contain rounded-3xl transition-all duration-500 bg-white p-4"
+                  className="w-full h-[400px] object-contain rounded-3xl transition-all duration-500 bg-white p-4 border border-gray-300"
                 />
               ) : (
                 <div className="w-full h-[300px] flex items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
@@ -182,17 +194,20 @@ const ProductDetails = ({ productId }) => {
                 {/* Ratings */}
                 {selectedProduct.rating && (
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex text-yellow-400 text-lg">
+                    {/* <div className="flex text-yellow-400 text-lg">
                       {Array.from({ length: 5 }, (_, i) => (
                         <span key={i}>
                           {i < Math.floor(selectedProduct.rating) ? "★" : "☆"}
                         </span>
                       ))}
-                    </div>
+                    </div> */}
+                    <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
+                      ★ {selectedProduct.rating}
+                    </span>
                     <span className="text-sm text-gray-600">
-                      ({selectedProduct.rating.toFixed(1)} •{" "}
+                      {/* {selectedProduct.rating.toFixed(1)} •{" "} */}
                       {selectedProduct.numReviews || 0} review
-                      {selectedProduct.numReviews === 1 ? "" : "s"})
+                      {selectedProduct.numReviews === 1 ? "" : "s"}
                     </span>
                   </div>
                 )}
@@ -201,29 +216,33 @@ const ProductDetails = ({ productId }) => {
                 {selectedProduct.discountPrice &&
                 selectedProduct.offerPercentage ? (
                   <div className="mb-4">
-                    <div className="text-gray-500 line-through text-lg">
-                      ₹{calculateOriginalPrice()}
+                    <div className="flex items-end gap-4">
+                      <div className="text-4xl font-semibold text-sky-700">
+                        ₹{selectedProduct.price}
+                      </div>
+                      <div className="text-gray-500 line-through text-xl">
+                        ₹{calculateOriginalPrice()}
+                      </div>
                     </div>
-                    <div className="text-6xl font-semibold text-sky-700">
-                      ₹{selectedProduct.price}
-                    </div>
-                    <div className="text-green-600 font-medium">
+                    <div className="text-green-600 font-medium mt-1">
                       {selectedProduct.discountPrice}% OFF
                     </div>
                   </div>
                 ) : (
-                  <div>
-                    <div className="text-gray-500 line-through text-lg">
-                      ₹
-                      {Math.floor(
-                        (selectedProduct.price * 100) /
-                          (100 - selectedProduct.discountPrice)
-                      )}
+                  <div className="mb-4">
+                    <div className="flex items-end gap-4">
+                      <div className="text-4xl font-semibold text-sky-700">
+                        ₹{selectedProduct.price}
+                      </div>
+                      <div className="text-gray-500 line-through text-xl">
+                        ₹
+                        {Math.floor(
+                          (selectedProduct.price * 100) /
+                            (100 - selectedProduct.discountPrice)
+                        )}
+                      </div>
                     </div>
-                    <div className="text-2xl font-semibold text-sky-700">
-                      ₹{selectedProduct.price}
-                    </div>
-                    <div className="text-green-600 font-medium">
+                    <div className="text-green-600 font-medium mt-1">
                       {selectedProduct.discountPrice}% OFF
                     </div>
                   </div>
@@ -296,20 +315,25 @@ const ProductDetails = ({ productId }) => {
                   <p className="font-medium text-gray-700 mb-1">
                     Stock Available:
                   </p>
-                  <span
-                    className={`font-semibold text-lg ${
-                      selectedProduct.countInStock < 10
-                        ? "text-red-600"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {selectedProduct.countInStock} item
-                    {selectedProduct.countInStock === 1 ? "" : "s"} in stock
-                  </span>
-                  {selectedProduct.countInStock < 10 && (
-                    <p className="text-sm text-red-500 mt-1 animate-pulse">
-                      Hurry! Only few left in stock.
-                    </p>
+
+                  {selectedProduct.countInStock === 0 ? (
+                    <span className="font-semibold text-lg text-red-600">
+                      Out of Stock
+                    </span>
+                  ) : selectedProduct.countInStock < 10 ? (
+                    <>
+                      <span className="font-semibold text-lg text-red-600">
+                        Hurry! Only {selectedProduct.countInStock} item
+                        {selectedProduct.countInStock === 1 ? "" : "s"} left
+                      </span>
+                      <p className="text-sm text-red-500 mt-1 animate-pulse">
+                        Almost gone! Order soon.
+                      </p>
+                    </>
+                  ) : (
+                    <span className="font-semibold text-lg text-green-600">
+                      In Stock
+                    </span>
                   )}
                 </div>
 
@@ -318,18 +342,18 @@ const ProductDetails = ({ productId }) => {
                   onClick={handleAddToCart}
                   disabled={isButtonDisabled}
                   className={`group relative w-full inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full font-semibold text-white shadow-md transition-all duration-300 ease-in-out
-    ${
-      isButtonDisabled
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-sky-600 hover:bg-sky-700 active:scale-95"
-    }
-  `}
+                  ${
+                    isButtonDisabled
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-sky-600 hover:bg-sky-700 active:scale-95"
+                  }
+                `}
                 >
                   {!isButtonDisabled && (
                     <HiOutlineShoppingBag className="text-xl group-hover:scale-110 transition-transform duration-300" />
                   )}
                   <span className="relative z-10">
-                    {isButtonDisabled ? "Adding..." : "Add to Cart"}
+                    {isAddingToCart ? "Adding..." : "Add to Cart"}
                   </span>
 
                   {!isButtonDisabled && (

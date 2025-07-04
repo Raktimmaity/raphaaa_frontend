@@ -51,7 +51,7 @@ const ProductGrid = ({ products, loading, error }) => {
           className="w-64 h-64 object-contain mb-4"
         />
         <p className="text-2xl font-semibold text-gray-600">
-         🤧 Oops! No products found
+          🤧 Oops! No products found
         </p>
         <p className="text-sm text-gray-500 mt-1">
           Try adjusting your filters and search again.
@@ -62,55 +62,78 @@ const ProductGrid = ({ products, loading, error }) => {
 
   return (
     <>
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
-    {currentProducts.map((product, index) => (
-      <Link
-        key={index}
-        to={`/product/${product._id}`}
-        className="block group transition-transform transform hover:-translate-y-1"
-      >
-        <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
-          {/* ✅ Increased card height */}
-          <div className="w-full h-[300px] mb-3 overflow-hidden rounded-lg">
-            <img
-              src={product.images[0].url}
-              alt={product.images[0].altText || product.name}
-              className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-          <div className="px-0.5">
-            <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
-              {product.name}
-            </h3>
-            <p className="text-blue-700 font-bold text-sm tracking-wide">
-              ₹ {product.price}
-            </p>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
+        {currentProducts.map((product, index) => (
+          <Link
+            key={index}
+            to={`/product/${product._id}`}
+            className="block group transition-transform transform hover:-translate-y-1"
+          >
+            <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
+              {/* ✅ Increased card height */}
+              <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg">
+                <img
+                  src={product.images[0].url}
+                  alt={product.images[0].altText || product.name}
+                  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
+
+                {/* 🛒 Stock Badge */}
+                <div className="absolute bottom-2 right-2 bg-white/80 text-blue-900 text-xs font-semibold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
+                  {product.countInStock === 0 ? (
+                    <span className="text-red-600">Out of Stock</span>
+                  ) : product.countInStock < 10 ? (
+                    <span className="text-red-600">
+                      Hurry up! Only {product.countInStock} left
+                    </span>
+                  ) : (
+                    <span className="text-green-600">In Stock</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-0.5">
+                <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
+                  {product.name}
+                </h3>
+                <p className="text-blue-700 font-bold text-2xl tracking-wide">
+                  ₹ {product.price}
+                </p>
+
+                {/* ⭐️ Product Rating */}
+                <div className="flex items-center space-x-1 mt-1">
+                  <span className="text-lg bg-green-600 p-0.5 rounded-xl text-white px-2">
+                    {product.rating}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-1">
+                    {product.numReviews} Reviews
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 space-x-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                currentPage === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
-      </Link>
-    ))}
-  </div>
-
-  {/* Pagination */}
-  {totalPages > 1 && (
-    <div className="flex justify-center mt-6 space-x-2">
-      {Array.from({ length: totalPages }, (_, i) => (
-        <button
-          key={i}
-          onClick={() => setCurrentPage(i + 1)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold ${
-            currentPage === i + 1
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          {i + 1}
-        </button>
-      ))}
-    </div>
-  )}
-</>
-
+      )}
+    </>
   );
 };
 

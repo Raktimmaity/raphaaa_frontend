@@ -29,6 +29,8 @@ import Contact from "./components/Common/Contact";
 import PrivacyPolicy from "./components/Common/PrivacyPolicy";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SubmitReview from "./pages/SubmitReview";
+import SubmitReviewFromOrder from "./pages/SubmitReviewFromOrder";
 
 const App = () => {
   return (
@@ -51,6 +53,8 @@ const App = () => {
           <Route path="/about" element={<About/>}/>
           <Route path="/contact-us" element={<Contact/>}/>
           <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+          <Route path="/review/:productId" element={<SubmitReview />} />
+          <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} />
           
 
           {/* extra added */}
