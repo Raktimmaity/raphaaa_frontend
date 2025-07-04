@@ -189,7 +189,7 @@ export const updateProfile = createAsyncThunk(
       };
 
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/users/profile`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/update-profile`,
         updatedData,
         config
       );
