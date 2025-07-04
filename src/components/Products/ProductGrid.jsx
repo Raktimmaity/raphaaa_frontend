@@ -71,7 +71,8 @@ const ProductGrid = ({ products, loading, error }) => {
           >
             <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-3 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
               {/* ✅ Increased card height */}
-              <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg">
+              {/* <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg"> */}
+              <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg">
                 <img
                   src={product.images[0].url}
                   alt={product.images[0].altText || product.name}
