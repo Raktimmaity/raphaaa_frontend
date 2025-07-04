@@ -12,7 +12,6 @@ import { addToCart } from "../../redux/slices/cartSlice";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-
 const ProductDetails = ({ productId }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -292,6 +291,27 @@ const ProductDetails = ({ productId }) => {
                     </button>
                   </div>
                 </div>
+                {/* Stock Info */}
+                <div className="mb-6">
+                  <p className="font-medium text-gray-700 mb-1">
+                    Stock Available:
+                  </p>
+                  <span
+                    className={`font-semibold text-lg ${
+                      selectedProduct.countInStock < 10
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {selectedProduct.countInStock} item
+                    {selectedProduct.countInStock === 1 ? "" : "s"} in stock
+                  </span>
+                  {selectedProduct.countInStock < 10 && (
+                    <p className="text-sm text-red-500 mt-1 animate-pulse">
+                      Hurry! Only few left in stock.
+                    </p>
+                  )}
+                </div>
 
                 {/* Add to Cart */}
                 <button
@@ -382,6 +402,5 @@ const ProductDetailsSkeleton = () => {
     </div>
   );
 };
-
 
 export default ProductDetails;
