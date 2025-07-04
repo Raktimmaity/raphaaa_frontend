@@ -31,6 +31,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SubmitReview from "./pages/SubmitReview";
 import SubmitReviewFromOrder from "./pages/SubmitReviewFromOrder";
+import UpdateProfile from "./pages/UpdateProfile";
 
 const App = () => {
   return (
@@ -72,6 +73,7 @@ const App = () => {
             <Route path="products/:id/edit" element={<EditProductPage/>}/>
             <Route path="orders" element={<OrderManagement/>}/>
             <Route path="add-product" element={<AddProduct/> }/>
+            <Route path="update-profile" element={<UpdateProfile/> }/>
           </Route>
         </Routes>
       </BrowserRouter>

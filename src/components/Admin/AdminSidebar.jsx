@@ -15,6 +15,7 @@ import { clearCart } from "../../redux/slices/cartSlice";
 import { useSelector } from "react-redux";
 import icon from "../../assets/man.png";
 import { HiPlusCircle } from "react-icons/hi";
+import { CgProfile } from "react-icons/cg";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -150,15 +151,15 @@ const AdminSidebar = () => {
 
         {/* Shop Link - Visible to all */}
         <NavLink
-          to="/"
+          to="update-profile"
           className={({ isActive }) =>
             isActive
-              ? "bg-gray-700 text-white py-3 rounded flex items-center space-x-2"
+              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
               : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
           }
         >
-          <FaStore />
-          <span>Shop</span>
+          <CgProfile />
+          <span>Profile</span>
         </NavLink>
       </nav>
 

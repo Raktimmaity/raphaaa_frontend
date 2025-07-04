@@ -6,6 +6,7 @@ import { loginUser } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { mergecart } from "../redux/slices/cartSlice";
 import { toast } from "sonner"; // ✅ Sonner import
+import { FiRefreshCcw } from "react-icons/fi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -64,8 +65,14 @@ const Login = () => {
     }
   }, [captchaQuestion]);
 
-  const validateEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const refreshCaptcha = () => {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    setCaptchaQuestion({ a, b, answer: a + b });
+    setCaptchaAnswer(""); // Optionally clear previous answer
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -119,9 +126,21 @@ const Login = () => {
             />
           </div>
 
-          {/* ✅ Captcha Field with Canvas Image */}
-          <div className="mb-6 flex items-center gap-3">
-            <canvas ref={canvasRef} className="rounded shadow-sm" />
+          {/* ✅ Captcha Field with Canvas + Refresh Button */}
+          <div className="mb-6 flex gap-2">
+            <div className="flex items-center gap-3">
+              <canvas
+                ref={canvasRef}
+                className="rounded shadow-sm border border-gray-300"
+              />
+              <button
+                type="button"
+                onClick={refreshCaptcha}
+                className="flex items-center gap-1 text-lg bg-blue-600 text-white px-3 p-4 py-1 rounded hover:bg-blue-200 transition"
+              >
+                <FiRefreshCcw className="animate-spin-slow" />
+              </button>
+            </div>
             <input
               type="text"
               value={captchaAnswer}
