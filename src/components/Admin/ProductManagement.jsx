@@ -1,18 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteProduct, fetchAdminProducts } from "../../redux/slices/adminProductSlice";
+import {
+  deleteProduct,
+  fetchAdminProducts,
+} from "../../redux/slices/adminProductSlice";
 import { FiEdit } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
-  const { products, loading, error } = useSelector((state) => state.adminProducts);
+  const { products, loading, error } = useSelector(
+    (state) => state.adminProducts
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 5;
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const openImageModal = (image) => {
+    setSelectedImage(image);
+    setIsImageModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    setIsImageModalOpen(false);
+  };
 
   useEffect(() => {
     dispatch(fetchAdminProducts());
@@ -48,7 +65,10 @@ const ProductManagement = () => {
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = sortedProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   if (loading) {
@@ -78,6 +98,15 @@ const ProductManagement = () => {
           }}
         />
 
+        <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800">
+          <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full shadow-inner">
+            {filteredProducts.length}
+          </span>
+          <span className="text-sm font-medium tracking-wide">
+            Total Products
+          </span>
+        </div>
+
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
@@ -96,43 +125,94 @@ const ProductManagement = () => {
           <table className="min-w-full text-left text-sm text-gray-700">
             <thead className="bg-gray-100 text-xs uppercase text-gray-600">
               <tr>
+                {/* <th className="py-3 px-6">#</th> */}
+                <th className="py-3 px-6">Image</th>
                 <th className="py-3 px-6">Name</th>
                 <th className="py-3 px-6">Price</th>
-                <th className="py-3 px-6">SKU</th>
+                <th className="py-3 px-6">Stock</th>
                 <th className="py-3 px-6">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentProducts.length > 0 ? (
-                currentProducts.map((product) => (
+                currentProducts.map((product, index) => (
                   <tr
                     key={product._id}
                     className="hover:bg-gray-50 transition-all duration-200"
                   >
+                    {/* <td className="py-3 px-6 font-medium text-gray-900">
+                      {(currentPage - 1) * productsPerPage + index + 1}
+                    </td>{" "} */}
+                    {/* Serial number */}
+                    <td className="py-3 px-6">
+                      {product.images?.length > 0 && product.images[0].url ? (
+                        <div className="group relative w-12 h-12">
+                          <img
+                            src={product.images[0].url}
+                            alt={product.images[0].altText || product.name}
+                            className="w-12 h-12 rounded object-cover border"
+                          />
+                          <div className="absolute z-10 hidden group-hover:block top-0 left-14 w-32 h-32 rounded shadow-lg border bg-white p-1">
+                            <img
+                              src={product.images[0].url}
+                              alt={product.images[0].altText || product.name}
+                              className="w-full h-full object-cover rounded"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 flex items-center justify-center bg-gray-100 text-gray-400 rounded border border-gray-300 text-xs">
+                          N/A
+                        </div>
+                      )}
+                    </td>
                     <td className="py-3 px-6 font-medium text-gray-900">
                       {product.name}
                     </td>
                     <td className="py-3 px-6">₹{product.price}</td>
-                    <td className="py-3 px-6">{product.sku}</td>
+                    <td className="py-3 px-6">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full flex items-center justify-center gap-1 ${
+                          product.countInStock === 0
+                            ? "bg-red-100 text-red-700"
+                            : product.countInStock < 10
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {product.countInStock === 0
+                          ? "Out of Stock"
+                          : product.countInStock < 10
+                          ? "Out of Stock Soon"
+                          : "In Stock"}
+                        <span className="font-semibold">
+                          ({product.countInStock})
+                        </span>
+                      </span>
+                    </td>
+
                     <td className="py-3 px-6 space-x-2">
                       <Link
                         to={`/admin/products/${product._id}/edit`}
                         className="inline-block bg-yellow-500 text-white px-4 py-1.5 rounded hover:bg-yellow-600"
                       >
-                       <FiEdit className="inline" /> Edit
+                        <FiEdit className="inline" /> Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(product._id)}
                         className="inline-block bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-600"
                       >
-                       <FaTrash className="inline" /> Delete
+                        <FaTrash className="inline" /> Delete
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="py-6 px-6 text-center text-gray-500 italic">
+                  <td
+                    colSpan={4}
+                    className="py-6 px-6 text-center text-gray-500 italic"
+                  >
                     No products found
                   </td>
                 </tr>
