@@ -114,6 +114,9 @@ import {
   deleteOrder,
   clearError,
 } from "../../redux/slices/adminOrderSlice";
+import { FaRegTrashCan } from "react-icons/fa6";
+import { FaBoxOpen } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -125,6 +128,8 @@ const OrderManagement = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const ordersPerPage = 10;
 
   useEffect(() => {
@@ -156,13 +161,12 @@ const OrderManagement = () => {
   };
 
   const filteredOrders = orders
-    .filter((order) =>
-      order._id.toLowerCase().includes(search.toLowerCase()) ||
-      order.user?.name?.toLowerCase().includes(search.toLowerCase())
+    .filter(
+      (order) =>
+        order._id.toLowerCase().includes(search.toLowerCase()) ||
+        order.user?.name?.toLowerCase().includes(search.toLowerCase())
     )
-    .filter((order) =>
-      statusFilter ? order.status === statusFilter : true
-    );
+    .filter((order) => (statusFilter ? order.status === statusFilter : true));
 
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
   const paginatedOrders = filteredOrders.slice(
@@ -186,9 +190,15 @@ const OrderManagement = () => {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <div className="flex justify-between items-center">
             <span>
-              Error: {typeof error === "string" ? error : error.message || "Something went wrong"}
+              Error:{" "}
+              {typeof error === "string"
+                ? error
+                : error.message || "Something went wrong"}
             </span>
-            <button onClick={clearErrorHandler} className="text-red-700 hover:text-red-900">
+            <button
+              onClick={clearErrorHandler}
+              className="text-red-700 hover:text-red-900"
+            >
               ×
             </button>
           </div>
@@ -206,7 +216,9 @@ const OrderManagement = () => {
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Order Management</h2>
-        <div className="text-sm text-gray-600">Total Orders: {filteredOrders.length}</div>
+        <div className="text-sm text-gray-600">
+          Total Orders: <span className="bg-blue-600 text-white p-1 rounded-full"> {filteredOrders.length} </span>
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -239,7 +251,7 @@ const OrderManagement = () => {
               <th className="py-4 px-6">Customer</th>
               <th className="py-4 px-6">Total Price</th>
               <th className="py-4 px-6">Status</th>
-              <th className="py-4 px-6">Payment Method</th>
+              {/* <th className="py-4 px-6">Payment Method</th> */}
               <th className="py-4 px-6">Created At</th>
               <th className="py-4 px-6">Actions</th>
             </tr>
@@ -254,12 +266,18 @@ const OrderManagement = () => {
                   <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
                     #{order._id.slice(-8)}
                   </td>
-                  <td className="py-4 px-6">{order.user?.name || "Unknown User"}</td>
-                  <td className="py-4 px-6">₹{order.totalPrice?.toFixed(2) || "0.00"}</td>
+                  <td className="py-4 px-6">
+                    {order.user?.name || "Unknown User"}
+                  </td>
+                  <td className="py-4 px-6">
+                    ₹{order.totalPrice?.toFixed(2) || "0.00"}
+                  </td>
                   <td className="py-4 px-6">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
                     >
                       <option value="Processing">Processing</option>
@@ -268,25 +286,36 @@ const OrderManagement = () => {
                       <option value="Cancelled">Cancelled</option>
                     </select>
                   </td>
-                  <td className="py-4 px-6 capitalize">
+                  {/* <td className="py-4 px-6 capitalize">
                     {order.paymentMethod?.replace("_", " ") || "N/A"}
-                  </td>
+                  </td> */}
                   <td className="py-4 px-6">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => handleStatusChange(order._id, "Delivered")}
+                        onClick={() => {
+                          setSelectedOrder(order);
+                          setIsModalOpen(true);
+                        }}
+                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors text-xs"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleStatusChange(order._id, "Delivered")
+                        }
                         className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors text-xs"
                       >
-                        Mark Delivered
+                       <FaBoxOpen className="inline"/> Mark Delivered
                       </button>
                       <button
                         onClick={() => handleDeleteOrder(order._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors text-xs"
                       >
-                        Delete
+                      <FaRegTrashCan className="inline"/>  Delete
                       </button>
                     </div>
                   </td>
@@ -294,7 +323,10 @@ const OrderManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-gray-500 italic">
+                <td
+                  colSpan={7}
+                  className="p-6 text-center text-gray-500 italic"
+                >
                   No orders found
                 </td>
               </tr>
@@ -311,12 +343,67 @@ const OrderManagement = () => {
               key={page}
               onClick={() => setCurrentPage(page)}
               className={`px-4 py-2 rounded-md border ${
-                page === currentPage ? "bg-blue-500 text-white" : "bg-white text-gray-700"
+                page === currentPage
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
               } hover:bg-blue-100`}
             >
               {page}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {isModalOpen && selectedOrder && (
+        <div
+          className="fixed inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center z-50"
+          onClick={() => setIsModalOpen(false)} // closes when clicked outside
+        >
+          <div
+            className="bg-white p-6 rounded-lg max-w-md w-full relative shadow-lg"
+            onClick={(e) => e.stopPropagation()} // prevents inner clicks from closing modal
+          >
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl"
+            >
+              &times;
+            </button>
+            <h3 className="text-lg font-bold mb-4">Order Details</h3>
+            <div className="grid gap-2 text-sm text-gray-800">
+              <p>
+                <strong>Order ID:</strong> {selectedOrder._id}
+              </p>
+              <p>
+                <strong>Customer:</strong>{" "}
+                {selectedOrder.user?.name || "Unknown"}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedOrder.user?.email || "N/A"}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedOrder.status}
+              </p>
+              <p>
+                <strong>Total Price:</strong> ₹
+                {selectedOrder.totalPrice?.toFixed(2)}
+              </p>
+              <p>
+                <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
+              </p>
+              <p>
+                <strong>Ordered On:</strong>{" "}
+                {new Date(selectedOrder.createdAt).toLocaleString()}
+              </p>
+              <p>
+                <strong>Shipping Address:</strong>{" "}
+                {selectedOrder.shippingAddress
+                  ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
+                  : "N/A"}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

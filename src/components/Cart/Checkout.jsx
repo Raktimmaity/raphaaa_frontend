@@ -15,16 +15,27 @@ const Checkout = () => {
 
   const [checkoutId, setCheckoutId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
-  const [orderProcessing, setOrderProcessing] = useState(false); // Add this flag
+  const [orderProcessing, setOrderProcessing] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [deliveryValidation, setDeliveryValidation] = useState({ isValid: true, message: "" });
+  const [phoneError, setPhoneError] = useState("");
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
     lastName: "",
     address: "",
     city: "",
     postalCode: "",
-    country: "",
-    phone: "",
+    country: "India",
+    phone: "+91",
   });
+
+  // Country list
+  const countries = [
+    "India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Japan", "China", "Brazil",
+    "Russia", "Italy", "Spain", "Netherlands", "Sweden", "Switzerland", "Norway", "Denmark", "Finland", "Belgium",
+    "Austria", "Portugal", "Greece", "Ireland", "Poland", "Czech Republic", "Hungary", "Romania", "Bulgaria",
+    "Croatia", "Slovenia", "Slovakia", "Estonia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"
+  ];
 
   // Clean up checkout state when component mounts
   useEffect(() => {
@@ -36,12 +47,127 @@ const Checkout = () => {
     if(!orderProcessing && (!cart || !cart.products || cart.products.length === 0)) {
       navigate("/");
     }
-  }, [cart, navigate, orderProcessing]); // Add orderProcessing to dependency array
+  }, [cart, navigate, orderProcessing]);
+
+  // Phone number validation
+  const validatePhone = (phone) => {
+    if (!phone.startsWith('+91')) {
+      setPhoneError("Phone number must start with +91");
+      return false;
+    }
+    const phoneWithoutCode = phone.slice(3);
+    if (phoneWithoutCode.length !== 10 || !/^\d{10}$/.test(phoneWithoutCode)) {
+      setPhoneError("Phone number must be exactly 10 digits after +91");
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
+
+  // Handle phone input change
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+    
+    // Ensure it always starts with +91
+    if (!value.startsWith('+91')) {
+      value = '+91' + value.replace(/^\+91/, '');
+    }
+    
+    // Remove any non-digit characters except +91
+    value = '+91' + value.slice(3).replace(/\D/g, '');
+    
+    // Limit to +91 + 10 digits
+    if (value.length > 13) {
+      value = value.slice(0, 13);
+    }
+    
+    setShippingAddress({ ...shippingAddress, phone: value });
+    validatePhone(value);
+  };
+
+  // Auto-detect address using pin code
+  const handlePinCodeChange = async (e) => {
+    const pinCode = e.target.value;
+    setShippingAddress({ ...shippingAddress, postalCode: pinCode });
+    
+    if (pinCode.length === 6 && /^\d{6}$/.test(pinCode)) {
+      setAddressLoading(true);
+      try {
+        // Using India Post API for pin code lookup
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${pinCode}`);
+        
+        if (response.data && response.data[0] && response.data[0].Status === "Success") {
+          const postOffice = response.data[0].PostOffice[0];
+          setShippingAddress(prev => ({
+            ...prev,
+            city: postOffice.District,
+            country: "India"
+          }));
+          
+          // Check delivery range (assuming delivery center is in a major city)
+          await checkDeliveryRange(postOffice.District, postOffice.State);
+        } else {
+          setDeliveryValidation({ isValid: false, message: "Invalid pin code. Please enter a valid Indian pin code." });
+        }
+      } catch (error) {
+        console.error("Error fetching pin code data:", error);
+        setDeliveryValidation({ isValid: false, message: "Unable to validate pin code. Please enter address manually." });
+      } finally {
+        setAddressLoading(false);
+      }
+    } else {
+      setDeliveryValidation({ isValid: true, message: "" });
+    }
+  };
+
+  // Check if delivery is within 30km range
+  const checkDeliveryRange = async (city, state) => {
+    try {
+      // This is a simplified check. In a real app, you'd use Google Maps Distance Matrix API
+      // or have a predefined list of serviceable areas
+      const deliveryCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi as example delivery center
+      
+      // For demonstration, we'll check against major cities
+      const serviceableCities = [
+        "Delhi", "Mumbai", "Bangalore", "Chennai", "Kolkata", "Hyderabad", 
+        "Pune", "Ahmedabad", "Surat", "Jaipur", "Lucknow", "Kanpur"
+      ];
+      
+      const isServiceable = serviceableCities.some(serviceableCity => 
+        city.toLowerCase().includes(serviceableCity.toLowerCase()) ||
+        serviceableCity.toLowerCase().includes(city.toLowerCase())
+      );
+      
+      if (!isServiceable) {
+        setDeliveryValidation({ 
+          isValid: false, 
+          message: "Sorry, we currently deliver within 30km of major cities only. Your location is outside our delivery range." 
+        });
+      } else {
+        setDeliveryValidation({ isValid: true, message: "✓ Delivery available in your area" });
+      }
+    } catch (error) {
+      console.error("Error checking delivery range:", error);
+      setDeliveryValidation({ isValid: true, message: "" });
+    }
+  };
 
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
+    
+    // Validate phone number before proceeding
+    if (!validatePhone(shippingAddress.phone)) {
+      return;
+    }
+    
+    // Check delivery validation
+    if (!deliveryValidation.isValid) {
+      alert("Please check your delivery address. We don't deliver to this location.");
+      return;
+    }
+    
     if(cart && cart.products.length > 0){
-      setOrderProcessing(true); // Set flag before processing
+      setOrderProcessing(true);
       
       if(paymentMethod === "cash_on_delivery") {
         // For COD, directly create order
@@ -110,7 +236,7 @@ const Checkout = () => {
         );
         if(res.type === 'checkout/createCheckout/fulfilled') {
           setCheckoutId(res.payload._id);
-          setOrderProcessing(false); // Reset flag for online payment flow
+          setOrderProcessing(false);
         } else {
           setOrderProcessing(false);
         }
@@ -120,7 +246,7 @@ const Checkout = () => {
 
   const handleRazorpaySuccess = async (paymentData) => {
     try {
-      setOrderProcessing(true); // Set flag before processing payment
+      setOrderProcessing(true);
       
       const result = await dispatch(updatePaymentStatus({
         checkoutId,
@@ -247,6 +373,31 @@ const Checkout = () => {
 
           <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <label className="block text-sm text-gray-600 mb-1">PIN Code</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full p-3 border rounded-lg"
+                  required
+                  value={shippingAddress.postalCode}
+                  onChange={handlePinCodeChange}
+                  placeholder="Enter 6-digit PIN code"
+                  maxLength="6"
+                  pattern="\d{6}"
+                />
+                {addressLoading && (
+                  <div className="absolute right-3 top-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
+                  </div>
+                )}
+              </div>
+              {deliveryValidation.message && (
+                <p className={`text-sm mt-1 ${deliveryValidation.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {deliveryValidation.message}
+                </p>
+              )}
+            </div>
+            <div>
               <label className="block text-sm text-gray-600 mb-1">City</label>
               <input
                 type="text"
@@ -258,44 +409,40 @@ const Checkout = () => {
                 }
               />
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Postal Code</label>
-              <input
-                type="text"
-                className="w-full p-3 border rounded-lg"
-                required
-                value={shippingAddress.postalCode}
-                onChange={(e) =>
-                  setShippingAddress({ ...shippingAddress, postalCode: e.target.value })
-                }
-              />
-            </div>
           </div>
 
           <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Country</label>
-              <input
-                type="text"
+              <select
                 className="w-full p-3 border rounded-lg"
                 required
                 value={shippingAddress.country}
                 onChange={(e) =>
                   setShippingAddress({ ...shippingAddress, country: e.target.value })
                 }
-              />
+              >
+                <option value="">Select Country</option>
+                {countries.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Phone</label>
               <input
                 type="tel"
-                className="w-full p-3 border rounded-lg"
+                className={`w-full p-3 border rounded-lg ${phoneError ? 'border-red-500' : ''}`}
                 required
                 value={shippingAddress.phone}
-                onChange={(e) =>
-                  setShippingAddress({ ...shippingAddress, phone: e.target.value })
-                }
+                onChange={handlePhoneChange}
+                placeholder="+91XXXXXXXXXX"
               />
+              {phoneError && (
+                <p className="text-sm text-red-600 mt-1">{phoneError}</p>
+              )}
             </div>
           </div>
 
@@ -341,8 +488,8 @@ const Checkout = () => {
             {!checkoutId ? (
               <button 
                 type="submit" 
-                className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900 transition disabled:opacity-50"
-                disabled={loading || orderProcessing}
+                className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || orderProcessing || !deliveryValidation.isValid || phoneError}
               >
                 {loading || orderProcessing ? "Processing..." : "Continue to Payment"}
               </button>

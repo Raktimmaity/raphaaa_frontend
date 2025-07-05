@@ -110,14 +110,16 @@ const ProductGrid = ({ products, loading, error }) => {
                 </p>
 
                 {/* ⭐️ Product Rating */}
-                <div className="flex items-center space-x-1 mt-1">
-                  <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">
-                    {product.rating} ★
-                  </span>
-                  <span className="text-xs text-gray-500 ml-1">
-                    {product.numReviews} Reviews
-                  </span>
-                </div>
+                {product.rating > 0 && product.numReviews > 0 && (
+                  <div className="flex items-center space-x-1 mt-1">
+                    <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">
+                      {product.rating} ★
+                    </span>
+                    <span className="text-xs text-gray-500 ml-1">
+                      {product.numReviews} Reviews
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </Link>

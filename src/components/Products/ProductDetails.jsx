@@ -29,6 +29,12 @@ const ProductDetails = ({ productId }) => {
   );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
+  // New state for pincode delivery check
+  const [pincode, setPincode] = useState("");
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
+  const [isCheckingDelivery, setIsCheckingDelivery] = useState(false);
+  const [showDeliveryCheck, setShowDeliveryCheck] = useState(false);
+
   const productFetchId = productId || id;
 
   useEffect(() => {
@@ -56,6 +62,144 @@ const ProductDetails = ({ productId }) => {
     }
     if (action === "minus" && quantity > 1) {
       setQuantity((prev) => prev - 1);
+    }
+  };
+
+  // Function to check actual pincode delivery availability
+  const checkDeliveryAvailability = async (pincode) => {
+    setIsCheckingDelivery(true);
+    
+    // Validate pincode format
+    const isValidPincode = /^\d{6}$/.test(pincode);
+    
+    if (!isValidPincode) {
+      setDeliveryInfo({
+        isDeliverable: false,
+        message: "Please enter a valid 6-digit pincode"
+      });
+      setIsCheckingDelivery(false);
+      return;
+    }
+    
+    try {
+      // Get pincode details from India Post API
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await response.json();
+      
+      if (data[0].Status === "Error") {
+        setDeliveryInfo({
+          isDeliverable: false,
+          message: "Invalid pincode. Please check and try again."
+        });
+        setIsCheckingDelivery(false);
+        return;
+      }
+      
+      // Get the location details
+      const location = data[0].PostOffice[0];
+      const district = location.District;
+      const state = location.State;
+      
+      // Calculate distance using Haversine formula
+      // You should replace these coordinates with your actual warehouse/store location
+      const warehouseLocation = {
+        lat: 22.5726, // Kolkata coordinates (replace with your actual location)
+        lon: 88.3639
+      };
+      
+      // Get approximate coordinates for the pincode location
+      // This is a simplified approach - you might want to use a proper geocoding service
+      const locationCoordinates = await getLocationCoordinates(district, state);
+      
+      if (!locationCoordinates) {
+        setDeliveryInfo({
+          isDeliverable: false,
+          message: "Unable to verify delivery location. Please contact support."
+        });
+        setIsCheckingDelivery(false);
+        return;
+      }
+      
+      const distance = calculateDistance(
+        warehouseLocation.lat,
+        warehouseLocation.lon,
+        locationCoordinates.lat,
+        locationCoordinates.lon
+      );
+      
+      const isDeliverable = distance <= 30;
+      
+      const currentDate = new Date();
+      const deliveryDate = new Date(currentDate);
+      deliveryDate.setDate(currentDate.getDate() + (isDeliverable ? Math.floor(Math.random() * 5) + 2 : 0)); // 2-6 days
+      
+      setDeliveryInfo({
+        isDeliverable,
+        message: isDeliverable 
+          ? `Delivery available - within 30km radius (${distance.toFixed(1)}km away)`
+          : `Not deliverable - beyond 30km radius (${distance.toFixed(1)}km away)`,
+        deliveryDate: isDeliverable ? deliveryDate.toLocaleDateString('en-IN', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        }) : null,
+        deliveryDays: isDeliverable ? Math.ceil((deliveryDate - currentDate) / (1000 * 60 * 60 * 24)) : null,
+        location: `${district}, ${state}`
+      });
+      
+    } catch (error) {
+      console.error('Error checking delivery:', error);
+      setDeliveryInfo({
+        isDeliverable: false,
+        message: "Error checking delivery availability. Please try again."
+      });
+    } finally {
+      setIsCheckingDelivery(false);
+    }
+  };
+
+  // Function to get approximate coordinates for a location
+  const getLocationCoordinates = async (district, state) => {
+    try {
+      // Using OpenStreetMap Nominatim API for geocoding
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(district)},${encodeURIComponent(state)},India&limit=1`
+      );
+      const data = await response.json();
+      
+      if (data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lon: parseFloat(data[0].lon)
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting coordinates:', error);
+      return null;
+    }
+  };
+
+  // Haversine formula to calculate distance between two points
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+  };
+
+  const handleDeliveryCheck = () => {
+    if (pincode.trim()) {
+      checkDeliveryAvailability(pincode.trim());
+    } else {
+      toast.error("Please enter a pincode", { duration: 1500 });
     }
   };
 
@@ -192,25 +336,18 @@ const ProductDetails = ({ productId }) => {
                 </h1>
 
                 {/* Ratings */}
-                {selectedProduct.rating && (
-                  <div className="flex items-center gap-2 mb-2">
-                    {/* <div className="flex text-yellow-400 text-lg">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <span key={i}>
-                          {i < Math.floor(selectedProduct.rating) ? "★" : "☆"}
-                        </span>
-                      ))}
-                    </div> */}
-                    <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
-                      {selectedProduct.rating} ★
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      {/* {selectedProduct.rating.toFixed(1)} •{" "} */}
-                      {selectedProduct.numReviews || 0} review
-                      {selectedProduct.numReviews === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                )}
+                {selectedProduct.rating > 0 && selectedProduct.numReviews > 0 && (
+  <div className="flex items-center gap-2 mb-2">
+    <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
+      {selectedProduct.rating} ★
+    </span>
+    <span className="text-sm text-gray-600">
+      {selectedProduct.numReviews} review
+      {selectedProduct.numReviews === 1 ? "" : "s"}
+    </span>
+  </div>
+)}
+
 
                 {/* Pricing */}
                 {selectedProduct.discountPrice &&
@@ -360,6 +497,67 @@ const ProductDetails = ({ productId }) => {
                     <span className="absolute inset-0 rounded-full bg-white opacity-10 group-hover:animate-pulse z-0" />
                   )}
                 </button>
+
+                {/* Pincode Delivery Check */}
+                <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">🚚</span>
+                    <p className="font-medium text-gray-700">
+                      Check Delivery Availability
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-3 mb-3">
+                    <input
+                      type="text"
+                      placeholder="Enter pincode"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      maxLength={6}
+                    />
+                    <button
+                      onClick={handleDeliveryCheck}
+                      disabled={isCheckingDelivery}
+                      className="px-6 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+                    >
+                      {isCheckingDelivery ? "Checking..." : "Check"}
+                    </button>
+                  </div>
+
+                  {deliveryInfo && (
+                    <div className={`p-3 rounded-lg ${
+                      deliveryInfo.isDeliverable 
+                        ? 'bg-green-50 border border-green-200' 
+                        : 'bg-red-50 border border-red-200'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">
+                          {deliveryInfo.isDeliverable ? '' : ''}
+                        </span>
+                        <span className={`font-medium ${
+                          deliveryInfo.isDeliverable ? 'text-green-700' : 'text-red-700'
+                        }`}>
+                          {deliveryInfo.message}
+                        </span>
+                      </div>
+                      
+                      {deliveryInfo.isDeliverable && deliveryInfo.deliveryDate && (
+                        <div className="text-sm text-green-600">
+                          <p><strong>Location:</strong> {deliveryInfo.location}</p>
+                          <p><strong>Estimated Delivery:</strong> {deliveryInfo.deliveryDate}</p>
+                          <p><strong>Delivery Time:</strong> {deliveryInfo.deliveryDays} days from today</p>
+                        </div>
+                      )}
+                      
+                      {!deliveryInfo.isDeliverable && deliveryInfo.location && (
+                        <div className="text-sm text-red-600">
+                          <p><strong>Location:</strong> {deliveryInfo.location}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
