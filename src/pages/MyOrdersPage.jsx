@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserOrders } from "../redux/slices/orderSlice";
+import axios from "axios";
+import { toast } from "sonner";
 
 const MyOrders = () => {
   const navigate = useNavigate();
@@ -12,15 +14,39 @@ const MyOrders = () => {
     key: "createdAt",
     direction: "desc",
   });
+  const [reviewedProducts, setReviewedProducts] = useState(new Set());
 
   const itemsPerPage = 5;
 
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.orders);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchUserOrders());
   }, [dispatch]);
+
+  // Fetch user's reviewed products
+  useEffect(() => {
+    const fetchReviewedProducts = async () => {
+      if (!user?.token) return;
+
+      try {
+        const response = await axios.get('/api/reviews/my-reviews', {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        
+        const reviewedProductIds = new Set(
+          response.data.map(review => review.product._id)
+        );
+        setReviewedProducts(reviewedProductIds);
+      } catch (error) {
+        console.error("Error fetching reviewed products:", error);
+      }
+    };
+
+    fetchReviewedProducts();
+  }, [user]);
 
   if (error) return <p>Error: {error}</p>;
 
@@ -40,7 +66,7 @@ const MyOrders = () => {
       const searchLower = searchQuery.toLowerCase();
       return (
         order._id.toLowerCase().includes(searchLower) ||
-        order.orderItems[0].name.toLowerCase().includes(searchLower) ||
+        order.orderItems[0]?.name?.toLowerCase().includes(searchLower) ||
         order.shippingAddress.city.toLowerCase().includes(searchLower) ||
         order.shippingAddress.country.toLowerCase().includes(searchLower)
       );
@@ -63,20 +89,51 @@ const MyOrders = () => {
     navigate(`/order/${orderId}`);
   };
 
-  // Fix: Handle review navigation properly
   const handleWriteReview = (e, order) => {
     e.stopPropagation(); // Prevent row click
 
-    // Get the first product from the order to review
-    const firstProduct = order.orderItems[0];
-    
-    if (firstProduct && firstProduct.product) {
-      // Navigate to review page with product ID
-      navigate(`/review/${firstProduct.product}`);
+    // For multiple items, show a selection or navigate to first item
+    if (order.orderItems.length === 1) {
+      const product = order.orderItems[0];
+      const productId = product.productId || product.product;
+      
+      if (productId) {
+        navigate(`/review/${productId}`);
+      } else {
+        toast.error("Product information not available");
+      }
     } else {
-      // Fallback: use the order ID and handle it in the review component
-      navigate(`/review-order/${order._id}`);
+      // Multiple items - show selection modal or navigate to first item
+      const firstProduct = order.orderItems[0];
+      const productId = firstProduct.productId || firstProduct.product;
+      
+      if (productId) {
+        navigate(`/review/${productId}`);
+      } else {
+        toast.error("Product information not available");
+      }
     }
+  };
+
+  const canWriteReview = (order) => {
+    if (order.status !== "Delivered") return false;
+    
+    // Check if any product in the order hasn't been reviewed
+    return order.orderItems.some(item => {
+      const productId = item.productId || item.product;
+      return productId && !reviewedProducts.has(productId);
+    });
+  };
+
+  const getReviewButtonText = (order) => {
+    const unreviewed = order.orderItems.filter(item => {
+      const productId = item.productId || item.product;
+      return productId && !reviewedProducts.has(productId);
+    });
+
+    if (unreviewed.length === 0) return "Reviewed";
+    if (unreviewed.length === 1) return "Write Review";
+    return `Review (${unreviewed.length})`;
   };
 
   return (
@@ -115,6 +172,11 @@ const MyOrders = () => {
                 onClick={() => handleSort("createdAt")}
               >
                 Ordered At
+                {sortConfig.key === "createdAt" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
               </th>
               <th className="py-3 px-4">Shipping Address</th>
               <th className="py-3 px-4">Items</th>
@@ -124,7 +186,16 @@ const MyOrders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {currentOrders.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="py-6 px-4 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600"></div>
+                    <span className="ml-2 text-gray-600">Loading orders...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : currentOrders.length > 0 ? (
               currentOrders.map((order) => (
                 <tr
                   key={order._id}
@@ -133,8 +204,8 @@ const MyOrders = () => {
                 >
                   <td className="py-3 px-4">
                     <img
-                      src={order.orderItems[0].image}
-                      alt={order.orderItems[0].name}
+                      src={order.orderItems[0]?.image || "/placeholder-image.jpg"}
+                      alt={order.orderItems[0]?.name || "Product"}
                       className="w-12 h-12 object-cover rounded-md border"
                     />
                   </td>
@@ -151,7 +222,12 @@ const MyOrders = () => {
                     {order.shippingAddress.city},{" "}
                     {order.shippingAddress.country}
                   </td>
-                  <td className="py-3 px-4">{order.orderItems.length}</td>
+                  <td className="py-3 px-4">
+                    <span className="font-medium">{order.orderItems.length}</span>
+                    {order.orderItems.length > 1 && (
+                      <span className="text-xs text-gray-500 block">items</span>
+                    )}
+                  </td>
                   <td className="py-3 px-4 font-semibold">
                     ₹{order.totalPrice}
                   </td>
@@ -181,14 +257,19 @@ const MyOrders = () => {
                       {order.status || "Processing"}
                     </span>
 
-                    {/* Fixed Review Link */}
+                    {/* Review Button */}
                     {order.status === "Delivered" && (
                       <div className="mt-2">
                         <button
                           onClick={(e) => handleWriteReview(e, order)}
-                          className="text-sky-600 hover:text-sky-800 hover:underline text-xs font-medium bg-sky-50 px-2 py-1 rounded border border-sky-200 transition-colors"
+                          disabled={!canWriteReview(order)}
+                          className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${
+                            canWriteReview(order)
+                              ? "text-sky-600 hover:text-sky-800 hover:underline bg-sky-50 border-sky-200"
+                              : "text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed"
+                          }`}
                         >
-                          Write Review
+                          {getReviewButtonText(order)}
                         </button>
                       </div>
                     )}

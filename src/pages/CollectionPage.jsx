@@ -70,16 +70,21 @@ const CollectionPage = () => {
 
         {/* Sort + Clear Filters Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <SortOptions />
-          {searchParams.toString() && (
-            <button
-              onClick={handleClearFilters}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
-            >
-              <ImCross className="inline" /> Clear All Filters
-            </button>
-          )}
-        </div>
+  <div className="flex items-center gap-2">
+    <span className="text-sm font-medium">Sort By:</span>
+    <SortOptions />
+  </div>
+
+  {searchParams.toString() && (
+    <button
+      onClick={handleClearFilters}
+      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
+    >
+      <ImCross className="inline mr-1" /> Clear All Filters
+    </button>
+  )}
+</div>
+
 
         {/* Product Grid */}
         <ProductGrid products={products} loading={loading} error={error} />

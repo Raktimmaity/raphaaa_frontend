@@ -73,7 +73,7 @@ const ProductGrid = ({ products, loading, error }) => {
               {/* ✅ Increased card height */}
               {/* <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg"> */}
               {/* <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg"> */}
-              <div className="w-full h-[220px] md:h-[160px] lg:h-[200px] mb-3 relative overflow-hidden rounded-lg">
+              <div className="w-full h-[220px] md:h-[300px] lg:h-[300px] mb-3 relative overflow-hidden rounded-lg">
                 <img
                   src={product.images[0].url}
                   alt={product.images[0].altText || product.name}
