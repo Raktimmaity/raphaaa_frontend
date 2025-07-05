@@ -459,7 +459,6 @@ const Checkout = () => {
                     checked={paymentMethod === "razorpay"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="mr-3"
-                    disabled
                   />
                   <div className="flex items-center">
                     <span className="text-sm font-medium">Online Payment (Razorpay)</span>
