@@ -12,11 +12,28 @@ const ViewTasks = () => {
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
+  //   const fetchTasks = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${userInfo.email}`
+  //       );
+  //       const data = await res.json();
+  //       setTasks(data);
+  //     } catch (err) {
+  //       toast.error("Failed to fetch tasks");
+  //     }
+  //   };
+
   const fetchTasks = async () => {
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${userInfo.email}`
-      );
+      const endpoint =
+        userInfo?.role === "admin"
+          ? `${import.meta.env.VITE_BACKEND_URL}/api/tasks`
+          : `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${
+              userInfo.email
+            }`;
+
+      const res = await fetch(endpoint);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -131,6 +148,14 @@ const ViewTasks = () => {
                 <>
                   <h3 className="text-lg font-semibold">{task.title}</h3>
                   <p className="text-gray-600 mb-2">{task.description}</p>
+                  {userInfo?.role === "admin" && (
+                    <p className="text-sm text-gray-500 mb-2">
+                      <span className="font-semibold">User:</span> {task.name} 
+                      <br />
+                      <span className="font-semibold">Email:</span> {task.email} 
+                    </p>
+                  )}
+
                   <p className="text-xs text-gray-400 mb-2">
                     Created At: {new Date(task.createdAt).toLocaleString()}
                   </p>

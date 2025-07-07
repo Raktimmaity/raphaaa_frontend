@@ -111,6 +111,14 @@ const App = () => {
               }
             />
             <Route
+              path="all-tasks"
+              element={
+                <ProtectedRoute role={["admin"]}>
+                  <ViewTasks/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="users"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
