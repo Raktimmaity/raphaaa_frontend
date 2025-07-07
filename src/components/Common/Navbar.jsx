@@ -124,11 +124,18 @@ const Navbar = () => {
               {user.role === "admin" ? "Admin Panel" : "Merchandise Panel"}
             </Link>
           )}
-          {user?.role === "customer" && (
-          <Link to="/profile" className="hover:text-black">
-            <HiOutlineUser className="h-6 w-6 text-gray-700" />
-          </Link>
+          {user ? (
+            user.role === "customer" && (
+              <Link to="/profile" className="hover:text-black">
+                <HiOutlineUser className="h-6 w-6 text-gray-700" />
+              </Link>
+            )
+          ) : (
+            <Link to="/login" className="hover:text-black">
+              <HiOutlineUser className="h-6 w-6 text-gray-700" />
+            </Link>
           )}
+
           <button
             onClick={toggleCartDrawer}
             className="relative hover:text-black"

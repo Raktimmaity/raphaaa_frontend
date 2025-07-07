@@ -18,6 +18,7 @@ import { HiPlusCircle } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineAddTask } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
+import { BsGraphUpArrow } from "react-icons/bs";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -154,6 +155,34 @@ const AdminSidebar = () => {
             <span>All Tasks</span>
           </NavLink>
         )}
+
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <NavLink
+            to="/admin/inventory"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <FaBoxOpen />
+            <span>Inventory</span>
+          </NavLink>
+        )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <NavLink
+            to="/admin/trend-analysis"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <BsGraphUpArrow />
+            <span>Sales Analysis</span>
+          </NavLink>
+        )}
+
         {user?.role === "admin" && (
           <NavLink
             to="/admin/users"

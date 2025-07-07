@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { FaCheckCircle, FaEdit, FaTrash } from "react-icons/fa";  
 
 const ViewTasks = () => {
   const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const tasksPerPage = 2;
+
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", description: "" });
   const [confirmModal, setConfirmModal] = useState({
@@ -11,31 +18,19 @@ const ViewTasks = () => {
   });
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-  //   const fetchTasks = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${userInfo.email}`
-  //       );
-  //       const data = await res.json();
-  //       setTasks(data);
-  //     } catch (err) {
-  //       toast.error("Failed to fetch tasks");
-  //     }
-  //   };
+  const isAdmin = userInfo?.role === "admin";
 
   const fetchTasks = async () => {
     try {
-      const endpoint =
-        userInfo?.role === "admin"
-          ? `${import.meta.env.VITE_BACKEND_URL}/api/tasks`
-          : `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${
-              userInfo.email
-            }`;
-
+      const endpoint = isAdmin
+        ? `${import.meta.env.VITE_BACKEND_URL}/api/tasks`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/tasks/user/${
+            userInfo.email
+          }`;
       const res = await fetch(endpoint);
       const data = await res.json();
       setTasks(data);
+      setFilteredTasks(data);
     } catch (err) {
       toast.error("Failed to fetch tasks");
     }
@@ -45,8 +40,26 @@ const ViewTasks = () => {
     fetchTasks();
   }, []);
 
+  useEffect(() => {
+    let updated = [...tasks];
+
+    if (searchTerm && isAdmin) {
+      updated = updated.filter(
+        (task) =>
+          task.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter && statusFilter !== "all") {
+      updated = updated.filter((task) => task.status === statusFilter);
+    }
+
+    setFilteredTasks(updated);
+    setCurrentPage(1); // reset to page 1
+  }, [searchTerm, statusFilter, tasks]);
+
   const handleDelete = async (id) => {
-    // if (!confirm("Are you sure you want to delete this task?")) return;
     try {
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tasks/${id}`, {
         method: "DELETE",
@@ -98,18 +111,47 @@ const ViewTasks = () => {
     }
   };
 
+  // Pagination
+  const indexOfLast = currentPage * tasksPerPage;
+  const indexOfFirst = indexOfLast - tasksPerPage;
+  const currentTasks = filteredTasks.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">My Tasks</h2>
 
-      {tasks.length === 0 ? (
+      {/* Top Filters */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {isAdmin && (
+          <input
+            type="text"
+            placeholder="Search by name or email"
+            className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-full shadow-sm outline-0 bg-white"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        )}
+        <select
+          className="w-full sm:w-1/4 px-4 py-2 border border-gray-300 rounded shadow-sm bg-white outline-0"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">All Status</option>
+          <option value="working">Working</option>
+          <option value="completed">Completed</option>
+          <option value="not completed">Not Completed</option>
+        </select>
+      </div>
+
+      {currentTasks.length === 0 ? (
         <p className="text-gray-600">No tasks found.</p>
       ) : (
-        <div className="space-y-4">
-          {tasks.map((task) => (
+        <div className="space-y-6">
+          {currentTasks.map((task) => (
             <div
               key={task._id}
-              className="p-4 bg-white shadow rounded-md border border-gray-100"
+              className="p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-lg"
             >
               {editingTaskId === task._id ? (
                 <>
@@ -119,26 +161,29 @@ const ViewTasks = () => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, title: e.target.value })
                     }
-                    className="w-full mb-2 px-3 py-2 border rounded-md"
+                    className="w-full mb-2 px-4 py-2 border rounded-md"
                   />
                   <textarea
                     rows={3}
                     value={editForm.description}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, description: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        description: e.target.value,
+                      })
                     }
-                    className="w-full mb-2 px-3 py-2 border rounded-md"
+                    className="w-full mb-4 px-4 py-2 border rounded-md"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={() => saveEdit(task._id)}
-                      className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700"
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelEdit}
-                      className="bg-gray-300 text-gray-800 px-4 py-1.5 rounded hover:bg-gray-400"
+                      className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
                     >
                       Cancel
                     </button>
@@ -146,68 +191,88 @@ const ViewTasks = () => {
                 </>
               ) : (
                 <>
-                  <h3 className="text-lg font-semibold">{task.title}</h3>
-                  <p className="text-gray-600 mb-2">{task.description}</p>
-                  {userInfo?.role === "admin" && (
-                    <p className="text-sm text-gray-500 mb-2">
-                      <span className="font-semibold">User:</span> {task.name} 
-                      <br />
-                      <span className="font-semibold">Email:</span> {task.email} 
+                  <div className="mb-3">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                      {task.title}
+                    </h3>
+                    <p className="text-gray-600 mb-1">{task.description}</p>
+                    {isAdmin && (
+                      <p className="text-sm text-gray-500">
+                        <span className="font-semibold">User:</span> {task.name}{" "}
+                        | <span className="font-semibold">Email:</span>{" "}
+                        {task.email}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-400">
+                      Created: {new Date(task.createdAt).toLocaleString()}
                     </p>
-                  )}
+                    <p className="text-xs text-gray-400">
+                      Updated: {new Date(task.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
 
-                  <p className="text-xs text-gray-400 mb-2">
-                    Created At: {new Date(task.createdAt).toLocaleString()}
-                  </p>
-
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>
-                      Status:{" "}
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="flex items-center gap-2">
+                      Status:
                       <span
-                        className={`font-semibold ${
-                          task.status === "completed"
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }`}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full
+      ${
+        task.status === "completed"
+          ? "bg-gradient-to-r from-green-400 to-green-600 text-white"
+          : task.status === "not-completed"
+          ? "bg-gradient-to-r from-red-400 to-red-600 text-white"
+          : "bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-800"
+      }`}
                       >
-                        {task.status}
+                        {task.status === "completed"
+                          ? "Completed"
+                          : task.status === "not-completed"
+                          ? "Not Completed"
+                          : "Working"}
                       </span>
                     </span>
+
                     <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          handleStatusToggle(task._id, task.status)
-                        }
-                        className="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600"
-                      >
-                        Mark as{" "}
-                        {task.status === "working" ? "Completed" : "Working"}
-                      </button>
-                      <button
-                        onClick={() => startEdit(task)}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() =>
-                          setConfirmModal({ isOpen: true, taskId: task._id })
-                        }
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
+  <button
+    onClick={() => handleStatusToggle(task._id, task.status)}
+    className="flex items-center gap-1 bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600"
+  >
+    <FaCheckCircle />
+    Mark as {task.status === "working" ? "Completed" : "Working"}
+  </button>
+
+  <button
+    onClick={() => startEdit(task)}
+    className="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+  >
+    <FaEdit />
+    Edit
+  </button>
+
+  <button
+    onClick={() =>
+      setConfirmModal({
+        isOpen: true,
+        taskId: task._id,
+      })
+    }
+    className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+  >
+    <FaTrash />
+    Delete
+  </button>
+</div>
                   </div>
-                  {confirmModal.isOpen && (
+
+                  {confirmModal.isOpen && confirmModal.taskId === task._id && (
                     <div
-                      className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center"
                       onClick={() =>
                         setConfirmModal({ isOpen: false, taskId: null })
                       }
                     >
                       <div
-                        className="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full animate-fade-in"
+                        className="bg-white rounded-xl p-6 shadow-xl max-w-sm w-full"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <h3 className="text-lg font-semibold mb-2 text-red-600">
@@ -220,7 +285,10 @@ const ViewTasks = () => {
                           <button
                             className="px-4 py-1 rounded bg-gray-300 text-gray-800 hover:bg-gray-400"
                             onClick={() =>
-                              setConfirmModal({ isOpen: false, taskId: null })
+                              setConfirmModal({
+                                isOpen: false,
+                                taskId: null,
+                              })
                             }
                           >
                             Cancel
@@ -229,7 +297,10 @@ const ViewTasks = () => {
                             className="px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700"
                             onClick={() => {
                               handleDelete(confirmModal.taskId);
-                              setConfirmModal({ isOpen: false, taskId: null });
+                              setConfirmModal({
+                                isOpen: false,
+                                taskId: null,
+                              });
                             }}
                           >
                             Delete
@@ -242,6 +313,23 @@ const ViewTasks = () => {
               )}
             </div>
           ))}
+
+          {/* Pagination */}
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded-full ${
+                  currentPage === i + 1
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-200 text-gray-800"
+                } hover:bg-indigo-500 hover:text-white`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

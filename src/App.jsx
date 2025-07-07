@@ -35,6 +35,8 @@ import UpdateProfile from "./pages/UpdateProfile";
 import ReviewForm from "./pages/ReviewForm";
 import CreateTask from "./pages/CreateTask";
 import ViewTasks from "./pages/ViewTasks";
+import InventoryPage from "./pages/InventoryPage";
+import SalesTrendsPage from "./pages/SalesTrendsPage";
 
 const App = () => {
   return (
@@ -115,6 +117,22 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin"]}>
                   <ViewTasks/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="inventory"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <InventoryPage/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="trend-analysis"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <SalesTrendsPage/>
                 </ProtectedRoute>
               }
             />
