@@ -252,7 +252,7 @@ const MyOrders = () => {
                     {/* Review Button */}
                     {order.status === "Delivered" && (
                       <div className="mt-2">
-                        <button
+                        {/* <button
                           onClick={(e) => handleWriteReview(e, order)}
                           disabled={!canWriteReview(order)}
                           className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${canWriteReview(order)
@@ -261,7 +261,7 @@ const MyOrders = () => {
                             }`}
                         >
                           {getReviewButtonText(order)}
-                        </button>
+                        </button> */}
                       </div>
                     )}
                   </td>
