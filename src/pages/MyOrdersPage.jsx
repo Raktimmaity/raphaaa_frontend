@@ -135,7 +135,7 @@ const MyOrders = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h2 className="text-xl sm:text-2xl font-bold">My Orders</h2>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm">
           <input
             type="text"
             placeholder="Search orders..."
