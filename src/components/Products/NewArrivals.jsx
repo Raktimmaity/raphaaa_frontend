@@ -1,141 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
-import product3 from "../../assets/product3.jpg";
-import product4 from "../../assets/product4.jpg";
-import product5 from "../../assets/product5.jpg";
-import product6 from "../../assets/product6.jpg";
 import axios from "axios";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-
-  // const newArrivals = [
-  //   {
-  //     _id: "1",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product3,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=1",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "2",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product4,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=2",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "3",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product5,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=3",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "4",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product6,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=4",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "5",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product3,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=5",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "6",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product4,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=6",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "7",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product5,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=7",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  //   {
-  //     _id: "8",
-  //     name: "Stylish Jacket",
-  //     price: 120,
-  //     images: [
-  //       {
-  //         url: product6,
-  //         altText: "Stylish Jacket Front View",
-  //       },
-  //       // {
-  //       //   url: "https://picsum.photos/500/500?random=8",
-  //       //   altText: "Stylish Jacket Front View",
-  //       // },
-  //     ],
-  //   },
-  // ];
-
   const [newArrivals, setNewArrivals] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ loading state
 
   useEffect(() => {
     const fetchNewArrivals = async () => {
@@ -146,8 +19,10 @@ const NewArrivals = () => {
         setNewArrivals(response.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false); // ✅ done loading
       }
-    }
+    };
     fetchNewArrivals();
   }, []);
 
@@ -229,26 +104,39 @@ const NewArrivals = () => {
         ref={scrollRef}
         className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth px-2 pb-6 custom-scrollbar"
       >
-        {newArrivals.map((product) => (
-          <div
-            key={product._id}
-            className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-white shadow-md rounded-xl border border-gray-100 relative group transition-all duration-300 hover:shadow-xl"
-          >
-            <img
-              src={product.images[0]?.url}
-              alt={product.images[0]?.altText || product.name}
-              className="h-80 w-full object-cover rounded-t-xl"
-            />
-            <div className="p-4 text-left">
-              <Link to={`/product/${product._id}`} className="block">
-                <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
-                  {product.name}
-                </h4>
-                <p className="mt-1 text-gray-600">₹{product.price}</p>
-              </Link>
-            </div>
-          </div>
-        ))}
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-gray-100 shadow-md rounded-xl animate-pulse"
+              >
+                <div className="h-80 w-full bg-gray-300 rounded-t-xl" />
+                <div className="p-4">
+                  <div className="h-4 w-3/4 bg-gray-300 rounded mb-2" />
+                  <div className="h-4 w-1/2 bg-gray-300 rounded" />
+                </div>
+              </div>
+            ))
+          : newArrivals.map((product) => (
+              <div
+                key={product._id}
+                className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-white shadow-md rounded-xl border border-gray-100 relative group transition-all duration-300 hover:shadow-xl"
+              >
+                <img
+                  src={product.images[0]?.url}
+                  alt={product.images[0]?.altText || product.name}
+                  className="h-80 w-full object-cover rounded-t-xl"
+                />
+                <div className="p-4 text-left">
+                  <Link to={`/product/${product._id}`} className="block">
+                    <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
+                      {product.name}
+                    </h4>
+                    <p className="mt-1 text-gray-600">₹{product.price}</p>
+                  </Link>
+                </div>
+              </div>
+            ))}
       </div>
     </section>
   );

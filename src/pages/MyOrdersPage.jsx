@@ -1,3 +1,4 @@
+// components/MyOrdersPage.jsx
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -90,30 +91,23 @@ const MyOrders = () => {
   };
 
   const handleWriteReview = (e, order) => {
-    e.stopPropagation(); // Prevent row click
-
-    // For multiple items, show a selection or navigate to first item
-    if (order.orderItems.length === 1) {
-      const product = order.orderItems[0];
-      const productId = product.productId || product.product;
-      
-      if (productId) {
-        navigate(`/review/${productId}`);
-      } else {
-        toast.error("Product information not available");
-      }
-    } else {
-      // Multiple items - show selection modal or navigate to first item
-      const firstProduct = order.orderItems[0];
-      const productId = firstProduct.productId || firstProduct.product;
-      
-      if (productId) {
-        navigate(`/review/${productId}`);
-      } else {
-        toast.error("Product information not available");
-      }
+  e.stopPropagation();
+  if (order.orderItems.length > 1) {
+    // Show a modal to select a product (requires additional UI component)
+    toast.info("Please select a product to review (modal implementation needed)");
+  } else {
+    const product = order.orderItems[0];
+    let productId = product.productId?._id ? product.productId._id.toString() : product.productId?.toString();
+    if (!productId && product.product) {
+      productId = product.product._id ? product.product._id.toString() : product.product.toString();
     }
-  };
+    if (productId) {
+      navigate(`/review/${productId}`);
+    } else {
+      toast.error("Product information not available");
+    }
+  }
+};
 
   const canWriteReview = (order) => {
     if (order.status !== "Delivered") return false;
@@ -141,7 +135,7 @@ const MyOrders = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h2 className="text-xl sm:text-2xl font-bold">My Orders</h2>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm items-center">
           <input
             type="text"
             placeholder="Search orders..."
@@ -233,26 +227,24 @@ const MyOrders = () => {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`${
-                        order.isPaid
+                      className={`${order.isPaid
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
-                      } px-3 py-1 rounded-full text-xs font-semibold`}
+                        } px-3 py-1 rounded-full text-xs font-semibold`}
                     >
                       {order.isPaid ? "Paid" : "Pending"}
                     </span>
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`${
-                        order.status === "Delivered"
+                      className={`${order.status === "Delivered"
                           ? "bg-blue-100 text-blue-700"
                           : order.status === "Shipped"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : order.status === "Cancelled"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-gray-100 text-gray-700"
-                      } px-3 py-1 rounded-full text-xs font-semibold`}
+                            ? "bg-yellow-100 text-yellow-700"
+                            : order.status === "Cancelled"
+                              ? "bg-red-200 text-red-800"
+                              : "bg-gray-100 text-gray-700"
+                        } px-3 py-1 rounded-full text-xs font-semibold`}
                     >
                       {order.status || "Processing"}
                     </span>
@@ -263,11 +255,10 @@ const MyOrders = () => {
                         <button
                           onClick={(e) => handleWriteReview(e, order)}
                           disabled={!canWriteReview(order)}
-                          className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${
-                            canWriteReview(order)
+                          className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${canWriteReview(order)
                               ? "text-sky-600 hover:text-sky-800 hover:underline bg-sky-50 border-sky-200"
                               : "text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed"
-                          }`}
+                            }`}
                         >
                           {getReviewButtonText(order)}
                         </button>

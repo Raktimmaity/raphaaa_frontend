@@ -32,6 +32,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SubmitReview from "./pages/SubmitReview";
 import SubmitReviewFromOrder from "./pages/SubmitReviewFromOrder";
 import UpdateProfile from "./pages/UpdateProfile";
+import ReviewForm from "./pages/ReviewForm";
 
 const App = () => {
   return (
@@ -54,8 +55,9 @@ const App = () => {
           <Route path="/about" element={<About/>}/>
           <Route path="/contact-us" element={<Contact/>}/>
           <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
-          <Route path="/review/:productId" element={<SubmitReview />} />
-          <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} />
+          <Route path="/review" element={<ReviewForm/>} />
+          <Route path="/review/:productId" element={<ReviewForm />} />
+          {/* <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} /> */}
           
 
           {/* extra added */}

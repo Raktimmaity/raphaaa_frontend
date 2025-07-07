@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
@@ -14,31 +14,61 @@ import { useSelector } from "react-redux";
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { cart } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000); // simulate loading
+    return () => clearTimeout(timer);
+  }, []);
+
   const isActive = (path) => location.pathname === path;
 
   const cartItemCount =
-    cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
-    0;
+    cart?.products?.reduce((total, product) => total + product.quantity, 0) || 0;
 
   const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
   };
+
   const toggleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
+
+  if (loading) {
+    return (
+      <div className="w-full px-6 py-4">
+        <div className="container mx-auto flex items-center justify-between animate-pulse">
+          <div className="h-10 w-24 bg-gray-200 rounded" />
+          <div className="hidden md:flex space-x-6">
+            <div className="h-4 w-20 bg-gray-200 rounded" />
+            <div className="h-4 w-20 bg-gray-200 rounded" />
+            <div className="h-4 w-24 bg-gray-200 rounded" />
+            <div className="h-4 w-28 bg-gray-200 rounded" />
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="h-6 w-6 bg-gray-200 rounded-full" />
+            <div className="h-6 w-6 bg-gray-200 rounded-full" />
+            <div className="h-6 w-6 bg-gray-200 rounded-full" />
+            <div className="h-6 w-6 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
         {/* Left logo */}
         <div>
           <Link to="/" className="text-2xl font-medium no-underline">
-            {/* Raphaa */}
             <img src={logo} alt="Logo" className="h-10 w-auto" />
           </Link>
         </div>
+
         {/* Center navigation links */}
         <div className="hidden md:flex space-x-6">
           <Link
@@ -61,7 +91,6 @@ const Navbar = () => {
           >
             About
           </Link>
-
           <Link
             to="/contact-us"
             className={`text-sm font-extrabold uppercase ${
@@ -82,26 +111,9 @@ const Navbar = () => {
           >
             Privacy & Policy
           </Link>
-          {/* <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
-          >
-            WOMEN
-          </Link> */}
-          {/* <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
-          >
-            Top Wear
-          </Link> */}
-          {/* <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-extrabold uppercase"
-          >
-            Bottom Wear
-          </Link> */}
         </div>
-        {/* right icons */}
+
+        {/* Right icons */}
         <div className="flex items-center space-x-4">
           {(user && (user.role === "admin" || user.role === "merchantise")) && (
             <Link
@@ -126,7 +138,7 @@ const Navbar = () => {
               </span>
             )}
           </button>
-          {/* Search icons */}
+
           <div className="overflow-hidden">
             <SearchBar />
           </div>
@@ -135,7 +147,9 @@ const Navbar = () => {
           </button>
         </div>
       </nav>
+
       <CartDrawer drawerOpen={drawerOpen} toggleCartDrawer={toggleCartDrawer} />
+
       {/* Mobile Navgation */}
       <div
         className={`fixed top-0 left-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
@@ -189,7 +203,7 @@ const Navbar = () => {
               Privacy & Policy
             </Link>
           </nav>
-          {/* Footer for mobile menu */}
+
           <div className="mt-8 pt-4 absolute bottom-0 pb-8">
             <h3 className="text-sm font-semibold text-gray-700 mb-2">
               Follow Us

@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-// import heroImg from "../../assets/hero_img.png";
 import heroImg from "../../assets/heroimg.jpeg";
 
 const Hero = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000); // Simulate 1s load
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8">
+        {/* Left Skeleton */}
+        <div className="w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0">
+          <div className="w-full h-60 bg-gray-200 rounded-2xl animate-pulse"></div>
+        </div>
+
+        {/* Right Skeleton */}
+        <div className="w-full sm:w-1/2 aspect-square overflow-hidden">
+          <div className="w-full h-full bg-gray-200 rounded-full md:rounded-l-none md:rounded-r-full animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8">
       {/* Hero Left Side */}

@@ -44,12 +44,12 @@ const SubmitReview = () => {
   }, [productId, navigate]);
 
   // Check if user is logged in
-  useEffect(() => {
-    if (!user || !user.token) {
-      toast.error("Please login to submit a review");
-      navigate("/login");
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user || !user.token) {
+  //     toast.error("Please login to submit a review");
+  //     navigate("/login");
+  //   }
+  // }, [user, navigate]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
