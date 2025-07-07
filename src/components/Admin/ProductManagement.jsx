@@ -7,6 +7,7 @@ import {
 } from "../../redux/slices/adminProductSlice";
 import { FiEdit } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
+import { toast } from "sonner";
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,9 @@ const ProductManagement = () => {
   const productsPerPage = 5;
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [skuSearchTerm, setSkuSearchTerm] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const openImageModal = (image) => {
     setSelectedImage(image);
@@ -32,19 +36,57 @@ const ProductManagement = () => {
   };
 
   useEffect(() => {
+  const handleEscape = (e) => {
+    if (e.key === "Escape") {
+      setShowConfirmModal(false);
+    }
+  };
+
+  document.addEventListener("keydown", handleEscape);
+  return () => document.removeEventListener("keydown", handleEscape);
+}, []);
+
+
+  useEffect(() => {
     dispatch(fetchAdminProducts());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure want to delete your product?")) {
-      dispatch(deleteProduct(id));
+  // const handleDelete = (id) => {
+  //   if (window.confirm("Are you sure want to delete your product?")) {
+  //     dispatch(deleteProduct(id));
+  //   }
+  // };
+
+  // const confirmDelete = () => {
+  //   if (productToDelete) {
+  //     dispatch(deleteProduct(productToDelete));
+  //     setProductToDelete(null);
+  //     setShowConfirmModal(false);
+  //   }
+  // };
+
+  const confirmDelete = () => {
+    if (productToDelete) {
+      dispatch(deleteProduct(productToDelete));
+      toast.success("Product deleted successfully!");
+      setProductToDelete(null);
+      setShowConfirmModal(false);
     }
   };
 
   // Filter by search
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredProducts = products.filter((product) =>
+  //   product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const filteredProducts = products.filter((product) => {
+    const matchesName = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesSKU = product.sku
+      ?.toLowerCase()
+      .includes(skuSearchTerm.toLowerCase());
+    return matchesName && (!skuSearchTerm || matchesSKU);
+  });
 
   // Sort logic
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -87,9 +129,10 @@ const ProductManagement = () => {
 
       {/* Search + Sort */}
       <div className="mb-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        {/* Search by Name */}
         <input
           type="text"
-          placeholder="Search products..."
+          placeholder="Search by name..."
           className="border px-4 py-2 rounded-md shadow-sm w-full md:max-w-xs bg-white outline-0"
           value={searchTerm}
           onChange={(e) => {
@@ -98,15 +141,19 @@ const ProductManagement = () => {
           }}
         />
 
-        <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800">
-          <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full shadow-inner">
-            {filteredProducts.length}
-          </span>
-          <span className="text-sm font-medium tracking-wide">
-            Total Products
-          </span>
-        </div>
+        {/* Search by SKU */}
+        <input
+          type="text"
+          placeholder="Search by SKU..."
+          className="border px-4 py-2 rounded-md shadow-sm w-full md:max-w-xs bg-white outline-0"
+          value={skuSearchTerm}
+          onChange={(e) => {
+            setSkuSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
 
+        {/* Sort Select */}
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
@@ -118,6 +165,16 @@ const ProductManagement = () => {
           <option value="price-asc">Price (Low to High)</option>
           <option value="price-desc">Price (High to Low)</option>
         </select>
+
+        {/* Product Count */}
+        <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-800">
+          <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full shadow-inner p-2">
+            {filteredProducts.length}
+          </span>
+          <span className="text-sm font-medium tracking-wide">
+            Total Products
+          </span>
+        </div>
       </div>
 
       <div className="bg-white p-6 shadow-md rounded-lg">
@@ -199,7 +256,10 @@ const ProductManagement = () => {
                         <FiEdit className="inline" /> Edit
                       </Link>
                       <button
-                        onClick={() => handleDelete(product._id)}
+                        onClick={() => {
+                          setProductToDelete(product._id);
+                          setShowConfirmModal(true);
+                        }}
                         className="inline-block bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-600"
                       >
                         <FaTrash className="inline" /> Delete
@@ -219,6 +279,37 @@ const ProductManagement = () => {
               )}
             </tbody>
           </table>
+          {showConfirmModal && (
+            <div
+  className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 animate-fade-in"
+  onClick={() => setShowConfirmModal(false)}
+>
+  <div
+    className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full animate-fade-in-slow"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
+    <p className="text-sm text-gray-600 mb-6">
+      Are you sure you want to delete this product? This action cannot be undone.
+    </p>
+    <div className="flex justify-end gap-3">
+      <button
+        onClick={() => setShowConfirmModal(false)}
+        className="px-4 py-2 text-sm rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={confirmDelete}
+        className="px-4 py-2 text-sm rounded-md bg-red-500 text-white hover:bg-red-600"
+      >
+        Yes, Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+          )}
         </div>
 
         {/* Pagination */}

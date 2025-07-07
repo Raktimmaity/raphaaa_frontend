@@ -24,6 +24,7 @@ const AdminHomePage = () => {
 
   const { orders } = useSelector((state) => state.adminOrders);
   const { users } = useSelector((state) => state.admin);
+  const { user } = useSelector((state) => state.auth);
   const { products } = useSelector((state) => state.adminProducts);
 
   const [revenue, setRevenue] = useState(0);
@@ -112,7 +113,14 @@ const AdminHomePage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        {user.role === "admin"
+          ? "Admin"
+          : user.role === "merchantise"
+          ? "Merchantise"
+          : "Customer"}{" "}
+        Dashboard
+      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Orders */}
         <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
@@ -159,25 +167,29 @@ const AdminHomePage = () => {
         </div>
 
         {/* Users */}
-        <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
-              <FaUsers className="text-xl" />
+        {user?.role === "admin" && (
+          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
+                <FaUsers className="text-xl" />
+              </div>
+              <div>
+                <h2 className="text-md font-semibold text-gray-700">
+                  Total Users
+                </h2>
+                <p className="text-3xl font-bold text-yellow-700">
+                  {countUsers}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-md font-semibold text-gray-700">
-                Total Users
-              </h2>
-              <p className="text-3xl font-bold text-yellow-700">{countUsers}</p>
-            </div>
+            <Link
+              to="/admin/users"
+              className="text-sm text-yellow-600 hover:underline font-medium"
+            >
+              Manage Users →
+            </Link>
           </div>
-          <Link
-            to="/admin/users"
-            className="text-sm text-yellow-600 hover:underline font-medium"
-          >
-            Manage Users →
-          </Link>
-        </div>
+        )}
       </div>
 
       {/* Order Trend and Status Charts */}
@@ -205,7 +217,9 @@ const AdminHomePage = () => {
 
           {/* Pie Chart */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Order Status Distribution</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Order Status Distribution
+            </h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -217,7 +231,10 @@ const AdminHomePage = () => {
                   dataKey="value"
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Legend />
@@ -291,6 +308,7 @@ const AdminHomePage = () => {
       </div>
 
       {/* Recent User Signups */}
+      {user?.role === "admin" &&(
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Recent User Signups</h2>
         <div className="p-6 bg-white shadow-md rounded-lg">
@@ -336,6 +354,7 @@ const AdminHomePage = () => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

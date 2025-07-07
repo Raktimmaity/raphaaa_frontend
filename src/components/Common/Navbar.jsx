@@ -27,7 +27,8 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const cartItemCount =
-    cart?.products?.reduce((total, product) => total + product.quantity, 0) || 0;
+    cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
+    0;
 
   const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
@@ -115,18 +116,19 @@ const Navbar = () => {
 
         {/* Right icons */}
         <div className="flex items-center space-x-4">
-          {(user && (user.role === "admin" || user.role === "merchantise")) && (
+          {user && (user.role === "admin" || user.role === "merchantise") && (
             <Link
               to="/admin"
               className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
             >
-              Admin
+              {user.role === "admin" ? "Admin Panel" : "Merchandise Panel"}
             </Link>
           )}
-
+          {user?.role === "customer" && (
           <Link to="/profile" className="hover:text-black">
             <HiOutlineUser className="h-6 w-6 text-gray-700" />
           </Link>
+          )}
           <button
             onClick={toggleCartDrawer}
             className="relative hover:text-black"

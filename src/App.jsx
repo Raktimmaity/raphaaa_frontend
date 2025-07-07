@@ -27,48 +27,56 @@ import AddProduct from "./components/Admin/AddProduct";
 import About from "./components/Common/About";
 import Contact from "./components/Common/Contact";
 import PrivacyPolicy from "./components/Common/PrivacyPolicy";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import SubmitReview from "./pages/SubmitReview";
 import SubmitReviewFromOrder from "./pages/SubmitReviewFromOrder";
 import UpdateProfile from "./pages/UpdateProfile";
 import ReviewForm from "./pages/ReviewForm";
+import CreateTask from "./pages/CreateTask";
+import ViewTasks from "./pages/ViewTasks";
 
 const App = () => {
   return (
     <Provider store={store}>
-       <ToastContainer position="top-right" autoClose={2000} />
-      <Toaster position="top-right" richColors/>
+      <ToastContainer position="top-right" autoClose={2000} />
+      <Toaster position="top-right" richColors />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<UserLayout />}>
-          <Route index element={<Home/>} />
-          <Route path="login" element={<Login/>}/>
-          <Route path="register" element={<Register/>}/>
-          <Route path="profile" element={<Profile/>}/>
-          <Route path="collections/:collection" element={<CollectionPage/>}/>
-          <Route path="product/:id" element={<ProductDetails/>}/>
-          <Route path="checkout" element={<Checkout/>}/>
-          <Route path="order-confirmation" element={<OrderConfirmationPage/>}/>
-          <Route path="order/:id" element={<OrderDetailsPage/>}/>
-          <Route path="/my-orders" element={<MyOrders/>}/>
-          <Route path="/about" element={<About/>}/>
-          <Route path="/contact-us" element={<Contact/>}/>
-          <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
-          <Route path="/review" element={<ReviewForm/>} />
-          <Route path="/review/:productId" element={<ReviewForm />} />
-          {/* <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} /> */}
-          
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="profile" element={<Profile />} />
+            <Route
+              path="collections/:collection"
+              element={<CollectionPage />}
+            />
+            <Route path="product/:id" element={<ProductDetails />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route
+              path="order-confirmation"
+              element={<OrderConfirmationPage />}
+            />
+            <Route path="order/:id" element={<OrderDetailsPage />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact-us" element={<Contact />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/review" element={<ReviewForm />} />
+            <Route path="/review/:productId" element={<ReviewForm />} />
+            {/* <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} /> */}
 
-          {/* extra added */}
-          <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
-          <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
+            {/* extra added */}
+            <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
+            <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
 
-          {/* User Layout */}
+            {/* User Layout */}
           </Route>
 
           {/* <Route path="/admin" element={<AdminLayout/>}/> */}
-          <Route path="/admin" element={<AdminLayout/>}>{/* Admin Layout */}
+          {/* Admin Layout */}
+          {/* <Route path="/admin" element={<AdminLayout/>}>
             <Route index element={<ProtectedRoute role="admin"> <AdminHomePage/> </ProtectedRoute>} />
             <Route path="users" element={<UserManagement/>}/>
             <Route path="products" element={<ProductManagement/>}/>
@@ -76,6 +84,80 @@ const App = () => {
             <Route path="orders" element={<OrderManagement/>}/>
             <Route path="add-product" element={<AddProduct/> }/>
             <Route path="update-profile" element={<UpdateProfile/> }/>
+          </Route> */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              index
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminHomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="add-task"
+              element={
+                <ProtectedRoute role={["merchantise"]}>
+                  <CreateTask/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="view-tasks"
+              element={
+                <ProtectedRoute role={["merchantise"]}>
+                  <ViewTasks/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <UserManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="products"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <ProductManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="products/:id/edit"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <EditProductPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <OrderManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="add-product"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="update-profile"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <UpdateProfile />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

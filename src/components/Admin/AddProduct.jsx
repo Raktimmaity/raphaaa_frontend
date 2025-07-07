@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { createProduct } from "../../redux/slices/adminProductSlice";
+import { toast } from "sonner";
 
 
 const AddProduct = () => {
@@ -148,10 +149,12 @@ const AddProduct = () => {
         weight: ""
       });
 
-      alert("Product added successfully!");
+      // alert("Product added successfully!");
+      toast.success('Product added successfully!');
     } catch (err) {
       console.error("Error adding product:", err);
-      alert(`Failed to add product: ${err.response?.data?.message || err.message}`);
+      // alert(`Failed to add product: ${err.response?.data?.message || err.message}`);
+      toast.error('Failed to add product');
     } finally {
       // setLoading(false);
     }
@@ -160,6 +163,7 @@ const AddProduct = () => {
   return (
     <div className="p-6 bg-white shadow-md rounded-lg mb-6">
       <h3 className="text-lg font-bold mb-6">Add New Product</h3>
+      <p className="text-red-500 font-bold mb-3 animate-pulse"> * Note that product image you can upload after you can upload the product details. You can upload the product image by find using product name.</p>
       <form onSubmit={handleProductSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Product Name */}

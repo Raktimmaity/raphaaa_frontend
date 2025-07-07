@@ -16,6 +16,8 @@ import { useSelector } from "react-redux";
 import icon from "../../assets/man.png";
 import { HiPlusCircle } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
+import { MdOutlineAddTask } from "react-icons/md";
+import { FaTasks } from "react-icons/fa";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -51,7 +53,11 @@ const AdminSidebar = () => {
       </div>
 
       <div className="text-center mb-6">
-        <h2 className="text-xl font-medium mb-4">Admin Dashboard</h2>
+        {/* <h2 className="text-xl font-medium mb-4">{user.role === "admin"
+                  ? "Admin"
+                  : user.role === "merchantise"
+                  ? "Merchantise"
+                  : "Customer"} Dashboard</h2> */}
 
         {user && (
           <div className="flex items-center justify-center gap-4 bg-gray-800 p-3 rounded-lg">
@@ -89,6 +95,50 @@ const AdminSidebar = () => {
           <RiDashboardHorizontalFill />
           <span>Dashboard</span>
         </NavLink>
+
+        {user?.role === "merchantise" && (
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FaTasks className="text-lg" />
+                  <span>Task</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
+              <div className="ml-6 mt-1 space-y-1">
+                <NavLink
+                  to="/admin/add-task"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  Add Task
+                </NavLink>
+                <NavLink
+                  to="/admin/view-tasks"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  View My Tasks
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
 
         {/* Only for admin */}
         {user?.role === "admin" && (
@@ -135,7 +185,7 @@ const AdminSidebar = () => {
         )}
 
         {/* Only for admin */}
-        {user?.role === "admin" && (
+        {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink
             to="/admin/orders"
             className={({ isActive }) =>
