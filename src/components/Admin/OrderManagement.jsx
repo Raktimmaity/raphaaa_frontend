@@ -623,21 +623,19 @@ const OrderManagement = () => {
                   </td>
                   <td className="py-4 px-6">
                     {user.role === "delivery_boy" ? (
-                      order.status === "Shipped" ? (
-                        <select
-                          value={order.status}
-                          onChange={(e) =>
-                            handleStatusChange(order._id, e.target.value)
-                          }
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
-                        >
-                          <option value="Delivered">Delivered</option>
-                        </select>
-                      ) : (
-                        <span className="text-sm text-gray-500 italic">
-                          Not Shipped
-                        </span>
-                      )
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          order.status === "Delivered"
+                            ? "bg-green-100 text-green-700"
+                            : order.status === "Shipped"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : order.status === "Cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
                     ) : (
                       <select
                         value={order.status}
@@ -774,73 +772,72 @@ const OrderManagement = () => {
 
       {/* Modal */}
       {isModalOpen && selectedOrder && (
-  <div
-    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-    onClick={() => setIsModalOpen(false)}
-  >
-    <div
-      className="relative bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full animate-fade-in"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={() => setIsModalOpen(false)}
-        className="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-2xl"
-      >
-        &times;
-      </button>
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="relative bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-2xl"
+            >
+              &times;
+            </button>
 
-      <h3 className="text-2xl font-bold text-blue-700 mb-6 border-b pb-2">
-        🧾 Order Summary
-      </h3>
+            <h3 className="text-2xl font-bold text-blue-700 mb-6 border-b pb-2">
+              🧾 Order Summary
+            </h3>
 
-      <div className="space-y-3 text-sm text-gray-700">
-        <div className="flex justify-between">
-          <span className="font-medium">Order ID:</span>
-          <span className="text-gray-900">{selectedOrder.orderId}</span>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="flex justify-between">
+                <span className="font-medium">Order ID:</span>
+                <span className="text-gray-900">{selectedOrder.orderId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Customer:</span>
+                <span>{selectedOrder.user?.name || "Unknown"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Email:</span>
+                <span>{selectedOrder.user?.email || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Status:</span>
+                <span className="font-semibold text-blue-600">
+                  {selectedOrder.status}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Total:</span>
+                <span className="text-green-600 font-bold">
+                  ₹{selectedOrder.totalPrice?.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Payment:</span>
+                <span>{selectedOrder.paymentMethod}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Ordered On:</span>
+                <span>
+                  {new Date(selectedOrder.createdAt).toLocaleString()}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium">Shipping Address:</span>
+                <p className="text-sm text-gray-600 mt-1">
+                  {selectedOrder.shippingAddress
+                    ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
+                    : "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Customer:</span>
-          <span>{selectedOrder.user?.name || "Unknown"}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Email:</span>
-          <span>{selectedOrder.user?.email || "N/A"}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Status:</span>
-          <span className="font-semibold text-blue-600">
-            {selectedOrder.status}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Total:</span>
-          <span className="text-green-600 font-bold">
-            ₹{selectedOrder.totalPrice?.toFixed(2)}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Payment:</span>
-          <span>{selectedOrder.paymentMethod}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Ordered On:</span>
-          <span>
-            {new Date(selectedOrder.createdAt).toLocaleString()}
-          </span>
-        </div>
-        <div>
-          <span className="font-medium">Shipping Address:</span>
-          <p className="text-sm text-gray-600 mt-1">
-            {selectedOrder.shippingAddress
-              ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
-              : "N/A"}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };
