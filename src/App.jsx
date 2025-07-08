@@ -37,6 +37,7 @@ import CreateTask from "./pages/CreateTask";
 import ViewTasks from "./pages/ViewTasks";
 import InventoryPage from "./pages/InventoryPage";
 import SalesTrendsPage from "./pages/SalesTrendsPage";
+import RevenueReport from "./pages/RevenueReport";
 
 const App = () => {
   return (
@@ -133,6 +134,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <SalesTrendsPage/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="revenue"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <RevenueReport/>
                 </ProtectedRoute>
               }
             />

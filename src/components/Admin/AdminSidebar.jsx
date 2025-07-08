@@ -19,6 +19,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdOutlineAddTask } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
 import { BsGraphUpArrow } from "react-icons/bs";
+import { FaRupeeSign } from "react-icons/fa";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -180,6 +181,19 @@ const AdminSidebar = () => {
           >
             <BsGraphUpArrow />
             <span>Sales Analysis</span>
+          </NavLink>
+        )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <NavLink
+            to="/admin/revenue"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <FaRupeeSign />
+            <span>Total Revenue</span>
           </NavLink>
         )}
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { FaShoppingCart, FaBoxOpen, FaUsers } from "react-icons/fa";
+import { FaShoppingCart, FaBoxOpen, FaUsers, FaRupeeSign } from "react-icons/fa";
 import { fetchAllOrders } from "../redux/slices/adminOrderSlice";
 import { fetchUsers } from "../redux/slices/adminSlice";
 import { fetchAdminProducts } from "../redux/slices/adminProductSlice";
@@ -18,6 +18,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import axios from "axios";
 
 const AdminHomePage = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,28 @@ const AdminHomePage = () => {
   const [productCount, setProductCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
   const [chartData, setChartData] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const token = localStorage.getItem("userToken"); // Get token from localStorage
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/orders/revenue/total`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setTotalRevenue(data.totalRevenue);
+      } catch (err) {
+        console.error("Error fetching revenue", err);
+      }
+    };
+
+    if (user?.role === "merchantise" || user?.role === "admin") {
+      fetchRevenue();
+    }
+  }, [user]);
 
   useEffect(() => {
     dispatch(fetchAllOrders());
@@ -122,75 +145,89 @@ const AdminHomePage = () => {
         Dashboard
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Orders */}
-        <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
-              <FaShoppingCart className="text-xl" />
-            </div>
-            <div>
-              <h2 className="text-md font-semibold text-gray-700">
-                Total Orders
-              </h2>
-              <p className="text-3xl font-bold text-green-700">{countOrders}</p>
-            </div>
-          </div>
-          <Link
-            to="/admin/orders"
-            className="text-sm text-green-600 hover:underline font-medium"
-          >
-            Manage Orders →
-          </Link>
-        </div>
 
-        {/* Products */}
-        <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-purple-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-md">
-              <FaBoxOpen className="text-xl" />
-            </div>
-            <div>
-              <h2 className="text-md font-semibold text-gray-700">
-                Total Products
-              </h2>
-              <p className="text-3xl font-bold text-purple-700">
-                {countProducts}
-              </p>
-            </div>
-          </div>
-          <Link
-            to="/admin/products"
-            className="text-sm text-purple-600 hover:underline font-medium"
-          >
-            Manage Products →
-          </Link>
-        </div>
-
-        {/* Users */}
-        {user?.role === "admin" && (
-          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
-                <FaUsers className="text-xl" />
-              </div>
-              <div>
-                <h2 className="text-md font-semibold text-gray-700">
-                  Total Users
-                </h2>
-                <p className="text-3xl font-bold text-yellow-700">
-                  {countUsers}
-                </p>
-              </div>
-            </div>
-            <Link
-              to="/admin/users"
-              className="text-sm text-yellow-600 hover:underline font-medium"
-            >
-              Manage Users →
-            </Link>
-          </div>
-        )}
+  {/* Orders (visible to both) */}
+  <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+    <div className="flex items-center gap-4 mb-4">
+      <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
+        <FaShoppingCart className="text-xl" />
       </div>
+      <div>
+        <h2 className="text-md font-semibold text-gray-700">Total Orders</h2>
+        <p className="text-3xl font-bold text-green-700">{countOrders}</p>
+      </div>
+    </div>
+    <Link
+      to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
+      className="text-sm text-green-600 hover:underline font-medium"
+    >
+      {user?.role === "merchantise" ? "View Sales →" : "Manage Orders →"}
+    </Link>
+  </div>
+
+  {/* Products (visible to both) */}
+  <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-purple-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+    <div className="flex items-center gap-4 mb-4">
+      <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-md">
+        <FaBoxOpen className="text-xl" />
+      </div>
+      <div>
+        <h2 className="text-md font-semibold text-gray-700">Total Products</h2>
+        <p className="text-3xl font-bold text-purple-700">{countProducts}</p>
+      </div>
+    </div>
+    <Link
+      to="/admin/products"
+      className="text-sm text-purple-600 hover:underline font-medium"
+    >
+      Manage Products →
+    </Link>
+  </div>
+
+  {/* Users (only for admin) */}
+  {user?.role === "admin" && (
+    <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
+          <FaUsers className="text-xl" />
+        </div>
+        <div>
+          <h2 className="text-md font-semibold text-gray-700">Total Users</h2>
+          <p className="text-3xl font-bold text-yellow-700">{countUsers}</p>
+        </div>
+      </div>
+      <Link
+        to="/admin/users"
+        className="text-sm text-yellow-600 hover:underline font-medium"
+      >
+        Manage Users →
+      </Link>
+    </div>
+  )}
+
+  {/* Revenue (visible to both) */}
+  {(user?.role === "admin" || user?.role === "merchantise") && (
+    <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-blue-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md">
+          <FaRupeeSign className="text-xl" />
+        </div>
+        <div>
+          <h2 className="text-md font-semibold text-gray-700">Total Revenue</h2>
+          <p className="text-3xl font-bold text-blue-700">₹{totalRevenue}</p>
+        </div>
+      </div>
+      <Link
+        to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
+        className="text-sm text-blue-600 hover:underline font-medium"
+      >
+        {user?.role === "merchantise" ? "View Sales →" : "Revenue Report →"}
+      </Link>
+    </div>
+  )}
+
+</div>
+
 
       {/* Order Trend and Status Charts */}
       <div className="mt-10">
@@ -308,52 +345,52 @@ const AdminHomePage = () => {
       </div>
 
       {/* Recent User Signups */}
-      {user?.role === "admin" &&(
-      <div className="mt-10">
-        <h2 className="text-2xl font-bold mb-4">Recent User Signups</h2>
-        <div className="p-6 bg-white shadow-md rounded-lg">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left text-gray-700">
-              <thead className="bg-gray-100 text-xs uppercase text-gray-600">
-                <tr>
-                  <th className="py-4 px-6">User Name</th>
-                  <th className="py-4 px-6">Email</th>
-                  <th className="py-4 px-6">Created At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users
-                  .slice(-5)
-                  .reverse()
-                  .map((user) => (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-gray-50 transition-all duration-200"
-                    >
-                      <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
-                        {user.name}
-                      </td>
-                      <td className="py-4 px-6">{user.email}</td>
-                      <td className="py-4 px-6">
-                        {new Date(user.createdAt).toLocaleString()}
+      {user?.role === "admin" && (
+        <div className="mt-10">
+          <h2 className="text-2xl font-bold mb-4">Recent User Signups</h2>
+          <div className="p-6 bg-white shadow-md rounded-lg">
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm text-left text-gray-700">
+                <thead className="bg-gray-100 text-xs uppercase text-gray-600">
+                  <tr>
+                    <th className="py-4 px-6">User Name</th>
+                    <th className="py-4 px-6">Email</th>
+                    <th className="py-4 px-6">Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users
+                    .slice(-5)
+                    .reverse()
+                    .map((user) => (
+                      <tr
+                        key={user._id}
+                        className="hover:bg-gray-50 transition-all duration-200"
+                      >
+                        <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
+                          {user.name}
+                        </td>
+                        <td className="py-4 px-6">{user.email}</td>
+                        <td className="py-4 px-6">
+                          {new Date(user.createdAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  {users.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="py-6 px-6 text-center text-gray-500 italic"
+                      >
+                        No users found.
                       </td>
                     </tr>
-                  ))}
-                {users.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="py-6 px-6 text-center text-gray-500 italic"
-                    >
-                      No users found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );
