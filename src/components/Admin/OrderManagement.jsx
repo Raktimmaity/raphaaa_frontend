@@ -426,7 +426,6 @@ import { FaBoxOpen } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { toast } from "sonner";
 
-
 const OrderManagement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -445,17 +444,19 @@ const OrderManagement = () => {
 
   // Check if user has permission to access this page
   const hasPermission =
-    user && (user.role === "admin" || user.role === "merchantise");
+    user &&
+    (user.role === "admin" ||
+      user.role === "merchantise" ||
+      user.role === "delivery_boy");
   const isAdmin = user && user.role === "admin";
   const confirmDeleteOrder = () => {
-  if (orderToDelete) {
-    dispatch(deleteOrder(orderToDelete));
-    toast.success("Order deleted successfully!");
-    setShowConfirmModal(false);
-    setOrderToDelete(null);
-  }
-};
-
+    if (orderToDelete) {
+      dispatch(deleteOrder(orderToDelete));
+      toast.success("Order deleted successfully!");
+      setShowConfirmModal(false);
+      setOrderToDelete(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) {
@@ -498,7 +499,8 @@ const OrderManagement = () => {
   const filteredOrders = orders
     .filter(
       (order) =>
-        order._id.toLowerCase().includes(search.toLowerCase()) ||
+        order._id?.toLowerCase().includes(search.toLowerCase()) ||
+        order.orderId?.toLowerCase().includes(search.toLowerCase()) ||
         order.user?.name?.toLowerCase().includes(search.toLowerCase())
     )
     .filter((order) => (statusFilter ? order.status === statusFilter : true));
@@ -591,7 +593,8 @@ const OrderManagement = () => {
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100 text-xs uppercase text-gray-600">
             <tr>
-              <th className="py-4 px-6">Order ID</th>
+              {/* <th className="py-4 px-6">Order ID</th> */}
+              <th className="py-4 px-6">ID</th>
               <th className="py-4 px-6">Customer</th>
               <th className="py-4 px-6">Total Price</th>
               <th className="py-4 px-6">Status</th>
@@ -606,8 +609,11 @@ const OrderManagement = () => {
                   key={order._id}
                   className="hover:bg-gray-50 transition-all duration-200 border-b"
                 >
-                  <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
+                  {/* <td className="py-4 px-6 font-semibold text-gray-900 whitespace-nowrap">
                     #{order._id.slice(-8)}
+                  </td> */}
+                  <td className="py-4 px-6">
+                    {order?.orderId || "Invalid ID"}
                   </td>
                   <td className="py-4 px-6">
                     {order.user?.name || "Unknown User"}
@@ -616,19 +622,38 @@ const OrderManagement = () => {
                     ₹{order.totalPrice?.toFixed(2) || "0.00"}
                   </td>
                   <td className="py-4 px-6">
-                    <select
-                      value={order.status}
-                      onChange={(e) =>
-                        handleStatusChange(order._id, e.target.value)
-                      }
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
-                    >
-                      <option value="Processing">Processing</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
+                    {user.role === "delivery_boy" ? (
+                      order.status === "Shipped" ? (
+                        <select
+                          value={order.status}
+                          onChange={(e) =>
+                            handleStatusChange(order._id, e.target.value)
+                          }
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
+                        >
+                          <option value="Delivered">Delivered</option>
+                        </select>
+                      ) : (
+                        <span className="text-sm text-gray-500 italic">
+                          Not Shipped
+                        </span>
+                      )
+                    ) : (
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(order._id, e.target.value)
+                        }
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2 w-full"
+                      >
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    )}
                   </td>
+
                   <td className="py-4 px-6">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
@@ -643,14 +668,28 @@ const OrderManagement = () => {
                       >
                         <FaEye className="inline mr-1" /> View
                       </button>
-                      <button
-                        onClick={() =>
-                          handleStatusChange(order._id, "Delivered")
-                        }
-                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors text-xs"
-                      >
-                        <FaBoxOpen className="inline mr-1" /> Delivered
-                      </button>
+                      {user.role === "delivery_boy" ? (
+                        order.status === "Shipped" && (
+                          <button
+                            onClick={() =>
+                              handleStatusChange(order._id, "Delivered")
+                            }
+                            className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors text-xs"
+                          >
+                            <FaBoxOpen className="inline mr-1" /> Delivered
+                          </button>
+                        )
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleStatusChange(order._id, "Delivered")
+                          }
+                          className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors text-xs"
+                        >
+                          <FaBoxOpen className="inline mr-1" /> Delivered
+                        </button>
+                      )}
+
                       {/* Only show delete button for admin */}
                       {isAdmin && (
                         <button
@@ -735,56 +774,73 @@ const OrderManagement = () => {
 
       {/* Modal */}
       {isModalOpen && selectedOrder && (
-        <div
-          className="fixed inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center z-50"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            className="bg-white p-6 rounded-lg max-w-md w-full relative shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl"
-            >
-              &times;
-            </button>
-            <h3 className="text-lg font-bold mb-4">Order Details</h3>
-            <div className="grid gap-2 text-sm text-gray-800">
-              <p>
-                <strong>Order ID:</strong> {selectedOrder._id}
-              </p>
-              <p>
-                <strong>Customer:</strong>{" "}
-                {selectedOrder.user?.name || "Unknown"}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedOrder.user?.email || "N/A"}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedOrder.status}
-              </p>
-              <p>
-                <strong>Total Price:</strong> ₹
-                {selectedOrder.totalPrice?.toFixed(2)}
-              </p>
-              <p>
-                <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
-              </p>
-              <p>
-                <strong>Ordered On:</strong>{" "}
-                {new Date(selectedOrder.createdAt).toLocaleString()}
-              </p>
-              <p>
-                <strong>Shipping Address:</strong>{" "}
-                {selectedOrder.shippingAddress
-                  ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
-                  : "N/A"}
-              </p>
-            </div>
-          </div>
+  <div
+    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+    onClick={() => setIsModalOpen(false)}
+  >
+    <div
+      className="relative bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full animate-fade-in"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-2xl"
+      >
+        &times;
+      </button>
+
+      <h3 className="text-2xl font-bold text-blue-700 mb-6 border-b pb-2">
+        🧾 Order Summary
+      </h3>
+
+      <div className="space-y-3 text-sm text-gray-700">
+        <div className="flex justify-between">
+          <span className="font-medium">Order ID:</span>
+          <span className="text-gray-900">{selectedOrder.orderId}</span>
         </div>
-      )}
+        <div className="flex justify-between">
+          <span className="font-medium">Customer:</span>
+          <span>{selectedOrder.user?.name || "Unknown"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Email:</span>
+          <span>{selectedOrder.user?.email || "N/A"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Status:</span>
+          <span className="font-semibold text-blue-600">
+            {selectedOrder.status}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Total:</span>
+          <span className="text-green-600 font-bold">
+            ₹{selectedOrder.totalPrice?.toFixed(2)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Payment:</span>
+          <span>{selectedOrder.paymentMethod}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Ordered On:</span>
+          <span>
+            {new Date(selectedOrder.createdAt).toLocaleString()}
+          </span>
+        </div>
+        <div>
+          <span className="font-medium">Shipping Address:</span>
+          <p className="text-sm text-gray-600 mt-1">
+            {selectedOrder.shippingAddress
+              ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
+              : "N/A"}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

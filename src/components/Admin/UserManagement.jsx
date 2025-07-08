@@ -27,7 +27,7 @@ const UserManagement = () => {
   const usersPerPage = 5;
 
   useEffect(() => {
-    if (user && user.role !== "admin") {
+    if (user && user.role !== "admin" && user.role !== "merchantise") {
       navigate("/");
     }
   }, [user, navigate]);
@@ -107,11 +107,26 @@ const UserManagement = () => {
     XLSX.writeFile(workbook, "Users.xlsx");
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (roleFilter ? u.role === roleFilter : true)
-  );
+  // const filteredUsers = users.filter(
+  //   (u) =>
+  //     u.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  //     (roleFilter ? u.role === roleFilter : true)
+  // );
+
+  const filteredUsers = users
+    .filter((u) => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((u) => {
+      // Admin can see all
+      if (user?.role === "admin") return true;
+
+      // Merchantise can see only customer & delivery_boy
+      if (user?.role === "merchantise") {
+        return u.role === "customer" || u.role === "delivery_boy";
+      }
+
+      return false;
+    })
+    .filter((u) => (roleFilter ? u.role === roleFilter : true));
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const paginatedUsers = filteredUsers.slice(
@@ -192,10 +207,21 @@ const UserManagement = () => {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
-                <option value="customer">Customer</option>
-                <option value="admin">Admin</option>
-                <option value="merchantise">Merchantise</option>
-                <option value="delivery_boy">Deliver Boy</option>
+                {user?.role === "admin" && (
+                  <>
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                    <option value="merchantise">Merchantise</option>
+                    <option value="delivery_boy">Delivery Boy</option>
+                  </>
+                )}
+
+                {user?.role === "merchantise" && (
+                  <>
+                    <option value="">Select Role</option>
+                    <option value="delivery_boy">Delivery Boy</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
@@ -231,6 +257,7 @@ const UserManagement = () => {
             <option value="">All Roles</option>
             <option value="customer">Customer</option>
             <option value="admin">Admin</option>
+            <option value="delivery_boy">Delivery Boy</option>
           </select>
           <button
             onClick={exportToExcel}
@@ -268,10 +295,13 @@ const UserManagement = () => {
                               ? "bg-gradient-to-r from-purple-500 to-indigo-500"
                               : u.role === "merchantise"
                               ? "bg-gradient-to-r from-orange-400 to-pink-500"
+                              : u.role === "delivery_boy"
+                              ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
                               : "bg-gradient-to-r from-green-400 to-blue-400"
                           }`}
                         >
-                          {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
+                          {u.role.charAt(0).toUpperCase() +
+                            u.role.slice(1).replace("_", " ")}
                         </span>
                       </div>
                     </td>
@@ -286,8 +316,16 @@ const UserManagement = () => {
                         disabled={loading}
                       >
                         <option value="customer">Customer</option>
-                        <option value="admin">Admin</option>
-                        <option value="merchantise">Merchantise</option>
+                        {user?.role === "admin" && (
+                          <>
+                            <option value="admin">Admin</option>
+                            <option value="merchantise">Merchantise</option>
+                            <option value="delivery_boy">Delivery Boy</option>
+                          </>
+                        )}
+                        {user?.role === "merchantise" && (
+                          <option value="delivery_boy">Delivery Boy</option>
+                        )}
                       </select>
                     </td>
                     <td className="p-4">
@@ -295,13 +333,19 @@ const UserManagement = () => {
                     </td>
                     <td className="p-4">
                       {u._id !== user._id && (
-                        <button
-                          onClick={() => handleDeleteUser(u._id)}
-                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
-                          disabled={loading}
-                        >
-                          Delete
-                        </button>
+                        <>
+                          {(user?.role === "admin" ||
+                            (user?.role === "merchantise" &&
+                              u.role === "delivery_boy")) && (
+                            <button
+                              onClick={() => handleDeleteUser(u._id)}
+                              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+                              disabled={loading}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>

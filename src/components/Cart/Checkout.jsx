@@ -771,7 +771,8 @@ const Checkout = () => {
             price: product.price,
             quantity: product.quantity,
             size: product.size,
-            color: product.color
+            color: product.color,
+            sku: product.sku
           })),
           shippingAddress: {
             firstName: shippingAddress.firstName,
@@ -811,7 +812,8 @@ const Checkout = () => {
               price: product.price,
               quantity: product.quantity,
               size: product.size,
-              color: product.color
+              color: product.color,
+              sku: product.sku
             })),
             shippingAddress: {
               firstName: shippingAddress.firstName,

@@ -38,6 +38,7 @@ import ViewTasks from "./pages/ViewTasks";
 import InventoryPage from "./pages/InventoryPage";
 import SalesTrendsPage from "./pages/SalesTrendsPage";
 import RevenueReport from "./pages/RevenueReport";
+import RegisterDeliveryBoy from "./pages/RegisterDeliveryBoy";
 
 const App = () => {
   return (
@@ -68,6 +69,7 @@ const App = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/review" element={<ReviewForm />} />
             <Route path="/review/:productId" element={<ReviewForm />} />
+            <Route path="/register-delivery" element={<RegisterDeliveryBoy/>} />
             {/* <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} /> */}
 
             {/* extra added */}
@@ -172,7 +174,7 @@ const App = () => {
             <Route
               path="orders"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "delivery_boy"]}>
                   <OrderManagement />
                 </ProtectedRoute>
               }
@@ -188,7 +190,7 @@ const App = () => {
             <Route
               path="update-profile"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "delivery_boy"]}>
                   <UpdateProfile />
                 </ProtectedRoute>
               }

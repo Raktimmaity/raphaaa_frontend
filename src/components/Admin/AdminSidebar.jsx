@@ -85,6 +85,7 @@ const AdminSidebar = () => {
 
       <nav className="flex flex-col space-y-2">
         {/* Dashboard - Visible to all */}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
         <NavLink
           to="/admin"
           end
@@ -97,6 +98,7 @@ const AdminSidebar = () => {
           <RiDashboardHorizontalFill />
           <span>Dashboard</span>
         </NavLink>
+        )}
 
         {user?.role === "merchantise" && (
           <div className="text-gray-300">
@@ -197,7 +199,7 @@ const AdminSidebar = () => {
           </NavLink>
         )}
 
-        {user?.role === "admin" && (
+        {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink
             to="/admin/users"
             className={({ isActive }) =>
@@ -241,7 +243,7 @@ const AdminSidebar = () => {
         )}
 
         {/* Only for admin */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "delivery_boy") && (
           <NavLink
             to="/admin/orders"
             className={({ isActive }) =>

@@ -89,6 +89,8 @@ const UpdateProfile = () => {
                       ? "bg-red-100 text-red-700"
                       : user.role === "merchantise"
                       ? "bg-purple-100 text-purple-700"
+                      : user.role === "delivery_boy"
+                      ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-700"
                   }`}
                 >
@@ -96,6 +98,8 @@ const UpdateProfile = () => {
                     ? "Admin"
                     : user.role === "merchantise"
                     ? "Merchantise"
+                    : user.role === "delivery_boy"
+                    ? "Delivery Boy"
                     : "Customer"}
                 </span>
               </p>
@@ -116,6 +120,8 @@ const UpdateProfile = () => {
                   ? "border-red-200 text-red-600"
                   : user.role === "merchantise"
                   ? "border-purple-200 text-purple-600"
+                  : user.role === "delivery_boy"
+                  ? "border-yellow-200 text-yellow-600"
                   : "border-green-200 text-green-600"
               }`}
             >
@@ -126,6 +132,8 @@ const UpdateProfile = () => {
                 ? "Admin Access"
                 : user.role === "merchantise"
                 ? "Merchant Tools"
+                : user.role === "delivery_boy"
+                ? "Delivery Access"
                 : "Customer Account"}
             </span>
           </div>
