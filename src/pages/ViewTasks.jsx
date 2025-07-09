@@ -198,7 +198,7 @@ const ViewTasks = () => {
                     <p className="text-gray-600 mb-1">{task.description}</p>
                     {isAdmin && (
                       <p className="text-sm text-gray-500">
-                        <span className="font-semibold">Merchaintiser:</span> {task.name}{" "}
+                        <span className="font-semibold">Merchantiser:</span> {task.name}{" "}
                         | <span className="font-semibold">Email:</span>{" "}
                         {task.email}
                       </p>
