@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import ProductGrid from "./ProductGrid";
 import { HiOutlineShoppingBag } from "react-icons/hi";
@@ -28,6 +28,7 @@ const ProductDetails = ({ productId }) => {
     selectedProduct?.countInStock === 0
   );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   // New state for pincode delivery check
   const [pincode, setPincode] = useState("");
@@ -36,6 +37,8 @@ const ProductDetails = ({ productId }) => {
   const [showDeliveryCheck, setShowDeliveryCheck] = useState(false);
 
   const productFetchId = productId || id;
+  const [sortOption, setSortOption] = useState("newest");
+  const [expandedReviews, setExpandedReviews] = useState({});
 
   useEffect(() => {
     if (selectedProduct) {
@@ -55,6 +58,38 @@ const ProductDetails = ({ productId }) => {
       setMainImage(selectedProduct.images[0].url);
     }
   }, [selectedProduct]);
+
+  const sortedReviews = useMemo(() => {
+    if (sortOption === "highest") {
+      return [...reviews].sort((a, b) => b.rating - a.rating);
+    } else if (sortOption === "lowest") {
+      return [...reviews].sort((a, b) => a.rating - b.rating);
+    } else {
+      return [...reviews].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    }
+  }, [sortOption, reviews]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/reviews/product/${productFetchId}`
+        );
+        const data = await res.json();
+        setReviews(data);
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
+      }
+    };
+
+    if (productFetchId) {
+      fetchReviews();
+    }
+  }, [productFetchId]);
 
   const handleQuantityChange = (action) => {
     if (action === "plus") {
@@ -262,10 +297,24 @@ const ProductDetails = ({ productId }) => {
     return selectedProduct.discountPrice || selectedProduct.price;
   };
 
+  const formatReviewDate = (isoDate) => {
+    const options = { day: "2-digit", month: "long", year: "numeric" };
+    return new Date(isoDate).toLocaleDateString("en-IN", options);
+  };
+  const totalReviews = reviews.length || 1;
+  const ratingCounts = [5, 4, 3, 2, 1].map((star) => {
+    const count = reviews.filter((r) => r.rating === star).length;
+    return {
+      star,
+      count,
+      percentage: Math.round((count / totalReviews) * 100),
+    };
+  });
+
   return (
-    <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100 min-h-screen py-10 px-4">
+    <div className=" min-h-screen py-10 px-4">
       {selectedProduct && (
-        <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-8 md:p-12">
+        <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md shadow-lg rounded p-8 md:p-12">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left Thumbnails */}
             <div className="hidden md:flex flex-col space-y-4">
@@ -290,7 +339,7 @@ const ProductDetails = ({ productId }) => {
                 <img
                   src={mainImage}
                   alt="Main Product"
-                  className="w-full h-[400px] object-contain rounded-3xl transition-all duration-500 bg-white p-4 border border-gray-300"
+                  className="w-full h-[400px] object-contain rounded-lg transition-all duration-500 bg-white p-4 border border-gray-300"
                 />
               ) : (
                 <div className="w-full h-[300px] flex items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
@@ -516,7 +565,7 @@ const ProductDetails = ({ productId }) => {
                 </button>
 
                 {/* Pincode Delivery Check */}
-                <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
+                {/* <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-lg">🚚</span>
                     <p className="font-medium text-gray-700">
@@ -591,8 +640,173 @@ const ProductDetails = ({ productId }) => {
                       )}
                     </div>
                   )}
+                </div> */}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16 mb-16 flex flex-col lg:flex-row gap-8">
+            {/* Left Sidebar: Rating Breakdown with Bars */}
+            <div className="lg:w-1/4 w-full bg-white border border-gray-100 rounded-2xl p-6 shadow-md h-fit">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Rating Breakdown
+              </h3>
+              <div className="space-y-4">
+                {ratingCounts.map(({ star, count, percentage }) => (
+                  <div key={star} className="space-y-1">
+                    <div className="flex justify-between items-center text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400">★</span>
+                        <span>{star}</span>
+                      </div>
+                      <span>{count}</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-yellow-400 rounded-full"
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Side: Review Section */}
+            <div className="lg:w-3/4 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                <h2 className="text-3xl font-bold text-gray-800">
+                  Customer Reviews
+                </h2>
+
+                <div className="mt-4 sm:mt-0">
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="highest">Highest Rating</option>
+                    <option value="lowest">Lowest Rating</option>
+                  </select>
                 </div>
               </div>
+
+              {sortedReviews.length > 0 ? (
+                <div className="space-y-8">
+                  {sortedReviews.map((review, index) => (
+                    <div
+                      key={index}
+                      className="bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner">
+                            {review.user?.name?.charAt(0).toUpperCase() || "U"}
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-800">
+                              {review.user?.name || "Anonymous"}
+                            </h4>
+                            <div className="flex items-center gap-1 mt-1">
+                              {Array.from({ length: 5 }, (_, i) => (
+                                <span
+                                  key={i}
+                                  className={`text-xl ${
+                                    i < review.rating
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                              <span className="ml-2 text-sm text-gray-500">
+                                {review.rating}/5
+                              </span>
+                            </div>
+
+                            {review.isVerifiedPurchase && (
+                              <div className="mt-1 flex items-center text-sm text-green-600 gap-1">
+                                <span className="text-green-500">✓</span>
+                                Verified Purchase
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="text-sm text-gray-500">
+                          {review.createdAt
+                            ? new Date(review.createdAt).toLocaleDateString(
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "long",
+                                  year: "numeric",
+                                }
+                              )
+                            : "Recently"}
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <p className="text-gray-700 leading-relaxed mb-2">
+                          {expandedReviews[index]
+                            ? review.comment
+                            : `${review.comment.slice(0, 200)}${
+                                review.comment.length > 200 ? "..." : ""
+                              }`}
+                        </p>
+
+                        {review.comment.length > 200 && (
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() =>
+                                setExpandedReviews((prev) => ({
+                                  ...prev,
+                                  [index]: !prev[index],
+                                }))
+                              }
+                              className="text-sm text-sky-600 hover:underline font-medium"
+                            >
+                              {expandedReviews[index]
+                                ? "Show less"
+                                : "Read more"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {(Array.isArray(review.image) &&
+                        review.image.length > 0 && (
+                          <div className="flex flex-wrap gap-3">
+                            {review.image.map((img, idx) => (
+                              <img
+                                key={idx}
+                                src={img}
+                                alt={`review-img-${idx}`}
+                                className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow hover:scale-105 transition-transform"
+                              />
+                            ))}
+                          </div>
+                        )) ||
+                        (typeof review.image === "string" && review.image && (
+                          <div className="mt-3">
+                            <img
+                              src={review.image}
+                              alt="review-img"
+                              className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gray-50 border border-gray-200 text-center p-8 rounded-xl text-gray-500">
+                  <p>No reviews yet.</p>
+                </div>
+              )}
             </div>
           </div>
 

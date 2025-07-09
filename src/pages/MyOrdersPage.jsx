@@ -248,9 +248,21 @@ const MyOrders = () => {
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    {order.status === "Delivered" && (
-                      <div className="mt-2 flex flex-col gap-2">
-                        {order.orderItems.map((item) => {
+                    <div className="flex flex-col gap-2">
+                      {/* 🏷️ Show Status Always */}
+                      <span
+                        className={`text-xs w-fit font-medium px-2 py-1 rounded border ${
+                          order.status === "Delivered"
+                            ? "text-green-600 bg-green-50 border-green-200"
+                            : "text-orange-600 bg-orange-50 border-orange-200"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+
+                      {/* ✍️ Write Review Buttons (Only if Delivered) */}
+                      {order.status === "Delivered" &&
+                        order.orderItems.map((item) => {
                           const rawProductId =
                             item.productId?._id ||
                             item.productId ||
@@ -280,8 +292,7 @@ const MyOrders = () => {
                             </button>
                           );
                         })}
-                      </div>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))

@@ -11,8 +11,8 @@ const ReviewForm = () => {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(null);
   const [comment, setComment] = useState("");
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const token = localStorage.getItem("userToken");
 
@@ -26,7 +26,8 @@ const ReviewForm = () => {
     const formData = new FormData();
     formData.append("rating", rating);
     formData.append("comment", comment);
-    if (image) formData.append("image", image);
+    images.forEach((img) => formData.append("image", img));
+
 
     try {
       setSubmitting(true);
@@ -43,8 +44,8 @@ const ReviewForm = () => {
       toast.success("Review submitted successfully!");
       setRating(0);
       setComment("");
-      setImage(null);
-      setPreview(null);
+      setImages([]);
+      setPreviews([]);
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Failed to submit review.");
@@ -105,23 +106,49 @@ const ReviewForm = () => {
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                setImage(file);
-                setPreview(URL.createObjectURL(file));
-              }
+              const files = Array.from(e.target.files);
+              const newPreviews = files.map((file) => ({
+                file,
+                url: URL.createObjectURL(file),
+              }));
+
+              setImages((prev) => [...prev, ...files]);
+              setPreviews((prev) => [...prev, ...newPreviews]);
             }}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
           />
-          {preview && (
+
+          {previews.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm text-gray-600 mb-1">Preview:</p>
-              <img
-                src={preview}
-                alt="Preview"
-                className="max-h-52 rounded-lg border border-gray-200 shadow-sm"
-              />
+              <p className="text-sm text-gray-600 mb-2">Preview:</p>
+              <div className="flex flex-wrap gap-4">
+                {previews.map((item, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={item.url}
+                      alt={`Preview ${index}`}
+                      className="max-h-40 rounded-lg border border-gray-200 shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center hover:bg-red-700 transition"
+                      onClick={() => {
+                        const newImages = [...images];
+                        const newPreviews = [...previews];
+                        newImages.splice(index, 1);
+                        newPreviews.splice(index, 1);
+                        setImages(newImages);
+                        setPreviews(newPreviews);
+                      }}
+                      title="Remove"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
