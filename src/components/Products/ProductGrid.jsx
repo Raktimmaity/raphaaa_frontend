@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import demoImg from "../../assets/login.jpg";
 
 const ProductGrid = ({ products, loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,10 +76,11 @@ const ProductGrid = ({ products, loading, error }) => {
               {/* <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg"> */}
               <div className="w-full h-[220px] md:h-[300px] lg:h-[300px] mb-3 relative overflow-hidden rounded-lg">
                 <img
-                  src={product.images[0].url}
-                  alt={product.images[0].altText || product.name}
-                  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
+  src={product.images?.[0]?.url || demoImg}
+  alt={product.images?.[0]?.altText || product.name}
+  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+/>
+
                 {/* 🟡 NEW Badge if created within last 2 days */}
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
