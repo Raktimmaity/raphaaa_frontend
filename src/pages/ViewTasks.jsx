@@ -213,10 +213,10 @@ const ViewTasks = () => {
 
                   <div className="flex justify-between items-center text-sm">
                     <span className="flex flex-col gap-1">
-  <span className="flex items-center gap-2">
-    Status:
-    <span
-      className={`px-3 py-1 text-xs font-semibold rounded-full
+                      <span className="flex items-center gap-2">
+                        Status:
+                        <span
+                          className={`px-3 py-1 text-xs font-semibold rounded-full
         ${
           task.status === "completed"
             ? "bg-gradient-to-r from-green-400 to-green-600 text-white"
@@ -224,33 +224,32 @@ const ViewTasks = () => {
             ? "bg-gradient-to-r from-red-400 to-red-600 text-white"
             : "bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-800"
         }`}
-    >
-      {task.status === "completed"
-        ? "Completed"
-        : task.status === "not-completed"
-        ? "Not Completed"
-        : "Working"}
-    </span>
-  </span>
+                        >
+                          {task.status === "completed"
+                            ? "Completed"
+                            : task.status === "not-completed"
+                            ? "Not Completed"
+                            : "Working"}
+                        </span>
+                      </span>
 
-  {/* Progress bar */}
-  {task.status !== "not-completed" ? (
-    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div
-        className={`h-full transition-all duration-300 ${
-          task.status === "working"
-            ? "w-2/3 bg-yellow-500"
-            : "w-full bg-green-600"
-        }`}
-      ></div>
-    </div>
-  ) : (
-    <div className="w-full h-2 bg-red-300 rounded-full flex items-center justify-center text-[10px] text-white font-bold tracking-wide bg-opacity-80">
-      Not Started
-    </div>
-  )}
-</span>
-
+                      {/* Progress bar */}
+                      {task.status !== "not-completed" ? (
+                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              task.status === "working"
+                                ? "w-2/3 bg-yellow-500"
+                                : "w-full bg-green-600"
+                            }`}
+                          ></div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-2 bg-red-300 rounded-full flex items-center justify-center text-[10px] text-white font-bold tracking-wide bg-opacity-80">
+                          Not Started
+                        </div>
+                      )}
+                    </span>
 
                     <div className="flex gap-2">
                       <button
