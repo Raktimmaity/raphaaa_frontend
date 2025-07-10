@@ -40,6 +40,7 @@ import SalesTrendsPage from "./pages/SalesTrendsPage";
 import RevenueReport from "./pages/RevenueReport";
 import RegisterDeliveryBoy from "./pages/RegisterDeliveryBoy";
 import ViewContacts from "./pages/ViewContacts";
+import HeroSettings from "./pages/HeroSettings";
 
 const App = () => {
   return (
@@ -193,6 +194,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <ViewContacts/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="website-settings/hero"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <HeroSettings/>
                 </ProtectedRoute>
               }
             />
