@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import contactImg from "../../assets/product4.jpg";
-
+import axios from "axios";
+import { toast } from "sonner";
+ 
 const Contact = () => {
+
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, formData);
+      toast.success("Message sent successfuly!!");
+      setFormData({ name: "", email: "", subject: "", message: ""});
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to send message. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen p-6 md:p-12 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
@@ -33,16 +57,22 @@ const Contact = () => {
             </div>
 
             {/* Form */}
-            <form className="mt-6 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="flex flex-col md:flex-row gap-4">
                 <input
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="Your Name"
                   className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   required
                 />
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Your Email"
                   className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   required
@@ -50,21 +80,28 @@ const Contact = () => {
               </div>
               <input
                 type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
                 placeholder="Subject"
                 className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 required
               />
               <textarea
                 placeholder="Your Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 rows="4"
                 className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 required
               ></textarea>
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-300 shadow-md"
+                disabled={isSubmitting}
+                className={`w-full px-6 py-2 rounded-md text-white font-semibold ${isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-sky-600 hover:bg-sky-700"} transition duration-200`}
               >
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
