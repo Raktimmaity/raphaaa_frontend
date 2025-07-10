@@ -117,7 +117,7 @@ const FilterSidebar = () => {
   );
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow border border-gray-200 space-y-6">
+    <div className="h-[100vh] md:h-auto lg:h-auto p-6 bg-white rounded-xl shadow border border-gray-200 space-y-6">
       <div>
         <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
           Filters

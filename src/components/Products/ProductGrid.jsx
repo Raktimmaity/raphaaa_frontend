@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
+import { IoFlash } from "react-icons/io5";
 
 const ProductGrid = ({ products, loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 9; // updated to 8
+  // const productsPerPage = 9; // updated to 8
+  const [productsPerPage, setProductsPerPage] = useState(
+    window.innerWidth < 640 ? 10 : 9 // sm breakpoint is 640px in Tailwind
+  );
+
+  // Optional: Handle window resize to keep it dynamic
+  React.useEffect(() => {
+    const handleResize = () => {
+      setProductsPerPage(window.innerWidth < 640 ? 10 : 9);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Pagination Logic
   const indexOfLast = currentPage * productsPerPage;
@@ -63,7 +76,7 @@ const ProductGrid = ({ products, loading, error }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
         {currentProducts.map((product, index) => (
           <Link
             key={index}
@@ -76,18 +89,24 @@ const ProductGrid = ({ products, loading, error }) => {
               {/* <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg"> */}
               <div className="w-full h-[220px] md:h-[300px] lg:h-[300px] mb-3 relative overflow-hidden rounded-lg">
                 <img
-  src={product.images?.[0]?.url || demoImg}
-  alt={product.images?.[0]?.altText || product.name}
-  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-/>
+                  src={product.images?.[0]?.url || demoImg}
+                  alt={product.images?.[0]?.altText || product.name}
+                  className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
 
                 {/* 🟡 NEW Badge if created within last 2 days */}
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
-                  <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
                     New
                   </div>
                 )}
+
+                {/* 💎 Raphaaa Choice Badge */}
+                <div className="absolute top-2 left-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md tracking-wide flex items-center gap-1">
+                  <IoFlash className="text-yellow-300 text-xs" />
+                  Raphaaa Assured
+                </div>
 
                 {/* 🛒 Stock Badge */}
                 <div className="absolute bottom-2 right-2 bg-white text-blue-900 text-xs font-semibold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
@@ -107,9 +126,34 @@ const ProductGrid = ({ products, loading, error }) => {
                 <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
                   {product.name}
                 </h3>
-                <p className="text-blue-700 font-bold text-2xl tracking-wide">
-                  ₹ {product.price}
-                </p>
+                {product.discountPrice &&
+                product.discountPrice < product.price ? (
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
+                      ₹ {product.discountPrice}
+                    </p>
+                    <p className="text-sm text-gray-500 line-through">
+                      ₹{" "}
+                      {Math.floor(
+                        (product.discountPrice * 100) /
+                          (100 -
+                            ((product.price - product.discountPrice) * 100) /
+                              product.price)
+                      )}
+                    </p>
+                    <p className="text-green-600 text-md font-semibold">
+                      {Math.round(
+                        ((product.price - product.discountPrice) * 100) /
+                          product.price
+                      )}
+                      % OFF
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-blue-700 font-bold text-2xl tracking-wide">
+                    ₹ {product.price}
+                  </p>
+                )}
 
                 {/* ⭐️ Product Rating */}
                 {product.rating > 0 && product.numReviews > 0 && (

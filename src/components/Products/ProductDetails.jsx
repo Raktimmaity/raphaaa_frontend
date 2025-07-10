@@ -11,6 +11,7 @@ import {
 import { addToCart } from "../../redux/slices/cartSlice";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { BsPatchCheckFill } from "react-icons/bs";
 
 const ProductDetails = ({ productId }) => {
   const { id } = useParams();
@@ -563,6 +564,7 @@ const ProductDetails = ({ productId }) => {
                     <span className="absolute inset-0 rounded-full bg-white opacity-10 group-hover:animate-pulse z-0" />
                   )}
                 </button>
+                
 
                 {/* Pincode Delivery Check */}
                 {/* <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
@@ -647,8 +649,8 @@ const ProductDetails = ({ productId }) => {
 
           <div className="mt-16 mb-16 flex flex-col lg:flex-row gap-8">
             {/* Left Sidebar: Rating Breakdown with Bars */}
-            <div className="lg:w-1/4 w-full bg-white border border-gray-100 rounded-2xl p-6 shadow-md h-fit">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            <div className="lg:w-1/4 w-full bg-gradient-to-b from-white via-sky-50 to-sky-100 border border-sky-100 rounded-2xl p-6 shadow-lg h-fit">
+              <h3 className="text-lg font-semibold text-sky-800 mb-4">
                 Rating Breakdown
               </h3>
               <div className="space-y-4">
@@ -657,13 +659,13 @@ const ProductDetails = ({ productId }) => {
                     <div className="flex justify-between items-center text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-400">★</span>
-                        <span>{star}</span>
+                        <span className="font-medium">{star}</span>
                       </div>
-                      <span>{count}</span>
+                      <span className="font-semibold">{count}</span>
                     </div>
                     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-yellow-400 rounded-full"
+                        className="h-full bg-yellow-400 rounded-full transition-all duration-300"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -675,15 +677,14 @@ const ProductDetails = ({ productId }) => {
             {/* Right Side: Review Section */}
             <div className="lg:w-3/4 w-full">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <h2 className="text-3xl font-bold text-gray-800">
+                <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
                   Customer Reviews
                 </h2>
-
                 <div className="mt-4 sm:mt-0">
                   <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200"
                   >
                     <option value="newest">Newest First</option>
                     <option value="highest">Highest Rating</option>
@@ -697,15 +698,15 @@ const ProductDetails = ({ productId }) => {
                   {sortedReviews.map((review, index) => (
                     <div
                       key={index}
-                      className="bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl p-6"
+                      className="bg-gradient-to-br from-white to-sky-50 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl p-6"
                     >
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner">
+                          <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner ring-1 ring-sky-300">
                             {review.user?.name?.charAt(0).toUpperCase() || "U"}
                           </div>
                           <div>
-                            <h4 className="text-lg font-semibold text-gray-800">
+                            <h4 className="text-lg font-semibold text-gray-800 tracking-wide">
                               {review.user?.name || "Anonymous"}
                             </h4>
                             <div className="flex items-center gap-1 mt-1">
@@ -727,15 +728,16 @@ const ProductDetails = ({ productId }) => {
                             </div>
 
                             {review.isVerifiedPurchase && (
-                              <div className="mt-1 flex items-center text-sm text-green-600 gap-1">
-                                <span className="text-green-500">✓</span>
-                                Verified Purchase
+                              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white text-xs font-semibold rounded-full shadow-md ring-1 ring-green-300">
+                                <BsPatchCheckFill className="text-white text-sm drop-shadow" />
+                                <span className="tracking-wide">
+                                  Verified Purchase
+                                </span>
                               </div>
                             )}
                           </div>
                         </div>
-
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-400 font-medium">
                           {review.createdAt
                             ? new Date(review.createdAt).toLocaleDateString(
                                 "en-IN",
@@ -750,7 +752,7 @@ const ProductDetails = ({ productId }) => {
                       </div>
 
                       <div className="relative">
-                        <p className="text-gray-700 leading-relaxed mb-2">
+                        <p className="text-gray-700 leading-relaxed mb-2 text-[15px]">
                           {expandedReviews[index]
                             ? review.comment
                             : `${review.comment.slice(0, 200)}${
@@ -785,7 +787,7 @@ const ProductDetails = ({ productId }) => {
                                 key={idx}
                                 src={img}
                                 alt={`review-img-${idx}`}
-                                className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow hover:scale-105 transition-transform"
+                                className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-md hover:scale-105 transition-transform"
                               />
                             ))}
                           </div>
@@ -795,7 +797,7 @@ const ProductDetails = ({ productId }) => {
                             <img
                               src={review.image}
                               alt="review-img"
-                              className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow hover:scale-105 transition-transform"
+                              className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-md hover:scale-105 transition-transform"
                             />
                           </div>
                         ))}
@@ -803,7 +805,7 @@ const ProductDetails = ({ productId }) => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 border border-gray-200 text-center p-8 rounded-xl text-gray-500">
+                <div className="bg-sky-50 border border-sky-100 text-center p-8 rounded-xl text-gray-500 shadow-inner">
                   <p>No reviews yet.</p>
                 </div>
               )}
