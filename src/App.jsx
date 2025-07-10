@@ -39,6 +39,7 @@ import InventoryPage from "./pages/InventoryPage";
 import SalesTrendsPage from "./pages/SalesTrendsPage";
 import RevenueReport from "./pages/RevenueReport";
 import RegisterDeliveryBoy from "./pages/RegisterDeliveryBoy";
+import ViewContacts from "./pages/ViewContacts";
 
 const App = () => {
   return (
@@ -184,6 +185,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="contact-messages"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <ViewContacts/>
                 </ProtectedRoute>
               }
             />
