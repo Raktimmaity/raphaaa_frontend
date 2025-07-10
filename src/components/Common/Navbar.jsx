@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
@@ -10,6 +10,7 @@ import { TbBrandMeta } from "react-icons/tb";
 import { IoLogoInstagram } from "react-icons/io5";
 import { RiTwitterXLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { HiChevronDown } from "react-icons/hi";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -18,6 +19,23 @@ const Navbar = () => {
   const { cart } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
+  const dropdownRef = useRef();
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Close dropdown when route changes
+  useEffect(() => {
+    setProfileOpen(false);
+  }, [location]);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000); // simulate loading
@@ -135,13 +153,52 @@ const Navbar = () => {
             )}
           {user ? (
             user.role === "customer" && (
-              <Link to="/profile" className="hover:text-black">
-                <HiOutlineUser className="h-6 w-6 text-gray-700" />
-              </Link>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white transition duration-200"
+                >
+                  <HiOutlineUser className="h-6 w-6 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full p-1" />
+                  <span className="text-sm font-medium text-gray-700 hidden md:inline">
+                    {user.name}
+                  </span>
+                  <HiChevronDown className="h-4 w-4 text-gray-500" />
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-md z-50">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      View Profile
+                    </Link>
+                    <Link
+                      to="/my-orders"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("userInfo");
+                        window.location.href = "/login";
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             )
           ) : (
-            <Link to="/login" className="hover:text-black">
-              <HiOutlineUser className="h-6 w-6 text-gray-700" />
+            <Link
+              to="/login"
+              className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
+            >
+              {/* <HiOutlineUser className="h-6 w-6 text-gray-700" /> */}
+              Login
             </Link>
           )}
 
