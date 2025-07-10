@@ -121,22 +121,17 @@ const Navbar = () => {
               user.role === "merchantise" ||
               user.role === "delivery_boy") && (
               <Link
-  to={
-    user.role === "delivery_boy"
-      ? "/admin/orders"
-      : "/admin"
-  }
-  className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
->
-  {user.role === "admin"
-    ? "Admin Panel"
-    : user.role === "merchantise"
-    ? "Merchandise Panel"
-    : user.role === "delivery_boy"
-    ? "Delivery Panel"
-    : "User Panel"}
-</Link>
-
+                to={user.role === "delivery_boy" ? "/admin/orders" : "/admin"}
+                className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
+              >
+                {user.role === "admin"
+                  ? "Admin Panel"
+                  : user.role === "merchantise"
+                  ? "Merchandise Panel"
+                  : user.role === "delivery_boy"
+                  ? "Delivery Panel"
+                  : "User Panel"}
+              </Link>
             )}
           {user ? (
             user.role === "customer" && (
