@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
 import { IoFlash } from "react-icons/io5";
 
-const ProductGrid = ({ products, loading, error }) => {
+const ProductGrid = ({ products = [], loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  // const productsPerPage = 9; // updated to 8
   const [productsPerPage, setProductsPerPage] = useState(
-    window.innerWidth < 640 ? 10 : 9 // sm breakpoint is 640px in Tailwind
+    window.innerWidth < 640 ? 10 : 9
   );
 
-  // Optional: Handle window resize to keep it dynamic
-  React.useEffect(() => {
+  // Dynamic resizing
+  useEffect(() => {
     const handleResize = () => {
       setProductsPerPage(window.innerWidth < 640 ? 10 : 9);
     };
@@ -19,12 +18,15 @@ const ProductGrid = ({ products, loading, error }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Pagination Logic
+  // ✅ Guard in case products is not a valid array
+  const safeProducts = Array.isArray(products) ? products : [];
+
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
-  const currentProducts = products.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const currentProducts = safeProducts.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(safeProducts.length / productsPerPage);
 
+  // Loading
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -52,15 +54,17 @@ const ProductGrid = ({ products, loading, error }) => {
     );
   }
 
+  // Error
   if (error) {
     return <p className="text-center text-red-500">Error: {error}</p>;
   }
 
-  if (!loading && products.length === 0) {
+  // No products
+  if (!loading && safeProducts.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center h-96 text-center">
         <img
-          src="https://i.gifer.com/7VE.gif" // Replace this with any GIF URL you like
+          src="https://i.gifer.com/7VE.gif"
           alt="No products found"
           className="w-64 h-64 object-contain mb-4"
         />
@@ -84,9 +88,6 @@ const ProductGrid = ({ products, loading, error }) => {
             className="block group transition-transform transform hover:-translate-y-1"
           >
             <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
-              {/* ✅ Increased card height */}
-              {/* <div className="w-full h-[300px] mb-3 relative overflow-hidden rounded-lg"> */}
-              {/* <div className="w-full h-[300px] md:h-[360px] lg:h-[400px] mb-3 relative overflow-hidden rounded-lg"> */}
               <div className="w-full h-[220px] md:h-[300px] lg:h-[300px] mb-3 relative overflow-hidden rounded-lg">
                 <img
                   src={product.images?.[0]?.url || demoImg}
@@ -94,7 +95,7 @@ const ProductGrid = ({ products, loading, error }) => {
                   className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
 
-                {/* 🟡 NEW Badge if created within last 2 days */}
+                {/* 🟡 NEW Badge */}
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
                   <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
@@ -102,13 +103,13 @@ const ProductGrid = ({ products, loading, error }) => {
                   </div>
                 )}
 
-                {/* 💎 Raphaaa Choice Badge */}
+                {/* 💎 Raphaaa Badge */}
                 <div className="absolute top-2 left-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md tracking-wide flex items-center gap-1">
                   <IoFlash className="text-yellow-300 text-xs" />
                   Raphaaa Assured
                 </div>
 
-                {/* 🛒 Stock Badge */}
+                {/* 🛒 Stock */}
                 <div className="absolute bottom-2 right-2 bg-white text-blue-900 text-xs font-semibold px-2 py-1 rounded shadow-sm backdrop-blur-sm">
                   {product.countInStock === 0 ? (
                     <span className="text-red-600">Out of Stock</span>
@@ -155,7 +156,6 @@ const ProductGrid = ({ products, loading, error }) => {
                   </p>
                 )}
 
-                {/* ⭐️ Product Rating */}
                 {product.rating > 0 && product.numReviews > 0 && (
                   <div className="flex items-center space-x-1 mt-1">
                     <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">

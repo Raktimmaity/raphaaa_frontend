@@ -41,6 +41,28 @@ const ProductDetails = ({ productId }) => {
   const [sortOption, setSortOption] = useState("newest");
   const [expandedReviews, setExpandedReviews] = useState({});
 
+  // ✅ Inside your ProductDetails component (near useState declarations)
+  const [showModal, setShowModal] = useState(false);
+  const [modalImage, setModalImage] = useState("");
+
+  // ✅ Function to handle image click
+  const handleImageClick = (imgUrl) => {
+    setModalImage(imgUrl);
+    setShowModal(true);
+  };
+
+  // ✅ Function to close modal
+  const handleCloseModal = () => setShowModal(false);
+
+  // ✅ Optional: close on Esc key
+  useEffect(() => {
+    const escHandler = (e) => {
+      if (e.key === "Escape") handleCloseModal();
+    };
+    document.addEventListener("keydown", escHandler);
+    return () => document.removeEventListener("keydown", escHandler);
+  }, []);
+
   useEffect(() => {
     if (selectedProduct) {
       setIsButtonDisabled(selectedProduct.countInStock === 0);
@@ -340,7 +362,8 @@ const ProductDetails = ({ productId }) => {
                 <img
                   src={mainImage}
                   alt="Main Product"
-                  className="w-full h-[400px] object-contain rounded-lg transition-all duration-500 bg-white p-4 border border-gray-300"
+                  onClick={() => handleImageClick(mainImage)}
+                  className="w-full h-[400px] object-contain rounded-lg transition-all duration-500 bg-white p-4 border border-gray-300 cursor-zoom-in"
                 />
               ) : (
                 <div className="w-full h-[300px] flex items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
@@ -564,7 +587,6 @@ const ProductDetails = ({ productId }) => {
                     <span className="absolute inset-0 rounded-full bg-white opacity-10 group-hover:animate-pulse z-0" />
                   )}
                 </button>
-                
 
                 {/* Pincode Delivery Check */}
                 {/* <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
@@ -822,6 +844,36 @@ const ProductDetails = ({ productId }) => {
               loading={loading}
               error={error}
             />
+          </div>
+        </div>
+      )}
+      {/* 🔍 Image Modal */}
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="w-full h-full max-w-5xl max-h-screen relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-white hover:text-red-400 text-3xl font-bold z-50"
+            >
+              ✕
+            </button>
+
+            {/* Zoomable Image */}
+            <div className="w-full h-full flex items-center justify-center overflow-hidden touch-pinch-zoom">
+              <img
+                src={modalImage}
+                alt="Zoomed Product"
+                className="max-w-full max-h-full object-contain transition-transform duration-300"
+                style={{ touchAction: "pan-x pan-y", userSelect: "none" }}
+              />
+            </div>
           </div>
         </div>
       )}

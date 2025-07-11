@@ -9,6 +9,7 @@ import FeaturesSection from "../components/Products/FeaturesSection";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsByFilters } from "../redux/slices/productsSlice";
 import axios from "axios";
+import BestSellersSection from "../components/Products/BestSeller";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -80,7 +81,7 @@ const Home = () => {
         </h2>
       </div>
       
-      {bestSellerLoading ? (
+      {/* {bestSellerLoading ? (
         <p className="text-center">Loading Best seller product...</p>
       ) : bestSellerError ? (
         <p className="text-center text-red-500">Error: {bestSellerError}</p>
@@ -88,7 +89,8 @@ const Home = () => {
         <ProductDetails productId={bestSellerProduct._id} />
       ) : (
         <p className="text-center">No best seller product found</p>
-      )}
+      )} */}
+      <BestSellersSection/>
 
       {/* Top wears for women */}
       {/* <div className="container mx-auto">

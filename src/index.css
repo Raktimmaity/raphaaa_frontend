@@ -38,3 +38,10 @@ html::-webkit-scrollbar {
   scrollbar-color: #3b82f6 transparent; /* Firefox: thumb color, then track color */
   scrollbar-width: thin;
 }
+.new-arrivals-track::-webkit-scrollbar {
+  display: none;
+}
+.new-arrivals-track {
+  -ms-overflow-style: none; /* IE */
+  scrollbar-width: none;    /* Firefox */
+}

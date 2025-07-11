@@ -1,0 +1,27 @@
+.best-seller-wrapper {
+  overflow: hidden;
+  width: 100%;
+  background: transparent;
+  padding: 1rem 0;
+}
+
+.best-seller-marquee {
+  display: flex;
+  gap: 1rem;
+  width: fit-content;
+  animation: scroll-left 25s linear infinite;
+}
+
+.product-card-wrapper {
+  min-width: 250px; /* Adjust based on your ProductCard width */
+  flex-shrink: 0;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}

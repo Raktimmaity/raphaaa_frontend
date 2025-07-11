@@ -8,8 +8,38 @@ const NewArrivals = () => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [newArrivals, setNewArrivals] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ loading state
+  const [loading, setLoading] = useState(true);
 
+  // ✅ Auto-scroll with loop & pause on hover
+  useEffect(() => {
+    let isHovered = false;
+    const container = scrollRef.current;
+
+    const handleMouseEnter = () => (isHovered = true);
+    const handleMouseLeave = () => (isHovered = false);
+
+    container?.addEventListener("mouseenter", handleMouseEnter);
+    container?.addEventListener("mouseleave", handleMouseLeave);
+
+    const interval = setInterval(() => {
+      if (!isHovered && container) {
+        container.scrollLeft -= 1;
+
+        // Loop to end if at beginning
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft = container.scrollWidth / 2;
+        }
+      }
+    }, 20); // adjust speed here
+
+    return () => {
+      clearInterval(interval);
+      container?.removeEventListener("mouseenter", handleMouseEnter);
+      container?.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
+  // ✅ Fetch latest products
   useEffect(() => {
     const fetchNewArrivals = async () => {
       try {
@@ -20,7 +50,7 @@ const NewArrivals = () => {
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false); // ✅ done loading
+        setLoading(false);
       }
     };
     fetchNewArrivals();
@@ -39,7 +69,6 @@ const NewArrivals = () => {
     if (container) {
       const leftScroll = container.scrollLeft;
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
-
       setCanScrollLeft(leftScroll > 0);
       setCanScrollRight(leftScroll < maxScrollLeft);
     }
@@ -49,8 +78,7 @@ const NewArrivals = () => {
     const container = scrollRef.current;
     if (!container) return;
 
-    updateScrollButtons(); // on load
-
+    updateScrollButtons();
     container.addEventListener("scroll", updateScrollButtons);
     window.addEventListener("resize", updateScrollButtons);
 
@@ -72,8 +100,8 @@ const NewArrivals = () => {
           keep your wardrobe on the cutting edge of fashion.
         </p>
 
-        {/* scroll buttons */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex space-x-2 z-10">
+        {/* Scroll Buttons */}
+        {/* <div className="absolute right-4 top-1/2 -translate-y-1/2 flex space-x-2 z-10">
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
@@ -96,47 +124,80 @@ const NewArrivals = () => {
           >
             <MdKeyboardArrowRight className="h-6 w-6" />
           </button>
-        </div>
+        </div> */}
       </div>
 
-      {/* Scrollable Product Cards */}
+      {/* Scrollable Product Cards (duplicated for looping) */}
       <div
         ref={scrollRef}
-        className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth px-2 pb-6 custom-scrollbar"
+        className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth px-2 pb-6 new-arrivals-track"
       >
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-gray-100 shadow-md rounded-xl animate-pulse"
-              >
-                <div className="h-80 w-full bg-gray-300 rounded-t-xl" />
-                <div className="p-4">
-                  <div className="h-4 w-3/4 bg-gray-300 rounded mb-2" />
-                  <div className="h-4 w-1/2 bg-gray-300 rounded" />
-                </div>
+        {(loading
+          ? Array.from({ length: 4 })
+          : [...newArrivals, ...newArrivals]
+        ).map((product, index) =>
+          loading ? (
+            <div
+              key={index}
+              className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-gray-100 shadow-md rounded-xl animate-pulse"
+            >
+              <div className="h-80 w-full bg-gray-300 rounded-t-xl" />
+              <div className="p-4">
+                <div className="h-4 w-3/4 bg-gray-300 rounded mb-2" />
+                <div className="h-4 w-1/2 bg-gray-300 rounded" />
               </div>
-            ))
-          : newArrivals.map((product) => (
-              <div
-                key={product._id}
-                className="min-w-[85%] sm:min-w-[50%] md:min-w-[40%] lg:min-w-[30%] bg-white shadow-md rounded-xl border border-gray-100 relative group transition-all duration-300 hover:shadow-xl"
-              >
+            </div>
+          ) : (
+            <div
+              key={`${product._id}_${index}`}
+              className="min-w-[250px] bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-md border border-sky-200 hover:shadow-lg transition-shadow duration-300 group"
+            >
+              <div className="w-full h-80 relative overflow-hidden rounded-t-xl">
                 <img
-                  src={product.images[0]?.url}
-                  alt={product.images[0]?.altText || product.name}
-                  className="h-80 w-full object-cover rounded-t-xl"
+                  src={product.images?.[0]?.url}
+                  alt={product.images?.[0]?.altText || product.name}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="p-4 text-left">
-                  <Link to={`/product/${product._id}`} className="block">
-                    <h4 className="font-semibold text-gray-800 group-hover:text-sky-600 transition-colors">
-                      {product.name}
-                    </h4>
-                    <p className="mt-1 text-gray-600">₹{product.price}</p>
-                  </Link>
-                </div>
+                {new Date() - new Date(product.createdAt) <
+                  2 * 24 * 60 * 60 * 1000 && (
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce uppercase tracking-wider">
+                    New
+                  </div>
+                )}
               </div>
-            ))}
+              <div className="p-4 text-left">
+                <Link to={`/product/${product._id}`} className="block">
+                  <h4 className="font-semibold text-blue-900 group-hover:text-sky-600 transition-colors truncate">
+                    {product.name}
+                  </h4>
+                  {product.discountPrice &&
+                  product.discountPrice < product.price ? (
+                    <div className="flex gap-2 items-center flex-wrap mt-1">
+                      <p className="text-blue-700 font-bold text-xl">
+                        ₹ {product.discountPrice}
+                      </p>
+                      <p className="text-sm text-gray-500 line-through">
+                        ₹ {product.price}
+                      </p>
+                      <p className="text-green-600 text-sm font-semibold">
+                        {Math.round(
+                          ((product.price - product.discountPrice) * 100) /
+                            product.price
+                        )}
+                        % OFF
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-blue-700 font-bold text-xl mt-1">
+                      ₹ {product.price}
+                    </p>
+                  )}
+                </Link>
+              </div>
+            </div>
+          )
+        )}
       </div>
     </section>
   );
