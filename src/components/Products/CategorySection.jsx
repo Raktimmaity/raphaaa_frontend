@@ -1,65 +1,82 @@
 import { Link } from "react-router-dom";
-import jeans from "../../assets/jeans.png";
+import { useEffect, useState } from "react";
+import Tshirt from "../../assets/t-shirt.png";
+import women from "../../assets/women.png";
+import casual from "../../assets/casual.png";
+import classic from "../../assets/classic.png";
 
-// Replace with actual image URLs or category icons
 const categories = [
   {
     name: "T-Shirts",
-    image: "https://pngimg.com/uploads/tshirt/tshirt_PNG5437.png",
-    slug: "t-shirt",
+    image: Tshirt,
+    slug: "search=t-shirt",
   },
   {
-    name: "Jeans",
-    image: jeans,
-    slug: "jeans",
+    name: "Women",
+    image: women,
+    slug: "category=Top+Wear&gender=Women",
   },
   {
-    name: "Shoes",
-    image: "https://cdn-icons-png.flaticon.com/512/892/892463.png",
-    slug: "shoes",
+    name: "Casual",
+    image: casual,
+    slug: "search=casual",
   },
   {
-    name: "Jackets",
-    image: "https://cdn-icons-png.flaticon.com/512/892/892460.png",
+    name: "Classic",
+    image: classic,
     slug: "jackets",
-  },
-  {
-    name: "Shirts",
-    image: "https://cdn-icons-png.flaticon.com/512/892/892464.png",
-    slug: "shirts",
-  },
-  {
-    name: "Accessories",
-    image: "https://cdn-icons-png.flaticon.com/512/3313/3313441.png",
-    slug: "accessories",
   },
 ];
 
 const CategorySection = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000); // simulate load
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="px-4 md:px-16 py-12">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-28">
         Shop by Category
       </h2>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:gap-8 md:overflow-visible">
-        {categories.map((category) => (
-          <Link
-            to={`/collections/all?search=${category.slug}`}
-            key={category.slug}
-            className="min-w-[100px] md:min-w-0 bg-white hover:shadow-lg border border-gray-200 rounded-xl p-4 flex flex-col items-center text-center transition-all duration-300 group"
-          >
-            <img
-              src={category.image}
-              alt={category.name}
-              className="w-16 h-16 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
-              loading="lazy"
-            />
-            <span className="text-sm font-medium text-gray-800 group-hover:text-sky-600">
-              {category.name}
-            </span>
-          </Link>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        {loading
+          ? Array.from({ length: 4 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-gray-200 rounded-t-full rounded-b-xl flex flex-col items-center justify-center text-center animate-pulse"
+              >
+                <div className="w-full h-full p-4">
+                  <div className="w-28 h-28 bg-gray-200 rounded-full mx-auto mb-4" />
+                  <div className="h-4 w-24 bg-gray-300 mx-auto rounded"></div>
+                </div>
+              </div>
+            ))
+          : categories.map((category) => (
+              <Link
+                to={`/collections/all?${category.slug}`}
+                key={category.slug}
+                className="relative bg-white hover:shadow-lg border border-gray-200 rounded-t-full rounded-b-xl flex flex-col items-center justify-end text-center transition-all duration-300 group"
+              >
+                {/* ✅ Fixed large image floated on top */}
+                <div className="relative -top-12">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-28 h-28 md:w-full md:h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </div>
+
+                {/* ✅ Title below */}
+                <p className="text-lg font-medium w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-90 rounded-b-xl">
+                  {category.name}
+                </p>
+              </Link>
+            ))}
       </div>
     </section>
   );
