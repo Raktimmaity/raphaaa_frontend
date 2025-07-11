@@ -65,7 +65,7 @@ const CollectionPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow px-4 md:px-6 lg:pl-10">
+      <div className="flex-grow px-1 md:px-6 lg:pl-10">
         <h2 className="text-2xl uppercase mb-4">All collections</h2>
 
         {/* Sort + Clear Filters Row */}
