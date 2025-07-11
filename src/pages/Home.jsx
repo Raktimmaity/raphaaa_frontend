@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsByFilters } from "../redux/slices/productsSlice";
 import axios from "axios";
 import BestSellersSection from "../components/Products/BestSeller";
+import CategorySection from "../components/Products/CategorySection";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -63,6 +64,7 @@ const Home = () => {
     <div>
       {/* Hero section */}
       <Hero />
+      <CategorySection/>
 
       {/* Gender collection section */}
       <GenderCollectionSection />
