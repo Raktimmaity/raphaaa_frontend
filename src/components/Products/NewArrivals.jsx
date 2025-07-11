@@ -10,7 +10,7 @@ const NewArrivals = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Auto-scroll with loop & pause on hover
+  // ✅ Auto-scroll with infinite loop (left to right) + pause on hover
   useEffect(() => {
     let isHovered = false;
     const container = scrollRef.current;
@@ -21,19 +21,24 @@ const NewArrivals = () => {
     container?.addEventListener("mouseenter", handleMouseEnter);
     container?.addEventListener("mouseleave", handleMouseLeave);
 
-    const interval = setInterval(() => {
-      if (!isHovered && container) {
-        container.scrollLeft -= 1;
-
-        // Loop to end if at beginning
-        if (container.scrollLeft <= 0) {
-          container.scrollLeft = container.scrollWidth / 2;
+    const scrollLoop = () => {
+      if (!container) return;
+      if (!isHovered) {
+        container.scrollLeft += 1;
+        if (
+          container.scrollLeft >=
+          container.scrollWidth / 2
+        ) {
+          container.scrollLeft = 0;
         }
       }
-    }, 20); // adjust speed here
+      requestAnimationFrame(scrollLoop);
+    };
+
+    const animationId = requestAnimationFrame(scrollLoop);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(animationId);
       container?.removeEventListener("mouseenter", handleMouseEnter);
       container?.removeEventListener("mouseleave", handleMouseLeave);
     };
@@ -99,35 +104,8 @@ const NewArrivals = () => {
           Discover the latest styles straight off the runway, freshly added to
           keep your wardrobe on the cutting edge of fashion.
         </p>
-
-        {/* Scroll Buttons */}
-        {/* <div className="absolute right-4 top-1/2 -translate-y-1/2 flex space-x-2 z-10">
-          <button
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className={`p-2 rounded-full border shadow-md transition-colors ${
-              canScrollLeft
-                ? "bg-white text-black hover:bg-sky-100"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            }`}
-          >
-            <MdKeyboardArrowLeft className="h-6 w-6" />
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className={`p-2 rounded-full border shadow-md transition-colors ${
-              canScrollRight
-                ? "bg-white text-black hover:bg-sky-100"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            }`}
-          >
-            <MdKeyboardArrowRight className="h-6 w-6" />
-          </button>
-        </div> */}
       </div>
 
-      {/* Scrollable Product Cards (duplicated for looping) */}
       <div
         ref={scrollRef}
         className="container mx-auto overflow-x-auto flex space-x-6 scroll-smooth px-2 pb-6 new-arrivals-track"
