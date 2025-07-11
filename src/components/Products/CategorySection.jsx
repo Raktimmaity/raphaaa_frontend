@@ -38,7 +38,7 @@ const CategorySection = () => {
 
   return (
     <section className="px-4 md:px-16 py-12">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-28">
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
         Shop by Category
       </h2>
 
@@ -59,20 +59,23 @@ const CategorySection = () => {
               <Link
                 to={`/collections/all?${category.slug}`}
                 key={category.slug}
-                className="relative bg-white hover:shadow-lg border border-gray-200 rounded-t-full rounded-b-xl flex flex-col items-center justify-end text-center transition-all duration-300 group"
+                className=" hover:shadow-lg rounded-t-full rounded-b-xl flex flex-col items-center justify-between text-center transition-all duration-300 group"
               >
-                {/* ✅ Fixed large image floated on top */}
-                <div className="relative -top-12">
+                {/* ✅ Image with fixed size */}
+                <div className="flex items-center justify-center min-h-[130px]">
+                  <div className="absolute w-60 h-60 rounded-full blur-lg bg-sky-400 opacity-60 z-0 animate-pulse" />
+
+                  {/* ✅ Your image on top */}
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-28 h-28 md:w-full md:h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                    className="w-28 h-28 md:w-full md:h-full lg:w-full lg:h-full relative z-10 object-contain transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
                   />
                 </div>
 
-                {/* ✅ Title below */}
-                <p className="text-lg font-medium w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-90 rounded-b-xl">
+                {/* ✅ Title */}
+                <p className="text-xl font-medium w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-90 z-50">
                   {category.name}
                 </p>
               </Link>
