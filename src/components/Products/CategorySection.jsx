@@ -69,7 +69,7 @@ const CategorySection = () => {
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-28 h-28 md:w-full md:h-full lg:w-full lg:h-full relative z-10 object-contain transition-transform duration-300 group-hover:scale-110"
+                    className="w-72 h-72 md:w-full md:h-full lg:w-full lg:h-full relative z-10 object-contain transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
                   />
                 </div>
