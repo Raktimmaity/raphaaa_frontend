@@ -159,7 +159,7 @@ const OrderDetailsPage = () => {
                   <tr key={item.productId} className="border-b">
                     <td className="py-2 px-4 flex items-center">
                       <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-lg mr-4" />
-                      <Link to={`/product/${item.productId}`} className='text-blue-500 hover:underline'>{item.name}</Link>
+                      <Link to={`/product/${item.productId._id}`} className='text-blue-500 hover:underline'>{item.name}</Link>
                     </td>
                     <td className="py-2 px-4">₹{item.price}</td>
                     <td className="py-2 px-4">{item.quantity}</td>
@@ -171,9 +171,9 @@ const OrderDetailsPage = () => {
           </div>
           <div className="flex justify-between items-center mt-4">
             <Link to="/my-orders" className='text-blue-500 hover:underline'>Back to my Orders</Link>
-            <button onClick={generatePDF} className="bg-sky-600 text-white px-4 py-2 rounded hover:bg-sky-700 transition text-sm font-medium">
+            {/* <button onClick={generatePDF} className="bg-sky-600 text-white px-4 py-2 rounded hover:bg-sky-700 transition text-sm font-medium">
               Download Invoice
-            </button>
+            </button> */}
           </div>
         </div>
       )}
