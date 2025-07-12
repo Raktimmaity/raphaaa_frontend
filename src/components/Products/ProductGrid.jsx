@@ -131,7 +131,7 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 product.discountPrice < product.price ? (
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
-                      ₹ {product.discountPrice}
+                      ₹ {product.price}
                     </p>
                     <p className="text-sm text-gray-500 line-through">
                       ₹{" "}

@@ -87,12 +87,12 @@ const OrderConfirmationPage = () => {
                 Order Date: {new Date(checkout.createdAt).toLocaleDateString()}
               </p>
 
-              <button
+              {/* <button
                 onClick={handleDownloadInvoice}
                 className="mt-2 inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-md"
               >
                 Download Invoice
-              </button>
+              </button> */}
             </div>
             <div>
               <p className="text-sm text-emerald-700 font-medium">
@@ -126,7 +126,7 @@ const OrderConfirmationPage = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-md text-gray-800 font-semibold">
-                    ${item.price}
+                    ₹{item.price}
                   </p>
                   <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                 </div>
