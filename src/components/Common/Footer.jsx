@@ -3,37 +3,71 @@ import { IoCall, IoLogoInstagram } from 'react-icons/io5'
 import { RiTwitterXLine } from 'react-icons/ri'
 import { TbBrandMeta, TbFilePhone } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
+import { toast } from 'sonner'; // or use "sonner"
 
 const Footer = () => {
   const [subscribe, setSubscribe] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!subscribe.trim()) {
+      return toast.error("Please enter a valid email.");
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/subscribe`,
+        { email: subscribe },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success(response.data.message || "Subscribed successfully!");
+      setSubscribe("");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Subscription failed. Try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <footer className="py-12">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4 lg:px-0">
         {/* Newsletter */}
         <div>
-          <h3 className="text-lg text-gray-800 mb-4">Newsletter</h3>
-          <p className="text-gray-500 mb-4">
-            Be the first to hear about new products, exclusive events and online offers.
-          </p>
-          <p className='font-medium text-sm text-gray-600 mb-6'>
-            Sign up and get 10% off your first order.
-          </p>
-          <form className="flex">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="p-3 w-full text-sm border bg-white border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
-              value={subscribe}
-              onChange={(e) => setSubscribe(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 text-sm rounded-r-md hover:bg-gray-800 transition-all"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
+      <h3 className="text-lg text-gray-800 mb-4">Newsletter</h3>
+      <p className="text-gray-500 mb-4">
+        Be the first to hear about new products, exclusive events and online offers.
+      </p>
+      <p className="font-medium text-sm text-gray-600 mb-6">
+        Sign up and get 10% off your first order.
+      </p>
+      <form className="flex" onSubmit={handleSubscribe}>
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="p-3 w-full text-sm border bg-white border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+          value={subscribe}
+          onChange={(e) => setSubscribe(e.target.value)}
+          disabled={loading}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 text-sm rounded-r-md hover:bg-gray-800 transition-all"
+        >
+          {loading ? "Subscribing..." : "Subscribe"}
+        </button>
+      </form>
+    </div>
 
         {/* Shop links */}
         <div>

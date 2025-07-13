@@ -1,39 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { HiMiniMagnifyingGlass, HiMiniXMark } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { MdHistory } from "react-icons/md";
 import {
   fetchProductsByFilters,
   setFilters,
 } from "../../redux/slices/productsSlice";
 import axios from "axios";
 
-// const API_URL = import. || 'http://localhost:5000';
+const MAX_HISTORY = 6;
+const STORAGE_KEY = "searchHistory";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [history, setHistory] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const searchRef = useRef(null);
 
-  const handleSearchToggle = () => {
-    setIsOpen(!isOpen);
-  };
+  // Toggle search bar
+  const handleSearchToggle = () => setIsOpen(!isOpen);
 
+  // Search logic
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim() === "") return;
 
+    updateHistory(searchTerm);
     dispatch(setFilters({ search: searchTerm }));
     dispatch(fetchProductsByFilters({ search: searchTerm }));
     navigate(`/collections/all?search=${searchTerm}`);
     setSearchTerm("");
     setIsOpen(false);
     setSuggestions([]);
+    setShowSuggestions(false);
   };
 
+  // Click on product suggestion
   const handleSuggestionClick = (product) => {
     navigate(`/product/${product._id}`);
     setSearchTerm("");
@@ -41,13 +48,61 @@ const SearchBar = () => {
     setSuggestions([]);
   };
 
+  // Update localStorage history
+  const updateHistory = (term) => {
+    let newHistory = [term, ...history.filter((item) => item !== term)];
+    if (newHistory.length > MAX_HISTORY)
+      newHistory = newHistory.slice(0, MAX_HISTORY);
+    setHistory(newHistory);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
+  };
+
+  const handleHistoryClick = (term) => {
+    setSearchTerm(""); // prevent suggestion trigger
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setIsOpen(false);
+    dispatch(setFilters({ search: term }));
+    dispatch(fetchProductsByFilters({ search: term }));
+    navigate(`/collections/all?search=${term}`);
+  };
+
+  const handleDeleteHistoryItem = (termToDelete) => {
+    const updated = history.filter((term) => term !== termToDelete);
+    setHistory(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const clearHistory = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setHistory([]);
+  };
+
+  // Close search on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Load history
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) setHistory(JSON.parse(stored));
+  }, []);
+
+  // Fetch suggestions when user types
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchTerm.trim().length === 0) {
         setSuggestions([]);
         return;
       }
-
       try {
         const { data } = await axios.get(
           `${
@@ -60,13 +115,13 @@ const SearchBar = () => {
         console.error("Error fetching suggestions:", error);
       }
     };
-
-    const delay = setTimeout(fetchSuggestions, 300); // debounce
+    const delay = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(delay);
   }, [searchTerm]);
 
   return (
     <div
+      ref={searchRef}
       className={`flex items-center justify-center w-full transition-all duration-300 ${
         isOpen ? "absolute top-0 left-0 w-full bg-white h-28 z-50" : "w-auto"
       } ease-in-out`}
@@ -74,9 +129,9 @@ const SearchBar = () => {
       {isOpen ? (
         <form
           onSubmit={handleSearch}
-          className="relative flex items-center justify-center w-full"
+          className="relative flex items-center justify-center gap-3 md:gap-0 md:justify-center w-full"
         >
-          <div className="relative w-1/2">
+          <div className="relative w-4/5 md:w-1/2 lg:w-1/2">
             <input
               type="text"
               className="bg-gray-100 py-3 px-4 pr-12 rounded-lg focus:outline-none w-full placeholder:text-gray-700"
@@ -92,25 +147,63 @@ const SearchBar = () => {
               <HiMiniMagnifyingGlass className="h-6 w-6" />
             </button>
 
-            {/* 🔻 Suggestions Dropdown */}
-            {showSuggestions && suggestions.length > 0 && (
+            {/* 🔻 Suggestions */}
+            {showSuggestions && (
               <ul className="absolute left-0 right-0 bg-white shadow-md max-h-64 overflow-y-auto z-50 mt-1 rounded-md">
-                {suggestions.map((product) => (
-                  <li
-                    key={product._id}
-                    className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSuggestionClick(product)}
-                  >
-                    <img
-                      src={product.images[0]?.url || "/no-image.png"}
-                      alt={product.name}
-                      className="w-10 h-10 object-cover rounded-md"
-                    />
-                    <span className="text-sm text-gray-800">
-                      {product.name}
-                    </span>
+                {searchTerm.trim()
+                  ? suggestions.map((product) => (
+                      <li
+                        key={product._id}
+                        className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSuggestionClick(product)}
+                      >
+                        <img
+                          src={product.images[0]?.url || "/no-image.png"}
+                          alt={product.name}
+                          className="w-10 h-10 object-cover rounded-md"
+                        />
+                        <span className="text-sm text-gray-800">
+                          {product.name}
+                        </span>
+                      </li>
+                    ))
+                  : history.map((item, index) => (
+                      <li
+                        key={index}
+                        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleHistoryClick(item);
+                          }}
+                          className="flex-1 text-left flex items-center gap-2"
+                        >
+                          <MdHistory className="inline" /> {item}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteHistoryItem(item);
+                          }}
+                          className="text-gray-400 text-lg hover:text-gray-600"
+                          title="Remove"
+                        >
+                          &times;
+                        </button>
+                      </li>
+                    ))}
+
+                {searchTerm.trim() === "" && history.length > 0 && (
+                  <li className="px-4 py-2 text-right">
+                    <button
+                      onClick={clearHistory}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      Clear all history
+                    </button>
                   </li>
-                ))}
+                )}
               </ul>
             )}
           </div>
