@@ -41,6 +41,9 @@ import RevenueReport from "./pages/RevenueReport";
 import RegisterDeliveryBoy from "./pages/RegisterDeliveryBoy";
 import ViewContacts from "./pages/ViewContacts";
 import HeroSettings from "./pages/HeroSettings";
+import AdminContactSettings from "./pages/AdminContactSettings";
+import ScrollToTop from "./components/Common/ScrollToTop";
+// import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
   return (
@@ -48,6 +51,7 @@ const App = () => {
       <ToastContainer position="top-right" autoClose={2000} />
       <Toaster position="top-right" richColors />
       <BrowserRouter>
+      <ScrollToTop/>
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
@@ -202,6 +206,22 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <HeroSettings/>
+                </ProtectedRoute>
+              }
+            />
+            {/* <Route
+              path="website-settings/about"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminAboutSettings/>
+                </ProtectedRoute>
+              }
+            /> */}
+            <Route
+              path="website-settings/contact"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminContactSettings/>
                 </ProtectedRoute>
               }
             />

@@ -3,6 +3,7 @@ import Header from '../Common/Header'
 import Footer from '../Common/Footer'
 import Home from '../../pages/Home'
 import { Outlet } from 'react-router-dom'
+import ScrollToTopButton from '../Common/ScrollToTopButton'
 
 const UserLayout = () => {
   return (
@@ -13,6 +14,7 @@ const UserLayout = () => {
         <Outlet/>
       </main>
       <Footer/>
+      <ScrollToTopButton/>
     </>
   )
 }

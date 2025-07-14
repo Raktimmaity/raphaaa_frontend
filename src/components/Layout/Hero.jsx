@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImg from "../../assets/heroimg.jpeg";
+import heroImg2 from "../../assets/hero_img.png";
+import heroImg3 from "../../assets/hero3.jpeg";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
+const heroImages = [heroImg, heroImg2, heroImg3];
 
 const Hero = () => {
   const [loading, setLoading] = useState(true);
@@ -54,13 +60,23 @@ const Hero = () => {
       </div>
 
       {/* Hero Right Side - Responsive Image Shape */}
-      <div className="w-full sm:w-1/2 aspect-square overflow-hidden">
-        <img
-          src={heroImg}
-          alt="Hero"
-          className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
-             rounded-full md:rounded-l-none md:rounded-r-full"
-        />
+      <div className="w-full sm:w-1/2 aspect-square overflow-hidden rounded-full md:rounded-l-none md:rounded-r-full shadow-md">
+        <Swiper
+          loop
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          modules={[Autoplay]}
+          className="w-full h-full"
+        >
+          {heroImages.map((img, idx) => (
+            <SwiperSlide key={idx}>
+              <img
+                src={img}
+                alt={`Hero ${idx}`}
+                className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );

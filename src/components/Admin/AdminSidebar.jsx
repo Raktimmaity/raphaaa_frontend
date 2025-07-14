@@ -217,32 +217,50 @@ const AdminSidebar = () => {
 
         {/* Visible to both admin and merchantise */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <>
-            <NavLink
-              to="/admin/add-product"
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-              }
-            >
-              <HiPlusCircle className="text-lg" />
-              <span>Add Products</span>
-            </NavLink>
+  <div className="text-gray-300">
+    <details className="group">
+      <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+        <span className="flex items-center gap-2">
+          <FaBoxOpen className="text-lg" />
+          <span>Products</span>
+        </span>
+        <svg
+          className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </summary>
 
-            <NavLink
-              to="/admin/products"
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-              }
-            >
-              <FaBoxOpen />
-              <span>Products</span>
-            </NavLink>
-          </>
-        )}
+      <div className="ml-6 mt-1 space-y-1">
+        <NavLink
+          to="/admin/add-product"
+          className={({ isActive }) =>
+            isActive
+              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+          }
+        >
+          Add Product
+        </NavLink>
+        <NavLink
+          to="/admin/products"
+          className={({ isActive }) =>
+            isActive
+              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+          }
+        >
+          All Products
+        </NavLink>
+      </div>
+    </details>
+  </div>
+)}
+
 
         {/* Only for admin */}
         {(user?.role === "admin" ||
@@ -328,7 +346,7 @@ const AdminSidebar = () => {
                   Hero Section
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                   to="/admin/website-settings/about"
                   className={({ isActive }) =>
                     isActive
@@ -337,7 +355,7 @@ const AdminSidebar = () => {
                   }
                 >
                   About Section
-                </NavLink>
+                </NavLink> */}
 
                 <NavLink
                   to="/admin/website-settings/contact"
@@ -350,7 +368,7 @@ const AdminSidebar = () => {
                   Contact Details
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                   to="/admin/website-settings/privacy-policy"
                   className={({ isActive }) =>
                     isActive
@@ -359,7 +377,7 @@ const AdminSidebar = () => {
                   }
                 >
                   Privacy & Policy
-                </NavLink>
+                </NavLink> */}
               </div>
             </details>
           </div>

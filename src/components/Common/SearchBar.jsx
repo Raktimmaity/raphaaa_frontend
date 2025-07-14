@@ -8,6 +8,7 @@ import {
   setFilters,
 } from "../../redux/slices/productsSlice";
 import axios from "axios";
+import { GoArrowUpRight } from "react-icons/go";
 
 const MAX_HISTORY = 6;
 const STORAGE_KEY = "searchHistory";
@@ -150,49 +151,60 @@ const SearchBar = () => {
             {/* 🔻 Suggestions */}
             {showSuggestions && (
               <ul className="absolute left-0 right-0 bg-white shadow-md max-h-64 overflow-y-auto z-50 mt-1 rounded-md">
-                {searchTerm.trim()
-                  ? suggestions.map((product) => (
+                {searchTerm.trim() ? (
+                  suggestions.length > 0 ? (
+                    suggestions.map((product) => (
                       <li
                         key={product._id}
-                        className="px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-gray-100"
+                        className="px-4 py-2 flex items-center justify-between cursor-pointer border-b border-gray-300 hover:bg-gray-100"
                         onClick={() => handleSuggestionClick(product)}
                       >
-                        <img
-                          src={product.images[0]?.url || "/no-image.png"}
-                          alt={product.name}
-                          className="w-10 h-10 object-cover rounded-md"
-                        />
-                        <span className="text-sm text-gray-800">
-                          {product.name}
-                        </span>
+                        <div className="flex flex-wrap justify-center items-center gap-3">
+                          <img
+                            src={product.images[0]?.url || "/no-image.png"}
+                            alt={product.name}
+                            className="w-10 h-10 object-cover rounded-md"
+                          />
+                          <span className="text-sm text-gray-800">
+                            {product.name}
+                          </span>
+                        </div>
+                        <GoArrowUpRight />
                       </li>
                     ))
-                  : history.map((item, index) => (
-                      <li
-                        key={index}
-                        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                  ) : (
+                    <li className="px-4 py-6 text-sm text-gray-500 text-center">
+                      No products found
+                    </li>
+                  )
+                ) : (
+                  history.map((item, index) => (
+                    <li
+                      key={index}
+                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleHistoryClick(item);
+                        }}
+                        className="flex-1 text-left flex items-center gap-2"
                       >
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleHistoryClick(item);
-                          }}
-                          className="flex-1 text-left flex items-center gap-2"
-                        >
-                          <MdHistory className="inline" /> {item}
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteHistoryItem(item);
-                          }}
-                          className="text-gray-400 text-lg hover:text-gray-600"
-                          title="Remove"
-                        >
-                          &times;
-                        </button>
-                      </li>
-                    ))}
+                        <MdHistory className="inline" /> {item}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteHistoryItem(item);
+                        }}
+                        className="text-gray-400 text-lg hover:text-gray-600"
+                        title="Remove"
+                      >
+                        &times;
+                      </button>
+                    </li>
+                  ))
+                )}
 
                 {searchTerm.trim() === "" && history.length > 0 && (
                   <li className="px-4 py-2 text-right">

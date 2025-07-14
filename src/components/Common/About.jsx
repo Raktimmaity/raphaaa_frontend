@@ -3,7 +3,7 @@ import aboutImg from "../../assets/product3.jpg";
 
 const About = () => {
   return (
-    <div className="min-h-screen p-6 md:p-12 bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen p-6 md:p-12">
       <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
         <div className="grid md:grid-cols-2">
           {/* Left: Image */}
