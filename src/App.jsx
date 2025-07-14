@@ -43,13 +43,17 @@ import ViewContacts from "./pages/ViewContacts";
 import HeroSettings from "./pages/HeroSettings";
 import AdminContactSettings from "./pages/AdminContactSettings";
 import ScrollToTop from "./components/Common/ScrollToTop";
+import ForgotPassword from "./pages/ForgotPassword";
+import AdminCollabSettings from "./pages/AdminCollabSettings";
+import AdminCollabPreview from "./pages/AdminCollabPreview";
+import EditCollab from "./pages/EditCollab";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
   return (
     <Provider store={store}>
       <ToastContainer position="top-right" autoClose={2000} />
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" />
       <BrowserRouter>
       <ScrollToTop/>
         <Routes>
@@ -81,6 +85,7 @@ const App = () => {
             {/* extra added */}
             <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
             <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
+            <Route path="/forgot-password" element={<ForgotPassword/>} />
 
             {/* User Layout */}
           </Route>
@@ -166,6 +171,30 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <ProductManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="collab-settings"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminCollabSettings/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="collabs"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminCollabPreview/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="edit-collab/:id"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <EditCollab/>
                 </ProtectedRoute>
               }
             />

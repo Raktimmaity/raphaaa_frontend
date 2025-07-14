@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import SearchBar from "./SearchBar";
@@ -9,8 +9,9 @@ import logo from "../../assets/logo1.png";
 import { TbBrandMeta } from "react-icons/tb";
 import { IoLogoInstagram } from "react-icons/io5";
 import { RiTwitterXLine } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { HiChevronDown } from "react-icons/hi";
+import { logout } from "../../redux/slices/authSlice";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -21,6 +22,8 @@ const Navbar = () => {
   const location = useLocation();
   const dropdownRef = useRef();
   const [profileOpen, setProfileOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -182,7 +185,8 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         localStorage.removeItem("userInfo");
-                        window.location.href = "/login";
+                        dispatch(logout()); // clear Redux state
+                        navigate("/login"); // 👈 soft navigation
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                     >

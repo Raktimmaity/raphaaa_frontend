@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
 import { IoFlash } from "react-icons/io5";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 const ProductGrid = ({ products = [], loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +26,10 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const indexOfFirst = indexOfLast - productsPerPage;
   const currentProducts = safeProducts.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(safeProducts.length / productsPerPage);
+  const handleWishlistClick = (product) => {
+    toast.success(`${product.name} added to wishlist!`);
+    // Optionally dispatch an action or call backend
+  };
 
   // Loading
   if (loading) {
@@ -98,7 +103,7 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 {/* 🟡 NEW Badge */}
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
+                  <div className="absolute bottom-2 left-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
                     New
                   </div>
                 )}
@@ -121,6 +126,17 @@ const ProductGrid = ({ products = [], loading, error }) => {
                     <span className="text-green-600">In Stock</span>
                   )}
                 </div>
+                {/* ❤️ Wishlist Button (Top Right Corner) */}
+                {/* <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // 🛑 prevent click from bubbling to parent
+                    handleWishlistClick(product);
+                  }}
+                  title="Add to Wishlist"
+                  className="absolute top-2 right-2 bg-white text-gray-800 rounded-full p-1 shadow-md hover:bg-pink-100 transition z-50"
+                >
+                  <AiOutlineHeart className="text-lg" />
+                </button> */}
               </div>
 
               <div className="p-3">

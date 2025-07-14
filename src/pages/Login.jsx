@@ -149,6 +149,14 @@ const Login = () => {
               placeholder="Answer"
             />
           </div>
+          <div className="mb-5 text-sm text-right">
+            <Link
+              to="/forgot-password"
+              className="text-sky-600 hover:underline font-medium"
+            >
+              Forgot Password?
+            </Link>
+          </div>
 
           <button
             type="submit"

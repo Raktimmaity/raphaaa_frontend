@@ -8,6 +8,10 @@ import {
 
 const CartContents = ({ cart, userId, guestId }) => {
   const dispatch = useDispatch();
+  const totalCartQuantity = cart.products.reduce(
+    (acc, item) => acc + item.quantity,
+    0
+  );
 
   // Handle adding or subtracting to cart
   const handleAddToCart = (productId, delta, quantity, size, color) => {
@@ -79,20 +83,32 @@ const CartContents = ({ cart, userId, guestId }) => {
                 </button>
                 <span className="text-lg font-medium">{product.quantity}</span>
                 <button
-                  onClick={() =>
-                    handleAddToCart(
-                      product.productId,
-                      1,
-                      product.quantity,
-                      product.size,
-                      product.color
-                    )
-                  }
-                  className="bg-gray-800 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-900 transition"
+                  onClick={() => {
+                    if (totalCartQuantity < 10) {
+                      handleAddToCart(
+                        product.productId,
+                        1,
+                        product.quantity,
+                        product.size,
+                        product.color
+                      );
+                    }
+                  }}
+                  disabled={totalCartQuantity >= 10}
+                  className={`font-bold rounded-full w-8 h-8 flex items-center justify-center transition ${
+                    totalCartQuantity >= 10
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-gray-800 text-white hover:bg-gray-900"
+                  }`}
                 >
                   +
                 </button>
               </div>
+                {totalCartQuantity >= 10 && (
+                  <p className="text-xs text-red-600 mt-1">
+                    You can buy up to 10 items only.
+                  </p>
+                )}
             </div>
           </div>
 
@@ -121,7 +137,9 @@ const CartContents = ({ cart, userId, guestId }) => {
           </h2>
           <div className="flex justify-between text-gray-800 font-medium text-base">
             <span>Total Items:</span>
-            <span>{cart.products.reduce((acc, item) => acc + item.quantity, 0)}</span>
+            <span>
+              {cart.products.reduce((acc, item) => acc + item.quantity, 0)}
+            </span>
           </div>
           <div className="flex justify-between text-gray-800 font-semibold text-lg mt-1">
             <span>Total Price:</span>

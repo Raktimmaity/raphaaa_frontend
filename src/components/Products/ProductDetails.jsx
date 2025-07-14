@@ -278,33 +278,73 @@ const ProductDetails = ({ productId }) => {
     }
   };
 
+  // const handleAddToCart = () => {
+  //   if (!selectedSize || !selectedColor) {
+  //     toast.error("Please select a size and color before adding to cart.", {
+  //       duration: 1500,
+  //     });
+  //     return;
+  //   }
+  //   setIsButtonDisabled(true);
+  //   setIsAddingToCart(true); // <- start loading
+  //   dispatch(
+  //     addToCart({
+  //       productId: productFetchId,
+  //       quantity,
+  //       size: selectedSize,
+  //       color: selectedColor,
+  //       guestId,
+  //       userId: user?._id,
+  //     })
+  //   )
+  //     .then(() => {
+  //       toast.success("Product added to cart!!", { duration: 1000 });
+  //     })
+  //     .finally(() => {
+  //       setIsButtonDisabled(false);
+  //       setIsAddingToCart(false); // <- stop loading
+  //     });
+  // };
+
   const handleAddToCart = () => {
-    if (!selectedSize || !selectedColor) {
-      toast.error("Please select a size and color before adding to cart.", {
-        duration: 1500,
-      });
-      return;
-    }
-    setIsButtonDisabled(true);
-    setIsAddingToCart(true); // <- start loading
-    dispatch(
-      addToCart({
-        productId: productFetchId,
-        quantity,
-        size: selectedSize,
-        color: selectedColor,
-        guestId,
-        userId: user?._id,
-      })
-    )
-      .then(() => {
-        toast.success("Product added to cart!!", { duration: 1000 });
-      })
-      .finally(() => {
-        setIsButtonDisabled(false);
-        setIsAddingToCart(false); // <- stop loading
-      });
-  };
+  if (!selectedSize || !selectedColor) {
+    toast.error("Please select a size and color before adding to cart.", {
+      duration: 1500,
+    });
+    return;
+  }
+
+  const currentCartItems = JSON.parse(localStorage.getItem("persist:root"))?.cart;
+  const totalProductsInCart = currentCartItems
+    ? JSON.parse(currentCartItems)?.cartItems?.reduce((acc, item) => acc + item.quantity, 0)
+    : 0;
+
+  if (totalProductsInCart + quantity > 10) {
+    toast.error("You can buy up to 10 items", { duration: 2000 });
+    return;
+  }
+
+  setIsButtonDisabled(true);
+  setIsAddingToCart(true);
+  dispatch(
+    addToCart({
+      productId: productFetchId,
+      quantity,
+      size: selectedSize,
+      color: selectedColor,
+      guestId,
+      userId: user?._id,
+    })
+  )
+    .then(() => {
+      toast.success("Product added to cart!!", { duration: 1000 });
+    })
+    .finally(() => {
+      setIsButtonDisabled(false);
+      setIsAddingToCart(false);
+    });
+};
+
 
   if (loading) return <ProductDetailsSkeleton />;
 
