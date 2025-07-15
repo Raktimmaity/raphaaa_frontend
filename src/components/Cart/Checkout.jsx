@@ -1088,13 +1088,13 @@ const Checkout = () => {
                   maxLength="6"
                   pattern="\d{6}"
                 />
-                {addressLoading && (
+                {/* {addressLoading && (
                   <div className="absolute right-3 top-3">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
                   </div>
-                )}
+                )} */}
               </div>
-              {deliveryValidation.message && (
+              {/* {deliveryValidation.message && (
                 <p
                   className={`text-sm mt-1 ${
                     deliveryValidation.isValid
@@ -1104,7 +1104,7 @@ const Checkout = () => {
                 >
                   {deliveryValidation.message}
                 </p>
-              )}
+              )} */}
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">City</label>
@@ -1220,7 +1220,7 @@ const Checkout = () => {
                 disabled={
                   loading ||
                   orderProcessing ||
-                  !deliveryValidation.isValid ||
+                  // !deliveryValidation.isValid ||
                   phoneError
                 }
               >
