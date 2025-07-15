@@ -138,8 +138,8 @@ const OrderDetailsPage = () => {
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-2">Shipping Info</h4>
-              <p>Shipping Method: {orderDetails.shippingMethod}</p>
-              <p>Address: {`${orderDetails.shippingAddress.city}, ${orderDetails.shippingAddress.country}`}</p>
+              {/* <p>Shipping Method: {orderDetails.shippingMethod}</p> */}
+              <p>Address: {`${orderDetails.shippingAddress.address}, ${orderDetails.shippingAddress.city}, ${orderDetails.shippingAddress.country}, ${orderDetails.shippingAddress.postalCode}`}</p>
             </div>
           </div>
 

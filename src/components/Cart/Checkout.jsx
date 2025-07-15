@@ -607,27 +607,15 @@ import axios from "axios";
 const Checkout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {
-    cart,
-    loading: cartLoading,
-    error: cartError,
-  } = useSelector((state) => state.cart);
+  const { cart, loading: cartLoading, error: cartError } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
-  const {
-    checkout,
-    order,
-    loading: checkoutLoading,
-    error: checkoutError,
-  } = useSelector((state) => state.checkout);
+  const { checkout, order, loading: checkoutLoading, error: checkoutError } = useSelector((state) => state.checkout);
 
   const [checkoutId, setCheckoutId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [orderProcessing, setOrderProcessing] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
-  const [deliveryValidation, setDeliveryValidation] = useState({
-    isValid: true,
-    message: "",
-  });
+  // Delivery validation removed
   const [phoneError, setPhoneError] = useState("");
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
@@ -639,64 +627,25 @@ const Checkout = () => {
     phone: "+91",
   });
 
-  // Country list
   const countries = [
-    "India",
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-    "Germany",
-    "France",
-    "Japan",
-    "China",
-    "Brazil",
-    "Russia",
-    "Italy",
-    "Spain",
-    "Netherlands",
-    "Sweden",
-    "Switzerland",
-    "Norway",
-    "Denmark",
-    "Finland",
-    "Belgium",
-    "Austria",
-    "Portugal",
-    "Greece",
-    "Ireland",
-    "Poland",
-    "Czech Republic",
-    "Hungary",
-    "Romania",
-    "Bulgaria",
-    "Croatia",
-    "Slovenia",
-    "Slovakia",
-    "Estonia",
-    "Latvia",
-    "Lithuania",
-    "Luxembourg",
-    "Malta",
-    "Cyprus",
+    "India", "United States", "United Kingdom", "Canada", "Australia",
+    "Germany", "France", "Japan", "China", "Brazil", "Russia", "Italy",
+    "Spain", "Netherlands", "Sweden", "Switzerland", "Norway", "Denmark",
+    "Finland", "Belgium", "Austria", "Portugal", "Greece", "Ireland", "Poland",
+    "Czech Republic", "Hungary", "Romania", "Bulgaria", "Croatia", "Slovenia",
+    "Slovakia", "Estonia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus",
   ];
 
-  // Clean up checkout state when component mounts
   useEffect(() => {
     dispatch(clearCheckout());
   }, [dispatch]);
 
-  // Ensure cart is loaded before proceeding - but don't redirect if order is being processed
   useEffect(() => {
-    if (
-      !orderProcessing &&
-      (!cart || !cart.products || cart.products.length === 0)
-    ) {
+    if (!orderProcessing && (!cart || !cart.products || cart.products.length === 0)) {
       navigate("/");
     }
   }, [cart, navigate, orderProcessing]);
 
-  // Phone number validation
   const validatePhone = (phone) => {
     if (!phone.startsWith("+91")) {
       setPhoneError("Phone number must start with +91");
@@ -711,28 +660,19 @@ const Checkout = () => {
     return true;
   };
 
-  // Handle phone input change
   const handlePhoneChange = (e) => {
     let value = e.target.value;
-
-    // Ensure it always starts with +91
     if (!value.startsWith("+91")) {
       value = "+91" + value.replace(/^\+91/, "");
     }
-
-    // Remove any non-digit characters except +91
     value = "+91" + value.slice(3).replace(/\D/g, "");
-
-    // Limit to +91 + 10 digits
     if (value.length > 13) {
       value = value.slice(0, 13);
     }
-
     setShippingAddress({ ...shippingAddress, phone: value });
     validatePhone(value);
   };
 
-  // Auto-detect address using pin code
   const handlePinCodeChange = async (e) => {
     const pinCode = e.target.value;
     setShippingAddress({ ...shippingAddress, postalCode: pinCode });
@@ -740,175 +680,108 @@ const Checkout = () => {
     if (pinCode.length === 6 && /^\d{6}$/.test(pinCode)) {
       setAddressLoading(true);
       try {
-        // Using India Post API for pin code lookup
-        const response = await axios.get(
-          `https://api.postalpincode.in/pincode/${pinCode}`
-        );
-
-        if (
-          response.data &&
-          response.data[0] &&
-          response.data[0].Status === "Success"
-        ) {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${pinCode}`);
+        if (response.data && response.data[0] && response.data[0].Status === "Success") {
           const postOffice = response.data[0].PostOffice[0];
           setShippingAddress((prev) => ({
             ...prev,
             city: postOffice.District,
             country: "India",
           }));
-
-          // Check delivery range (assuming delivery center is in a major city)
-          await checkDeliveryRange(postOffice.District, postOffice.State);
-        } else {
-          setDeliveryValidation({
-            isValid: false,
-            message: "Invalid pin code. Please enter a valid Indian pin code.",
-          });
+          // Delivery validation removed
+          // await checkDeliveryRange(postOffice.District, postOffice.State);
         }
+        // else {
+        //   setDeliveryValidation({ isValid: false, message: "Invalid pin code. Please enter a valid Indian pin code." });
+        // }
       } catch (error) {
         console.error("Error fetching pin code data:", error);
-        setDeliveryValidation({
-          isValid: false,
-          message:
-            "Unable to validate pin code. Please enter address manually.",
-        });
+        // setDeliveryValidation({ isValid: false, message: "Unable to validate pin code. Please enter address manually." });
       } finally {
         setAddressLoading(false);
       }
     } else {
-      setDeliveryValidation({ isValid: true, message: "" });
+      // setDeliveryValidation({ isValid: true, message: "" });
     }
   };
 
-  // Check if delivery is within 30km range
-  const checkDeliveryRange = async (city, state) => {
-    try {
-      // This is a simplified check. In a real app, you'd use Google Maps Distance Matrix API
-      // or have a predefined list of serviceable areas
-      const deliveryCenter = { lat: 28.6139, lng: 77.209 }; // Delhi as example delivery center
-
-      // For demonstration, we'll check against major cities
-      const serviceableCities = [
-        "Delhi",
-        "Mumbai",
-        "Bangalore",
-        "Chennai",
-        "Kolkata",
-        "Hyderabad",
-        "Pune",
-        "Ahmedabad",
-        "Surat",
-        "Jaipur",
-        "Lucknow",
-        "Kanpur",
-      ];
-
-      const isServiceable = serviceableCities.some(
-        (serviceableCity) =>
-          city.toLowerCase().includes(serviceableCity.toLowerCase()) ||
-          serviceableCity.toLowerCase().includes(city.toLowerCase())
-      );
-
-      if (!isServiceable) {
-        setDeliveryValidation({
-          isValid: false,
-          message:
-            "Sorry, we currently deliver within 30km of major cities only. Your location is outside our delivery range.",
-        });
-      } else {
-        setDeliveryValidation({
-          isValid: true,
-          message: "✓ Delivery available in your area",
-        });
-      }
-    } catch (error) {
-      console.error("Error checking delivery range:", error);
-      setDeliveryValidation({ isValid: true, message: "" });
-    }
-  };
+  // const checkDeliveryRange = async (city, state) => {
+  //   try {
+  //     const serviceableCities = ["Delhi", "Mumbai", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad", "Surat", "Jaipur", "Lucknow", "Kanpur"];
+  //     const isServiceable = serviceableCities.some((c) =>
+  //       city.toLowerCase().includes(c.toLowerCase()) || c.toLowerCase().includes(city.toLowerCase())
+  //     );
+  //     if (!isServiceable) {
+  //       setDeliveryValidation({ isValid: false, message: "Sorry, we currently deliver within 30km of major cities only." });
+  //     } else {
+  //       setDeliveryValidation({ isValid: true, message: "✓ Delivery available in your area" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking delivery range:", error);
+  //     setDeliveryValidation({ isValid: true, message: "" });
+  //   }
+  // };
 
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
+    if (!validatePhone(shippingAddress.phone)) return;
 
-    // Validate phone number before proceeding
-    if (!validatePhone(shippingAddress.phone)) {
-      return;
-    }
-
-    // Check delivery validation
-    if (!deliveryValidation.isValid) {
-      alert(
-        "Please check your delivery address. We don't deliver to this location."
-      );
-      return;
-    }
+    // Delivery validation check removed
+    // if (!deliveryValidation.isValid) {
+    //   alert("Please check your delivery address. We don't deliver to this location.");
+    //   return;
+    // }
 
     if (cart && cart.products.length > 0) {
       setOrderProcessing(true);
 
+      const shipping = {
+        firstName: shippingAddress.firstName,
+        lastName: shippingAddress.lastName,
+        address: shippingAddress.address,
+        city: shippingAddress.city,
+        postalCode: shippingAddress.postalCode,
+        country: shippingAddress.country,
+        phone: shippingAddress.phone,
+      };
+
       if (paymentMethod === "cash_on_delivery") {
-        // For COD, directly create order
         const orderData = {
-          orderItems: cart.products.map((product) => ({
-            productId: product.productId,
-            name: product.name,
-            image: product.image,
-            price: product.price,
-            quantity: product.quantity,
-            size: product.size,
-            color: product.color,
-            sku: product.sku,
+          orderItems: cart.products.map((p) => ({
+            productId: p.productId,
+            name: p.name,
+            image: p.image,
+            price: p.price,
+            quantity: p.quantity,
+            size: p.size,
+            color: p.color,
+            sku: p.sku,
           })),
-          shippingAddress: {
-            firstName: shippingAddress.firstName,
-            lastName: shippingAddress.lastName,
-            address: shippingAddress.address,
-            city: shippingAddress.city,
-            postalCode: shippingAddress.postalCode,
-            country: shippingAddress.country,
-            phone: shippingAddress.phone,
-          },
+          shippingAddress: shipping,
           paymentMethod: "cash_on_delivery",
           totalPrice: cart.totalPrice,
         };
-
         const result = await dispatch(createCODOrder(orderData));
         if (result.type === "checkout/createCODOrder/fulfilled") {
-          // Clear cart after successful COD order
           dispatch(clearCart());
-          navigate("/order-confirmation", {
-            state: {
-              order: result.payload,
-              paymentMethod: "cash_on_delivery",
-            },
-          });
+          navigate("/order-confirmation", { state: { order: result.payload, paymentMethod: "cash_on_delivery" } });
         } else {
-          // Reset flag if order creation failed
           setOrderProcessing(false);
         }
       } else {
-        // For online payment, create checkout first
         const res = await dispatch(
           createCheckout({
-            checkoutItems: cart.products.map((product) => ({
-              productId: product.productId,
-              name: product.name,
-              image: product.image,
-              price: product.price,
-              quantity: product.quantity,
-              size: product.size,
-              color: product.color,
-              sku: product.sku,
+            checkoutItems: cart.products.map((p) => ({
+              productId: p.productId,
+              name: p.name,
+              image: p.image,
+              price: p.price,
+              quantity: p.quantity,
+              size: p.size,
+              color: p.color,
+              sku: p.sku,
             })),
-            shippingAddress: {
-              firstName: shippingAddress.firstName,
-              lastName: shippingAddress.lastName,
-              address: shippingAddress.address,
-              city: shippingAddress.city,
-              postalCode: shippingAddress.postalCode,
-              country: shippingAddress.country,
-              phone: shippingAddress.phone,
-            },
+            shippingAddress: shipping,
             paymentMethod,
             totalPrice: cart.totalPrice,
           })
@@ -926,23 +799,18 @@ const Checkout = () => {
   const handleRazorpaySuccess = async (paymentData) => {
     try {
       setOrderProcessing(true);
-
-      const result = await dispatch(
-        updatePaymentStatus({
-          checkoutId,
-          paymentData: {
-            paymentStatus: "paid",
-            paymentDetails: paymentData,
-            paymentMethod: "razorpay",
-          },
-        })
-      );
+      const result = await dispatch(updatePaymentStatus({
+        checkoutId,
+        paymentData: {
+          paymentStatus: "paid",
+          paymentDetails: paymentData,
+          paymentMethod: "razorpay",
+        },
+      }));
 
       if (result.type === "checkout/updatePaymentStatus/fulfilled") {
-        // Finalize the checkout to create order
         const finalResult = await dispatch(finalizeCheckout(checkoutId));
         if (finalResult.type === "checkout/finalizeCheckout/fulfilled") {
-          // Clear cart after successful payment
           dispatch(clearCart());
           navigate("/order-confirmation", {
             state: {
@@ -972,7 +840,7 @@ const Checkout = () => {
         navigate("/order-confirmation", {
           state: {
             order: result.payload,
-            paymentMethod: paymentMethod,
+            paymentMethod,
           },
         });
       } else {
@@ -987,6 +855,7 @@ const Checkout = () => {
 
   const loading = cartLoading || checkoutLoading;
   const error = cartError || checkoutError;
+
 
   if (loading) return <p>Loading cart...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -1088,11 +957,11 @@ const Checkout = () => {
                   maxLength="6"
                   pattern="\d{6}"
                 />
-                {/* {addressLoading && (
+                {addressLoading && (
                   <div className="absolute right-3 top-3">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
                   </div>
-                )} */}
+                )}
               </div>
               {/* {deliveryValidation.message && (
                 <p

@@ -120,7 +120,7 @@ const OrderConfirmationPage = () => {
                       {item.name}
                     </h4>
                     <p className="text-sm text-gray-500">
-                      {item.color} | Size {item.size}
+                      Color: {item.color} | Size: {item.size}
                     </p>
                   </div>
                 </div>
@@ -140,7 +140,8 @@ const OrderConfirmationPage = () => {
               <h4 className="text-lg font-semibold text-gray-800 mb-2">
                 Payment Method
               </h4>
-              <p className="text-gray-600">Razor Pay</p>
+              {/* <p className="text-gray-600">Razor Pay</p> */}
+              <p className="text-gray-600">{checkout.paymentMethod}</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold text-gray-800 mb-2">
@@ -151,7 +152,7 @@ const OrderConfirmationPage = () => {
               </p>
               <p className="text-gray-600">
                 {checkout.shippingAddress.city},{" "}
-                {checkout.shippingAddress.country}
+                {checkout.shippingAddress.country}, {checkout.shippingAddress.postalCode}
               </p>
             </div>
           </div>

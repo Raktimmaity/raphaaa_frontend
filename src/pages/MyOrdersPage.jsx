@@ -213,7 +213,8 @@ const MyOrders = () => {
                     />
                   </td>
                   <td className="py-3 px-4 font-medium text-gray-900 whitespace-nowrap">
-                    #{order._id.slice(-8)}
+                    {/* #{order._id.slice(-8)} */}
+                    {order.orderItems[0]?.name}
                   </td>
                   <td className="py-3 px-4">
                     {new Date(order.createdAt).toLocaleDateString()} <br />
