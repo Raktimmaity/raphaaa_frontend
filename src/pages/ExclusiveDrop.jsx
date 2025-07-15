@@ -1,33 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import { FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-const exclusiveDrops = [
-  {
-    name: "Cristiano Ronaldo",
-    image: "https://picsum.photos/seed/ronaldo/500/400",
-    product: "R7 Streetwear Edition",
-    productImage: "https://picsum.photos/seed/r7product/100/100",
-    slug: "ronaldo",
-  },
-  {
-    name: "Lionel Messi",
-    image: "https://picsum.photos/seed/messi/500/400",
-    product: "Messi x Raphaa Fusion Jacket",
-    productImage: "https://picsum.photos/seed/messiproduct/100/100",
-    slug: "messi",
-  },
-  {
-    name: "Kylian Mbappé",
-    image: "https://picsum.photos/seed/mbappe/500/400",
-    product: "KM Speed Series",
-    productImage: "https://picsum.photos/seed/kmspeed/100/100",
-    slug: "mbappe",
-  },
-];
-
 const ExclusiveDrop = () => {
+  const [exclusiveDrops, setExclusiveDrops] = useState([]);
+
+  useEffect(() => {
+    const fetchDrops = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs`);
+        setExclusiveDrops(data); // Only published ones will be returned
+      } catch (err) {
+        toast.error("Failed to load exclusive drops");
+      }
+    };
+    fetchDrops();
+  }, []);
+
   return (
     <section className="container mx-auto px-4 py-14">
       {/* Header */}
@@ -45,43 +37,55 @@ const ExclusiveDrop = () => {
 
       {/* Grid Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-        {exclusiveDrops.map((item, index) => (
-          <motion.div
-            key={index}
-            className="group bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-          >
-            <Link to={`/exclusive-drop/${item.slug}`}>
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-64 w-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </Link>
-
-            <div className="p-5">
-              <h3 className="text-xl font-bold text-gray-800">{item.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{item.product}</p>
-
-              <div className="mt-6 flex items-center justify-between">
+        {exclusiveDrops.flatMap((collab, index) =>
+          collab.collaborators.map((person, i) => (
+            <motion.div
+              key={`${collab._id}-${i}`}
+              className="group bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+            >
+              <Link
+                to={`/exclusive-drop/${person.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+              >
                 <img
-                  src={item.productImage}
-                  alt="Product"
-                  className="h-12 w-12 object-cover rounded-full border-2 border-sky-400 shadow-md"
+                  src={person.image}
+                  alt={person.name}
+                  className="md:h-[550px] w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <Link
-                  to={`/exclusive-drop/${item.slug}`}
-                  className="flex items-center text-sm font-semibold text-sky-600 hover:text-blue-700 transition"
-                >
-                  View More <FaArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+              </Link>
+
+              <div className="p-5">
+                <h3 className="text-xl font-bold text-gray-800">{person.name}</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {person.products?.[0]?.name || "Featured Product"}
+                </p>
+
+                <div className="mt-6 flex items-center justify-between">
+                  <img
+                    src={
+                      person.image || "/no-image.png"
+                    }
+                    alt="Product"
+                    className="h-12 w-12 object-cover rounded-full border-2 border-sky-400 shadow-md"
+                  />
+                  <Link
+                    to={`/exclusive-drop/${person.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                    className="flex items-center text-sm font-semibold text-sky-600 hover:text-blue-700 transition"
+                  >
+                    View More <FaArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))
+        )}
       </div>
     </section>
   );
