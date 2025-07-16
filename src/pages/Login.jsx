@@ -136,13 +136,13 @@ const Login = () => {
               <button
                 type="button"
                 onClick={refreshCaptcha}
-                className="flex items-center gap-1 text-lg bg-blue-600 text-white px-3 p-4 py-1 rounded hover:bg-blue-200 transition"
+                className="flex items-center gap-1 text-lg bg-blue-600 text-white px-3 p-4 py-1 rounded hover:bg-blue-800 transition"
               >
                 <FiRefreshCcw className="animate-spin-slow" />
               </button>
             </div>
             <input
-              type="text"
+              type="number"
               value={captchaAnswer}
               onChange={(e) => setCaptchaAnswer(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
