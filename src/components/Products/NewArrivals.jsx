@@ -25,10 +25,7 @@ const NewArrivals = () => {
       if (!container) return;
       if (!isHovered) {
         container.scrollLeft += 1;
-        if (
-          container.scrollLeft >=
-          container.scrollWidth / 2
-        ) {
+        if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft = 0;
         }
       }
@@ -149,26 +146,27 @@ const NewArrivals = () => {
                   <h4 className="font-semibold text-blue-900 group-hover:text-sky-600 transition-colors truncate">
                     {product.name}
                   </h4>
-                  {product.discountPrice &&
-                  product.discountPrice < product.price ? (
-                    <div className="flex gap-2 items-center flex-wrap mt-1">
-                      <p className="text-blue-700 font-bold text-xl">
-                        ₹ {product.discountPrice}
-                      </p>
-                      <p className="text-sm text-gray-500 line-through">
-                        ₹ {product.price}
-                      </p>
+                  {product.discountPrice && product.discountPrice > 0 ? (
+                    <div className="flex flex-col gap-1 mt-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-blue-700 font-bold text-lg">
+                          ₹{product.price}
+                        </p>
+                        <p className="line-through text-gray-500 text-sm">
+                          ₹
+                          {Math.floor(
+                            (product.discountPrice * 100) /
+                              (100 - product.discountPrice)
+                          )}
+                        </p>
+                      </div>
                       <p className="text-green-600 text-sm font-semibold">
-                        {Math.round(
-                          ((product.price - product.discountPrice) * 100) /
-                            product.price
-                        )}
-                        % OFF
+                        {product.discountPrice}% OFF
                       </p>
                     </div>
                   ) : (
-                    <p className="text-blue-700 font-bold text-xl mt-1">
-                      ₹ {product.price}
+                    <p className="text-blue-700 font-bold text-lg mt-2">
+                      ₹{product.price}
                     </p>
                   )}
                 </Link>

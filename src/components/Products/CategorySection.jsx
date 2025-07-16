@@ -59,23 +59,19 @@ const CategorySection = () => {
               <Link
                 to={`/collections/all?${category.slug}`}
                 key={category.slug}
-                className=" hover:shadow-lg rounded-t-full rounded-b-xl flex flex-col items-center justify-between text-center transition-all duration-300 group"
+                className="bg-white/20 backdrop-blur-md border border-white/20 hover:shadow-xl rounded-t-full rounded-b-xl flex flex-col items-center justify-between text-center transition-all duration-300 group relative overflow-hidden hover:ring-2 hover:ring-sky-400 hover:ring-offset-2"
               >
-                {/* ✅ Image with fixed size */}
-                <div className="flex items-center justify-center min-h-[130px]">
-                  <div className="absolute w-60 h-60 rounded-full blur-lg bg-sky-400 opacity-60 z-0 animate-pulse" />
-
-                  {/* ✅ Your image on top */}
+                <div className="flex items-center justify-center min-h-[130px] relative z-10">
+                  <div className="absolute w-40 h-40 rounded-full blur-2xl bg-sky-300 opacity-30 z-0 group-hover:scale-125 transition-transform duration-500" />
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-72 h-72 md:w-full md:h-full lg:w-full lg:h-full relative z-10 object-contain transition-transform duration-300 group-hover:scale-110"
+                    className="w-44 h-44 sm:w-52 sm:h-52 object-contain relative z-10 transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
 
-                {/* ✅ Title */}
-                <p className="text-xl font-medium w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-90 z-50">
+                <p className="text-lg md:text-xl font-semibold w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-95 z-10 shadow-inner">
                   {category.name}
                 </p>
               </Link>

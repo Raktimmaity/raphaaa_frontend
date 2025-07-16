@@ -17,7 +17,8 @@ const ProductCard = ({ product, badge }) => {
             loading="lazy"
           />
 
-          {new Date() - new Date(product.createdAt) < 2 * 24 * 60 * 60 * 1000 && (
+          {new Date() - new Date(product.createdAt) <
+            2 * 24 * 60 * 60 * 1000 && (
             <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce tracking-wide uppercase">
               New
             </div>
@@ -46,25 +47,17 @@ const ProductCard = ({ product, badge }) => {
             {product.name}
           </h3>
 
-          {product.discountPrice && product.discountPrice < product.price ? (
+          {product.discountPrice && product.discountPrice > 0 ? (
             <div className="flex items-baseline gap-2 flex-wrap">
               <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
-                ₹ {product.discountPrice}
+                ₹{" "}
+                {Math.round(product.price * (1 - product.discountPrice / 100))}
               </p>
               <p className="text-sm text-gray-500 line-through">
-                ₹{" "}
-                {Math.floor(
-                  (product.discountPrice * 100) /
-                    (100 -
-                      ((product.price - product.discountPrice) * 100) /
-                        product.price)
-                )}
+                ₹ {product.price}
               </p>
               <p className="text-green-600 text-md font-semibold">
-                {Math.round(
-                  ((product.price - product.discountPrice) * 100) / product.price
-                )}
-                % OFF
+                {product.discountPrice}% OFF
               </p>
             </div>
           ) : (
@@ -86,9 +79,7 @@ const ProductCard = ({ product, badge }) => {
 
           {/* 🔥 Badge for sold count */}
           {badge && (
-            <p className="text-xs mt-1 font-medium text-orange-600">
-              {badge}
-            </p>
+            <p className="text-xs mt-1 font-medium text-orange-600">{badge}</p>
           )}
         </div>
       </div>

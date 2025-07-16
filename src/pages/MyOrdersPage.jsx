@@ -17,7 +17,7 @@ const MyOrders = () => {
   });
   const [reviewedProducts, setReviewedProducts] = useState(new Set());
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
 
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.orders);
@@ -165,7 +165,7 @@ const MyOrders = () => {
           <thead className="bg-gray-50 text-xs uppercase text-gray-700">
             <tr>
               <th className="py-3 px-4">Image</th>
-              <th className="py-3 px-4">Order ID</th>
+              <th className="py-3 px-4">Order Name</th>
               <th
                 className="py-3 px-4 cursor-pointer hover:underline"
                 onClick={() => handleSort("createdAt")}

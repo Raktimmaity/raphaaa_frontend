@@ -9,7 +9,7 @@
   display: flex;
   gap: 1rem;
   width: fit-content;
-  animation: scroll-left 25s linear infinite;
+  animation: scroll-left 60s linear infinite;
 }
 
 .product-card-wrapper {
