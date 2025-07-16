@@ -177,7 +177,7 @@ const MyOrders = () => {
                   </span>
                 )}
               </th>
-              <th className="py-3 px-4">Shipping Address</th>
+              {/* <th className="py-3 px-4">Shipping Address</th> */}
               <th className="py-3 px-4">Items</th>
               <th className="py-3 px-4">Price</th>
               <th className="py-3 px-4">Status</th>
@@ -222,10 +222,10 @@ const MyOrders = () => {
                       {new Date(order.createdAt).toLocaleTimeString()}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
+                  {/* <td className="py-3 px-4">
                     {order.shippingAddress.city},{" "}
                     {order.shippingAddress.country}
-                  </td>
+                  </td> */}
                   <td className="py-3 px-4">
                     <span className="font-medium">
                       {order.orderItems.length}
