@@ -3,7 +3,7 @@ import JoditEditor from "jodit-react";
 import axios from "axios";
 import { toast } from "sonner";
 
-const AdminAboutSettings = () => {
+const PrivacyPolicySettings = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
@@ -11,11 +11,11 @@ const AdminAboutSettings = () => {
   useEffect(() => {
     const fetchAbout = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/about`);
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/policy`);
         setContent(data.content || "");
       } catch (error) {
-        console.error("Failed to fetch About Us content");
-        toast.error("Failed to load About Us content");
+        console.error("Failed to fetch Privacy and Policy content");
+        toast.error("Failed to load Privacy and Policy content");
       }
     };
     fetchAbout();
@@ -25,17 +25,17 @@ const AdminAboutSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/settings/about`, { content });
-      toast.success("About Us updated successfully!");
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/settings/policy`, { content });
+      toast.success("Privacy and Policy updated successfully!");
     } catch (error) {
-      console.error("Failed to update About Us content");
-      toast.error("Failed to update About Us.");
+      console.error("Failed to update Privacy and Policy content");
+      toast.error("Failed to update Privacy and Policy");
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mt-10 border border-gray-200">
-      <h2 className="text-2xl font-bold mb-4">Edit About Us Page</h2>
+      <h2 className="text-2xl font-bold mb-4">Edit Privacy and Policy Page</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <JoditEditor
           ref={editor}
@@ -54,4 +54,4 @@ const AdminAboutSettings = () => {
   );
 };
 
-export default AdminAboutSettings;
+export default PrivacyPolicySettings;

@@ -6,7 +6,7 @@ import {
   FaSignOutAlt,
   FaStore,
   FaUser,
-  FaCog
+  FaCog,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
@@ -65,11 +65,20 @@ const AdminSidebar = () => {
 
         {user && (
           <div className="flex items-center justify-center gap-4 bg-gray-800 p-3 rounded-lg">
-            <img
-              src={icon}
-              alt="Profile"
-              className="w-12 h-12 rounded-full object-cover border-2 border-white"
-            />
+            {user.photo ? (
+              <img
+                src={user.photo}
+                alt={user.name || user.email}
+                className="w-12 h-12 rounded-full object-cover border-2 border-white"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center text-lg font-bold border-2 border-white">
+                {user.name
+                  ? user.name.charAt(0).toUpperCase()
+                  : user.email?.charAt(0).toUpperCase()}
+              </div>
+            )}
+
             <div className="text-left text-sm text-gray-200">
               <p className="font-semibold">{user.name}</p>
               <p className="text-xs text-gray-400">{user.email}</p>
@@ -217,94 +226,93 @@ const AdminSidebar = () => {
 
         {/* Visible to both admin and merchantise */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-  <div className="text-gray-300">
-    <details className="group">
-      <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
-        <span className="flex items-center gap-2">
-          <FaBoxOpen className="text-lg" />
-          <span>Products</span>
-        </span>
-        <svg
-          className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      </summary>
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FaBoxOpen className="text-lg" />
+                  <span>Products</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
 
-      <div className="ml-6 mt-1 space-y-1">
-        <NavLink
-          to="/admin/add-product"
-          className={({ isActive }) =>
-            isActive
-              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-          }
-        >
-          Add Product
-        </NavLink>
-        <NavLink
-          to="/admin/products"
-          className={({ isActive }) =>
-            isActive
-              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-          }
-        >
-          All Products
-        </NavLink>
-      </div>
-    </details>
-  </div>
-)}
+              <div className="ml-6 mt-1 space-y-1">
+                <NavLink
+                  to="/admin/add-product"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  Add Product
+                </NavLink>
+                <NavLink
+                  to="/admin/products"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  All Products
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-  <div className="text-gray-300">
-    <details className="group">
-      <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
-        <span className="flex items-center gap-2">
-          <FaBoxOpen className="text-lg" />
-          <span>Collab</span>
-        </span>
-        <svg
-          className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      </summary>
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FaBoxOpen className="text-lg" />
+                  <span>Collab</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
 
-      <div className="ml-6 mt-1 space-y-1">
-        <NavLink
-          to="/admin/collab-settings"
-          className={({ isActive }) =>
-            isActive
-              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-          }
-        >
-          Settings
-        </NavLink>
-        <NavLink
-          to="/admin/collabs"
-          className={({ isActive }) =>
-            isActive
-              ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-              : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-          }
-        >
-          View Collabs
-        </NavLink>
-      </div>
-    </details>
-  </div>
-)}
-
+              <div className="ml-6 mt-1 space-y-1">
+                <NavLink
+                  to="/admin/collab-settings"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  Settings
+                </NavLink>
+                <NavLink
+                  to="/admin/collabs"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  View Collabs
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
 
         {/* Only for admin */}
         {(user?.role === "admin" ||
@@ -390,7 +398,7 @@ const AdminSidebar = () => {
                   Hero Section
                 </NavLink>
 
-                {/* <NavLink
+                <NavLink
                   to="/admin/website-settings/about"
                   className={({ isActive }) =>
                     isActive
@@ -399,7 +407,17 @@ const AdminSidebar = () => {
                   }
                 >
                   About Section
-                </NavLink> */}
+                </NavLink>
+                <NavLink
+                  to="/admin/website-settings/privacy&policy"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  Privacy & Policy
+                </NavLink>
 
                 <NavLink
                   to="/admin/website-settings/contact"

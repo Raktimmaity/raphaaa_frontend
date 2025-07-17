@@ -147,22 +147,14 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 product.discountPrice < product.price ? (
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
-                      ₹ {product.price}
+                      ₹ {product.discountPrice}
                     </p>
                     <p className="text-sm text-gray-500 line-through">
                       ₹{" "}
-                      {Math.floor(
-                        (product.discountPrice * 100) /
-                          (100 -
-                            ((product.price - product.discountPrice) * 100) /
-                              product.price)
-                      )}
+                      {product.price}
                     </p>
                     <p className="text-green-600 text-md font-semibold">
-                      {Math.round(
-                        ((product.price - product.discountPrice) * 100) /
-                          product.price
-                      )}
+                      {product.offerPercentage}
                       % OFF
                     </p>
                   </div>

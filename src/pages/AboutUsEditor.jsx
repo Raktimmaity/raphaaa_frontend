@@ -3,32 +3,29 @@ import JoditEditor from "jodit-react";
 import axios from "axios";
 import { toast } from "sonner";
 
-const AdminAboutSettings = () => {
+const AboutUsEditor = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
-  // ✅ Fetch existing About Us content
+  // Fetch existing content
   useEffect(() => {
     const fetchAbout = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/about`);
-        setContent(data.content || "");
+        const { data } = await axios.get("/api/about");
+        setContent(data.description);
       } catch (error) {
         console.error("Failed to fetch About Us content");
-        toast.error("Failed to load About Us content");
       }
     };
     fetchAbout();
   }, []);
 
-  // ✅ Submit updated content
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/settings/about`, { content });
+      await axios.put("/api/about", { description: content });
       toast.success("About Us updated successfully!");
     } catch (error) {
-      console.error("Failed to update About Us content");
       toast.error("Failed to update About Us.");
     }
   };
@@ -54,4 +51,4 @@ const AdminAboutSettings = () => {
   );
 };
 
-export default AdminAboutSettings;
+export default AboutUsEditor;

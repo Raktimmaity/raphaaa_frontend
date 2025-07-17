@@ -10,7 +10,6 @@ const Topbar = () => {
   const [contactInfo, setContactInfo] = useState(null);
 
   useEffect(() => {
-    // Simulate loading delay
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -31,20 +30,15 @@ const Topbar = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-sky-100 via-sky-300 to-sky-30 text-zinc-800">
+      <div className="bg-gradient-to-r from-sky-100 via-sky-300 to-sky-50 text-zinc-800">
         <div className="container mx-auto flex justify-between items-center py-3">
-          {/* Left Skeleton */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="h-5 w-5 bg-sky-200 rounded-full animate-pulse"></div>
             <div className="h-5 w-5 bg-sky-200 rounded-full animate-pulse"></div>
           </div>
-
-          {/* Center Skeleton */}
           <div className="text-sm text-center flex-grow">
             <div className="h-4 w-60 mx-auto bg-sky-200 rounded animate-pulse"></div>
           </div>
-
-          {/* Right Skeleton */}
           <div className="text-sm hidden md:block">
             <div className="h-4 w-28 bg-sky-200 rounded animate-pulse"></div>
           </div>
@@ -54,26 +48,35 @@ const Topbar = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-sky-100 via-sky-300 to-sky-30 text-zinc-800">
-      <div className="container mx-auto flex justify-between itmes-center py-3">
+    <div className="bg-gradient-to-r from-sky-100 via-sky-300 to-sky-50 text-zinc-800">
+      <div className="container mx-auto flex justify-between items-center py-3 px-4 md:px-0">
+        {/* Left: Social Icons */}
         <div className="hidden md:flex items-center space-x-4">
           {contactInfo?.showFacebook && (
-            <a href={contactInfo.facebookUrl} className="hover:text-sky-500">
+            <a
+              href={contactInfo.facebookUrl}
+              className="hover:text-blue-600 transition-transform duration-200 hover:scale-110"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaFacebook className="h-5 w-5" />
             </a>
           )}
           {contactInfo?.showInstagram && (
-            <a href={contactInfo.instagramUrl} className="hover:text-sky-500">
+            <a
+              href={contactInfo.instagramUrl}
+              className="hover:text-pink-600 transition-transform duration-200 hover:scale-110"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <IoLogoInstagram className="h-5 w-5" />
             </a>
           )}
-          {/* <a href="#" className='hover:text-gray-300'>
-              <RiTwitterXLine className='h-4 w-4' />
-          </a> */}
+          {/* Twitter support can be added later */}
         </div>
 
-        <div className="text-sm text-center flex-grow">
-          {/* Show marquee only on small screens */}
+        {/* Center: Shipping message */}
+        <div className="text-sm text-center flex-grow font-medium text-gray-800">
           <div className="block md:hidden">
             <marquee behavior="scroll" direction="left" scrollamount="5">
               <span className="font-semibold">
@@ -81,24 +84,22 @@ const Topbar = () => {
               </span>
             </marquee>
           </div>
-
-          {/* Show static text on md and larger */}
           <div className="hidden md:block">
-            <span className="font-normal">
-              We ship worldwide - Fast and reliable shipping!!
+            <span>
+              We ship worldwide — <span className="text-blue-700">Fast & Reliable Shipping!</span>
             </span>
           </div>
         </div>
+
+        {/* Right: Phone Number */}
         {contactInfo?.showPhone && (
           <div className="text-sm hidden md:block">
-            {contactInfo?.showPhone && (
-              <a
-                href={`tel:${contactInfo.phone}`}
-                className="text-blue-600 hover:text-sky-500 transition-colors"
-              >
-                {contactInfo.phone}
-              </a>
-            )}
+            <a
+              href={`tel:${contactInfo.phone}`}
+              className="text-blue-700 font-semibold hover:text-sky-600 transition-colors duration-200"
+            >
+              {contactInfo.phone}
+            </a>
           </div>
         )}
       </div>

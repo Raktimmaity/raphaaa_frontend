@@ -204,28 +204,37 @@ const Profile = () => {
           <div className="w-full md:h-2/3 lg:w-3/4">
             <div className="bg-white shadow-md rounded-lg">
               <div className="flex justify-center gap-4 p-4 bg-gray-100 rounded-t-lg">
-  <button
-    className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
-      activeTab === "orders"
-        ? "bg-blue-600 text-white shadow"
-        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-    }`}
-    onClick={() => setActiveTab("orders")}
-  >
-    My Orders
-  </button>
-  <button
-    className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
-      activeTab === "address"
-        ? "bg-blue-600 text-white shadow"
-        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-    }`}
-    onClick={() => setActiveTab("address")}
-  >
-    Address Book
-  </button>
-</div>
-
+                <button
+                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                    activeTab === "orders"
+                      ? "bg-blue-600 text-white shadow"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setActiveTab("orders")}
+                >
+                  My Orders
+                </button>
+                <button
+                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                    activeTab === "address"
+                      ? "bg-blue-600 text-white shadow"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setActiveTab("address")}
+                >
+                  Address Book
+                </button>
+                {/* <button
+                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                    activeTab === "coupons"
+                      ? "bg-blue-600 text-white shadow"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setActiveTab("coupons")}
+                >
+                  Coupons
+                </button> */}
+              </div>
 
               <div className="p-6">
                 {activeTab === "orders" ? (

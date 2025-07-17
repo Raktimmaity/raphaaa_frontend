@@ -51,13 +51,17 @@ const ProductCard = ({ product, badge }) => {
             <div className="flex items-baseline gap-2 flex-wrap">
               <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
                 ₹{" "}
-                {Math.round(product.price * (1 - product.discountPrice / 100))}
+                {product.discountPrice}
               </p>
               <p className="text-sm text-gray-500 line-through">
                 ₹ {product.price}
               </p>
               <p className="text-green-600 text-md font-semibold">
-                {product.discountPrice}% OFF
+                {(product.offerPercentage) ? (
+                  product.offerPercentage % OFF
+                ) : (
+                  ""
+                )}
               </p>
             </div>
           ) : (

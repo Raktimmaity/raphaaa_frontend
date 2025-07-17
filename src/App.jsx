@@ -47,6 +47,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import AdminCollabSettings from "./pages/AdminCollabSettings";
 import AdminCollabPreview from "./pages/AdminCollabPreview";
 import EditCollab from "./pages/EditCollab";
+import AdminAboutSettings from "./pages/AdminAboutSettings";
+import PrivacyPolicySettings from "./pages/PrivacyPolicySettings";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -238,14 +240,22 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route
+            <Route
               path="website-settings/about"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <AdminAboutSettings/>
                 </ProtectedRoute>
               }
-            /> */}
+            />
+            <Route
+              path="website-settings/privacy&policy"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <PrivacyPolicySettings/>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="website-settings/contact"
               element={

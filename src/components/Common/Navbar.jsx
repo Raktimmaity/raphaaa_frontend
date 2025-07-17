@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlineUser, HiChevronDown } from "react-icons/hi";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
@@ -8,10 +8,9 @@ import { IoIosClose } from "react-icons/io";
 import logo from "../../assets/logo1.png";
 import { TbBrandMeta } from "react-icons/tb";
 import { IoLogoInstagram } from "react-icons/io5";
-import { RiTwitterXLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { HiChevronDown } from "react-icons/hi";
 import { logout } from "../../redux/slices/authSlice";
+import axios from "axios";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,6 +23,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [contactInfo, setContactInfo] = useState(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -35,21 +35,19 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close dropdown when route changes
   useEffect(() => {
     setProfileOpen(false);
   }, [location]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000); // simulate loading
+    const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
   const isActive = (path) => location.pathname === path;
 
   const cartItemCount =
-    cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
-    0;
+    cart?.products?.reduce((total, product) => total + product.quantity, 0) || 0;
 
   const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
@@ -58,6 +56,18 @@ const Navbar = () => {
   const toggleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
+
+  useEffect(() => {
+    const fecthContactInfo = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
+        setContactInfo(res.data);
+      } catch (err) {
+        console.error("Failed to load contact settings", err);
+      }
+    };
+    fecthContactInfo();
+  }, [])
 
   if (loading) {
     return (
@@ -84,58 +94,29 @@ const Navbar = () => {
   return (
     <>
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
-        {/* Left logo */}
-        <div>
-          <Link to="/" className="text-2xl font-medium no-underline">
-            <img src={logo} alt="Logo" className="h-10 w-auto" />
-          </Link>
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2 group">
+          <img src={logo} alt="Logo" className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" />
+        </Link>
+
+        {/* Center Navigation */}
+        <div className="hidden md:flex space-x-6 items-center">
+          {["/collections/all", "/about", "/contact-us", "/privacy-policy"].map((path, index) => (
+            <Link
+              key={path}
+              to={path}
+              className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${
+                isActive(path)
+                  ? "text-sky-600 border-b-2 border-sky-600 pb-1"
+                  : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
+              }`}
+            >
+              {["Collections", "About", "Contact Us", "Privacy & Policy"][index]}
+            </Link>
+          ))}
         </div>
 
-        {/* Center navigation links */}
-        <div className="hidden md:flex space-x-6">
-          <Link
-            to="/collections/all"
-            className={`text-sm font-extrabold uppercase ${
-              isActive("/collections/all")
-                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
-                : "text-gray-700 hover:text-black"
-            }`}
-          >
-            Collections
-          </Link>
-          <Link
-            to="/about"
-            className={`text-sm font-extrabold uppercase ${
-              isActive("/about")
-                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
-                : "text-gray-700 hover:text-black"
-            }`}
-          >
-            About
-          </Link>
-          <Link
-            to="/contact-us"
-            className={`text-sm font-extrabold uppercase ${
-              isActive("/contact-us")
-                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
-                : "text-gray-700 hover:text-black"
-            }`}
-          >
-            CONTACT US
-          </Link>
-          <Link
-            to="/privacy-policy"
-            className={`text-sm font-extrabold uppercase ${
-              isActive("/privacy-policy")
-                ? "bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent underline"
-                : "text-gray-700 hover:text-black"
-            }`}
-          >
-            Privacy & Policy
-          </Link>
-        </div>
-
-        {/* Right icons */}
+        {/* Right Side */}
         <div className="flex items-center space-x-4">
           {user &&
             (user.role === "admin" ||
@@ -143,33 +124,32 @@ const Navbar = () => {
               user.role === "delivery_boy") && (
               <Link
                 to={user.role === "delivery_boy" ? "/admin/orders" : "/admin"}
-                className="block bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
+                className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 rounded-full shadow hover:shadow-md hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
               >
                 {user.role === "admin"
                   ? "Admin Panel"
                   : user.role === "merchantise"
                   ? "Merchandise Panel"
-                  : user.role === "delivery_boy"
-                  ? "Delivery Panel"
-                  : "User Panel"}
+                  : "Delivery Panel"}
               </Link>
             )}
+
           {user ? (
             user.role === "customer" && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileOpen((prev) => !prev)}
-                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white transition duration-200"
+                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-100 transition-all"
                 >
-                  <HiOutlineUser className="h-6 w-6 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full p-1" />
-                  <span className="text-sm font-medium text-gray-700 hidden md:inline">
+                  <HiOutlineUser className="h-6 w-6 text-sky-600" />
+                  <span className="text-sm font-medium text-gray-800 hidden md:inline">
                     {user.name}
                   </span>
                   <HiChevronDown className="h-4 w-4 text-gray-500" />
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-md z-50">
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <Link
                       to="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -185,8 +165,8 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         localStorage.removeItem("userInfo");
-                        dispatch(logout()); // clear Redux state
-                        navigate("/login"); // 👈 soft navigation
+                        dispatch(logout());
+                        navigate("/login");
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                     >
@@ -199,20 +179,16 @@ const Navbar = () => {
           ) : (
             <Link
               to="/login"
-              className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
+              className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 rounded-full shadow hover:from-sky-600 hover:to-blue-700 transition duration-300"
             >
-              {/* <HiOutlineUser className="h-6 w-6 text-gray-700" /> */}
               Login
             </Link>
           )}
 
-          <button
-            onClick={toggleCartDrawer}
-            className="relative hover:text-black"
-          >
+          <button onClick={toggleCartDrawer} className="relative hover:scale-105 transition-transform">
             <HiOutlineShoppingBag className="h-6 w-6 text-gray-700" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 bg-sky-500 text-white text-xs rounded-full px-2 py-0.5">
+              <span className="absolute -top-1 -right-2 bg-sky-500 text-white text-xs rounded-full px-2 py-0.5 shadow">
                 {cartItemCount}
               </span>
             )}
@@ -221,7 +197,8 @@ const Navbar = () => {
           <div className="overflow-hidden">
             <SearchBar />
           </div>
-          <button onClick={toggleNavDrawer} className="md:hidden">
+
+          <button onClick={toggleNavDrawer} className="md:hidden transition-transform hover:scale-110">
             <HiMiniBars3BottomRight className="h-6 w-6 text-gray-700" />
           </button>
         </div>
@@ -229,9 +206,9 @@ const Navbar = () => {
 
       <CartDrawer drawerOpen={drawerOpen} toggleCartDrawer={toggleCartDrawer} />
 
-      {/* Mobile Navgation */}
+      {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 left-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
+        className={`fixed top-0 left-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-xl transform transition-transform duration-300 z-50 ${
           navDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -246,76 +223,54 @@ const Navbar = () => {
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-4">Menu</h2>
           <nav className="space-y-4">
-            <Link
-              to="/"
-              onClick={toggleNavDrawer}
-              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
-            >
-              Home
-            </Link>
-            <Link
-              to="/collections/all"
-              onClick={toggleNavDrawer}
-              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
-            >
-              Collections
-            </Link>
-            <Link
-              to="/about"
-              onClick={toggleNavDrawer}
-              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
-            >
-              About Us
-            </Link>
-            <Link
-              to="/contact-us"
-              onClick={toggleNavDrawer}
-              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
-            >
-              Contact Us
-            </Link>
-            <Link
-              to="privacy-policy"
-              onClick={toggleNavDrawer}
-              className="block text-gray-700 hover:text-black text-sm font-medium uppercase"
-            >
-              Privacy & Policy
-            </Link>
+            {[
+              { path: "/", label: "Home" },
+              { path: "/collections/all", label: "Collections" },
+              { path: "/about", label: "About Us" },
+              { path: "/contact-us", label: "Contact Us" },
+              { path: "/privacy-policy", label: "Privacy & Policy" },
+            ].map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={toggleNavDrawer}
+                className="block text-gray-700 hover:text-sky-600 text-base font-semibold uppercase tracking-wide transition"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="mt-8 pt-4 absolute bottom-0 pb-8">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">
-              Follow Us
-            </h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">Follow Us</h3>
             <div className="flex space-x-4 mb-4">
+              {contactInfo?.showFacebook && (
               <a
-                href="https://www.facebook.com/Raphaaa.Store/"
+                href={contactInfo.facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <TbBrandMeta className="h-5 w-5 text-blue-600 inline" />
               </a>
+              )}
+              {contactInfo?.showInstagram && (
               <a
-                href="https://www.instagram.com/raphaaaofficial/"
+                href={contactInfo.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <IoLogoInstagram className="h-5 w-5 inline text-[#E1306C]" />
               </a>
-              {/* <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <RiTwitterXLine className="h-4 w-4 inline" />
-              </a> */}
+              )}
             </div>
-
-            <h3 className="text-sm font-semibold text-gray-700 mb-1">
-              Contact
-            </h3>
-            <p className="text-xs text-gray-600">support@raphaa.com</p>
-            <p className="text-xs text-gray-600">+91 98765 43210</p>
+            
+            <h3 className="text-sm font-semibold text-gray-700 mb-1">Contact</h3>
+            {contactInfo?.showGmail && (
+              <a href={`mailto:${contactInfo.gmail}`} className="text-xs text-gray-600">{contactInfo.gmail}</a>
+            )}
+            {contactInfo?.showPhone && (
+              <a href={`tel:${contactInfo.phone}`} className="text-xs text-gray-600">{contactInfo.phone}</a>
+            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { updateProfile } from "../redux/slices/authSlice"; // ✅ Add this line
+import axios from "axios";
+import { updateProfile } from "../redux/slices/authSlice";
 
 const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -11,8 +12,11 @@ const UpdateProfile = () => {
     name: "",
     email: "",
     password: "",
+    photo: "",
   });
+  const [uploading, setUploading] = useState(false);
   const [greeting, setGreeting] = useState("");
+
   useEffect(() => {
     const updateGreeting = () => {
       const hour = new Date().getHours();
@@ -21,12 +25,9 @@ const UpdateProfile = () => {
       else if (hour < 21) setGreeting("Good Evening");
       else setGreeting("Good Night");
     };
-
-    updateGreeting(); // Initial set
-
-    const interval = setInterval(updateGreeting, 60 * 1000); // Update every minute
-
-    return () => clearInterval(interval); // Cleanup on unmount
+    updateGreeting();
+    const interval = setInterval(updateGreeting, 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -35,16 +36,39 @@ const UpdateProfile = () => {
         name: user.name || "",
         email: user.email || "",
         password: "",
+        photo: user.photo || "",
       });
     }
   }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formDataCloud = new FormData();
+    formDataCloud.append("image", file);
+    try {
+      setUploading(true);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
+        formDataCloud,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      setFormData((prev) => ({ ...prev, photo: data.imageUrl }));
+      setUploading(false);
+    } catch (error) {
+      setUploading(false);
+      toast.error("Image upload failed");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -53,7 +77,6 @@ const UpdateProfile = () => {
       toast.error("Name and email are required");
       return;
     }
-
     const result = await dispatch(updateProfile(formData));
     if (result?.meta?.requestStatus === "fulfilled") {
       toast.success("Profile updated successfully");
@@ -68,15 +91,20 @@ const UpdateProfile = () => {
       {loading && <p className="text-blue-600 font-medium">Loading...</p>}
       {error && <p className="text-red-500 font-medium">Error: {error}</p>}
 
-      {/* ✅ Profile Card */}
       {user && (
         <div className="relative bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-100 shadow-xl rounded-xl mb-8 p-6 sm:flex sm:items-center sm:justify-between transition-all duration-300">
-          {/* Avatar with Glow Ring */}
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white flex items-center justify-center text-2xl font-bold shadow-md ring-4 ring-white">
-              {user.name?.charAt(0).toUpperCase()}
-            </div>
-            {/* Info */}
+            {formData.photo ? (
+              <img
+                src={formData.photo}
+                alt="Profile"
+                className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white flex items-center justify-center text-2xl font-bold shadow-md ring-4 ring-white">
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div>
               <h3 className="text-2xl font-bold text-blue-800 mb-1">
                 {greeting}, {user.name}
@@ -94,13 +122,9 @@ const UpdateProfile = () => {
                       : "bg-green-100 text-green-700"
                   }`}
                 >
-                  {user.role === "admin"
-                    ? "Admin"
-                    : user.role === "merchantise"
-                    ? "Merchantise"
-                    : user.role === "delivery_boy"
-                    ? "Delivery Boy"
-                    : "Customer"}
+                  {user.role
+                    .replace("_", " ")
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
                 </span>
               </p>
               <p className="text-sm text-gray-600">
@@ -110,32 +134,6 @@ const UpdateProfile = () => {
                 <span className="font-medium">User ID:</span> {user._id}
               </p>
             </div>
-          </div>
-
-          {/* Badge Icon */}
-          <div className="hidden sm:block mt-6 sm:mt-0">
-            <span
-              className={`inline-flex items-center gap-2 bg-white border px-4 py-1.5 rounded-full shadow text-sm font-medium ${
-                user.role === "admin"
-                  ? "border-red-200 text-red-600"
-                  : user.role === "merchantise"
-                  ? "border-purple-200 text-purple-600"
-                  : user.role === "delivery_boy"
-                  ? "border-yellow-200 text-yellow-600"
-                  : "border-green-200 text-green-600"
-              }`}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2a6 6 0 016 6c0 2.137-1.262 3.992-3.098 4.897l.597 1.791a1 1 0 01-1.899.632L10 13.618l-1.6 1.702a1 1 0 01-1.9-.631l.597-1.791A5.998 5.998 0 014 8a6 6 0 016-6z" />
-              </svg>
-              {user.role === "admin"
-                ? "Admin Access"
-                : user.role === "merchantise"
-                ? "Merchant Tools"
-                : user.role === "delivery_boy"
-                ? "Delivery Access"
-                : "Customer Account"}
-            </span>
           </div>
         </div>
       )}
@@ -191,15 +189,51 @@ const UpdateProfile = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
+            <div>
+              <label
+                htmlFor="photo"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Profile Picture
+              </label>
+
+              <div className="flex items-center gap-4">
+                {/* Preview if available */}
+                {formData.photo ? (
+                  <img
+                    src={formData.photo}
+                    alt="Preview"
+                    className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-sm"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-blue-600 font-bold text-lg border-2 border-gray-300 shadow-sm">
+                    {formData.name?.charAt(0).toUpperCase() || "?"}
+                  </div>
+                )}
+
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id="photo"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
+                  />
+                  {uploading && (
+                    <p className="text-blue-500 text-xs mt-1">Uploading...</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-6">
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow"
-              disabled={loading}
+              disabled={loading || uploading}
             >
-              {loading ? "Updating..." : "Update Profile"}
+              {loading || uploading ? "Updating..." : "Update Profile"}
             </button>
           </div>
         </form>

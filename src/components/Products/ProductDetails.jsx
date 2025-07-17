@@ -44,6 +44,27 @@ const ProductDetails = ({ productId }) => {
   // ✅ Inside your ProductDetails component (near useState declarations)
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [finalPrice, setFinalPrice] = useState(null);
+
+  useEffect(() => {
+  const applyCoupon = () => {
+    if (selectedProduct && user) {
+      const regDate = new Date(user.createdAt);
+      const today = new Date();
+      const daysSinceRegistration = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
+
+      if (couponCode.trim().toUpperCase() === "FIRST10" && daysSinceRegistration <= 10) {
+        const discounted = selectedProduct.price - selectedProduct.price * 0.1;
+        setFinalPrice(Math.round(discounted));
+        return;
+      }
+    }
+    setFinalPrice(null); // fallback
+  };
+
+  applyCoupon();
+}, [couponCode, selectedProduct, user]);
 
   // ✅ Function to handle image click
   const handleImageClick = (imgUrl) => {
@@ -374,6 +395,8 @@ const ProductDetails = ({ productId }) => {
     };
   });
 
+
+
   return (
     <div className=" min-h-screen py-10 px-4">
       {selectedProduct && (
@@ -485,14 +508,14 @@ const ProductDetails = ({ productId }) => {
                   <div className="mb-4">
                     <div className="flex items-end gap-4">
                       <div className="text-4xl font-semibold text-sky-700">
-                        ₹{selectedProduct.price}
+                        ₹{selectedProduct.discountPrice}
                       </div>
                       <div className="text-gray-500 line-through text-xl">
-                        ₹{calculateOriginalPrice()}
+                        ₹{selectedProduct.price}
                       </div>
                     </div>
                     <div className="text-green-600 font-medium mt-1">
-                      {selectedProduct.discountPrice}% OFF
+                      {selectedProduct.offerPercentage}% OFF
                     </div>
                   </div>
                 ) : (
@@ -603,6 +626,22 @@ const ProductDetails = ({ productId }) => {
                     </span>
                   )}
                 </div>
+                {/* <div className="mb-6">
+  <p className="font-medium text-gray-700 mb-2">Apply Coupon Code:</p>
+  <input
+    type="text"
+    placeholder="Enter coupon (e.g., FIRST10)"
+    value={couponCode}
+    onChange={(e) => setCouponCode(e.target.value)}
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+  />
+  {finalPrice && (
+    <p className="text-green-600 mt-2 font-medium">
+      Coupon Applied! Discounted Price: ₹{finalPrice}
+    </p>
+  )}
+</div> */}
+
 
                 {/* Add to Cart */}
                 <button

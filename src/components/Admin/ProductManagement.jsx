@@ -36,16 +36,15 @@ const ProductManagement = () => {
   };
 
   useEffect(() => {
-  const handleEscape = (e) => {
-    if (e.key === "Escape") {
-      setShowConfirmModal(false);
-    }
-  };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        setShowConfirmModal(false);
+      }
+    };
 
-  document.addEventListener("keydown", handleEscape);
-  return () => document.removeEventListener("keydown", handleEscape);
-}, []);
-
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchAdminProducts());
@@ -226,7 +225,7 @@ const ProductManagement = () => {
                     <td className="py-3 px-6 font-medium text-gray-900">
                       {product.name}
                     </td>
-                    <td className="py-3 px-6">₹{product.price}</td>
+                    <td className="py-3 px-6">₹{product.discountPrice}</td>
                     <td className="py-3 px-6">
                       <span
                         className={`px-2 py-1 text-xs rounded-full flex items-center justify-center gap-1 ${
@@ -281,34 +280,36 @@ const ProductManagement = () => {
           </table>
           {showConfirmModal && (
             <div
-  className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 animate-fade-in"
-  onClick={() => setShowConfirmModal(false)}
->
-  <div
-    className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full animate-fade-in-slow"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
-    <p className="text-sm text-gray-600 mb-6">
-      Are you sure you want to delete this product? This action cannot be undone.
-    </p>
-    <div className="flex justify-end gap-3">
-      <button
-        onClick={() => setShowConfirmModal(false)}
-        className="px-4 py-2 text-sm rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
-      >
-        Cancel
-      </button>
-      <button
-        onClick={confirmDelete}
-        className="px-4 py-2 text-sm rounded-md bg-red-500 text-white hover:bg-red-600"
-      >
-        Yes, Delete
-      </button>
-    </div>
-  </div>
-</div>
-
+              className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 animate-fade-in"
+              onClick={() => setShowConfirmModal(false)}
+            >
+              <div
+                className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full animate-fade-in-slow"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Confirm Deletion
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Are you sure you want to delete this product? This action
+                  cannot be undone.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowConfirmModal(false)}
+                    className="px-4 py-2 text-sm rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="px-4 py-2 text-sm rounded-md bg-red-500 text-white hover:bg-red-600"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

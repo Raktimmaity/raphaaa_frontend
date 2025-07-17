@@ -150,18 +150,14 @@ const NewArrivals = () => {
                     <div className="flex flex-col gap-1 mt-2">
                       <div className="flex items-center gap-2">
                         <p className="text-blue-700 font-bold text-lg">
-                          ₹{product.price}
+                          ₹{product.discountPrice}
                         </p>
                         <p className="line-through text-gray-500 text-sm">
-                          ₹
-                          {Math.floor(
-                            (product.discountPrice * 100) /
-                              (100 - product.discountPrice)
-                          )}
+                          ₹{product.price}
                         </p>
                       </div>
                       <p className="text-green-600 text-sm font-semibold">
-                        {product.discountPrice}% OFF
+                        {product.offerPercentage}% OFF
                       </p>
                     </div>
                   ) : (

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { createProduct } from "../../redux/slices/adminProductSlice";
 import { toast } from "sonner";
-
+import Select from "react-select";
 
 const AddProduct = () => {
   // const [loading, setLoading] = useState(false);
@@ -12,16 +12,17 @@ const AddProduct = () => {
     description: "",
     price: "",
     discountPrice: "",
+    offerPercentage: "",
     countInStock: "",
     sku: "",
     category: "",
     brand: "",
-    sizes: "",
-    colors: "",
+    sizes: [],
+    colors: [],
     collections: "",
     material: "",
     gender: "",
-    images: [{ url: "", altText: "" }],
+    images: [],
     isFeatured: false,
     isPublished: false,
     tags: "",
@@ -31,17 +32,16 @@ const AddProduct = () => {
     dimensions: {
       length: "",
       width: "",
-      height: ""
+      height: "",
     },
-    weight: ""
+    weight: "",
   });
-  const { loading, error } = useSelector(state => state.adminProducts);
+  const { loading } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
-
 
   const handleProductChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === "checkbox") {
       setProductData({ ...productData, [name]: checked });
     } else if (name.startsWith("dimensions.")) {
@@ -50,125 +50,166 @@ const AddProduct = () => {
         ...productData,
         dimensions: {
           ...productData.dimensions,
-          [dimensionKey]: value
-        }
+          [dimensionKey]: value,
+        },
       });
     } else {
-      setProductData({ ...productData, [name]: value });
+      const updatedData = { ...productData, [name]: value };
+      if (name === "offerPercentage") {
+        const price = parseFloat(updatedData.price);
+        const offer = parseFloat(value);
+        if (!isNaN(price) && !isNaN(offer)) {
+          const discount = price - (price * offer) / 100;
+          updatedData.discountPrice = Math.round(discount);
+        }
+      }
+      setProductData(updatedData);
     }
   };
 
-  const handleImageChange = (index, field, value) => {
-    const updatedImages = [...productData.images];
-    updatedImages[index][field] = value;
-    setProductData({ ...productData, images: updatedImages });
-  };
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = [];
 
-  const addImageField = () => {
-    setProductData({
-      ...productData,
-      images: [...productData.images, { url: "", altText: "" }]
-    });
-  };
+    for (let file of files) {
+      const formData = new FormData();
+      formData.append("image", file);
 
-  const removeImageField = (index) => {
-    if (productData.images.length > 1) {
-      const updatedImages = productData.images.filter((_, i) => i !== index);
-      setProductData({ ...productData, images: updatedImages });
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
+          }
+        );
+
+        newImages.push({ url: data.imageUrl, altText: file.name });
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        toast.error(`Failed to upload image: ${file.name}`);
+      }
     }
+
+    setProductData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...newImages],
+    }));
+  };
+
+  const handleImageRemove = (index) => {
+    const updated = [...productData.images];
+    updated.splice(index, 1);
+    setProductData({ ...productData, images: updated });
+  };
+
+  const handleMultiSelect = (selectedOptions, name) => {
+    const values = selectedOptions.map((opt) => opt.value);
+    setProductData({ ...productData, [name]: values });
   };
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // setLoading(true);
-
-      // Transform data to match backend schema
       const transformedData = {
         ...productData,
         price: Number(productData.price),
-        discountPrice: productData.discountPrice ? Number(productData.discountPrice) : undefined,
+        offerPercentage: productData.offerPercentage
+          ? Number(productData.offerPercentage)
+          : 0,
+        discountPrice: productData.offerPercentage
+          ? Math.round(
+              Number(productData.price) -
+                (Number(productData.price) * Number(productData.offerPercentage)) /
+                  100
+            )
+          : productData.discountPrice
+          ? Math.round(Number(productData.discountPrice))
+          : undefined,
         countInStock: Number(productData.countInStock),
         weight: productData.weight ? Number(productData.weight) : undefined,
-        sizes: productData.sizes.split(",").map(size => size.trim()).filter(size => size),
-        colors: productData.colors.split(",").map(color => color.trim()).filter(color => color),
-        tags: productData.tags ? productData.tags.split(",").map(tag => tag.trim()).filter(tag => tag) : [],
+        tags: productData.tags
+          ? productData.tags.split(",").map((tag) => tag.trim()).filter((tag) => tag)
+          : [],
         dimensions: {
           length: productData.dimensions.length ? Number(productData.dimensions.length) : undefined,
           width: productData.dimensions.width ? Number(productData.dimensions.width) : undefined,
-          height: productData.dimensions.height ? Number(productData.dimensions.height) : undefined
+          height: productData.dimensions.height ? Number(productData.dimensions.height) : undefined,
         },
-        images: productData.images.filter(img => img.url.trim() !== "")
+        images: productData.images.filter((img) => img.url.trim() !== ""),
       };
 
-      // Remove empty dimensions object if all values are undefined
       if (!transformedData.dimensions.length && !transformedData.dimensions.width && !transformedData.dimensions.height) {
         delete transformedData.dimensions;
       }
 
-      // Get token from localStorage
-      const token = localStorage.getItem("userToken");
-      
-      // await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, transformedData, {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${token}`
-      //   },
-      // });
       dispatch(createProduct(transformedData));
 
-
-      // Reset form
-      setProductData({
-        name: "",
-        description: "",
-        price: "",
-        discountPrice: "",
-        countInStock: "",
-        sku: "",
-        category: "",
-        brand: "",
-        sizes: "",
-        colors: "",
-        collections: "",
-        material: "",
-        gender: "",
-        images: [{ url: "", altText: "" }],
-        isFeatured: false,
-        isPublished: false,
-        tags: "",
-        metaTitle: "",
-        metaDescription: "",
-        metaKeywords: "",
-        dimensions: {
-          length: "",
-          width: "",
-          height: ""
-        },
-        weight: ""
-      });
-
-      // alert("Product added successfully!");
-      toast.success('Product added successfully!');
+      toast.success("Product added successfully!");
     } catch (err) {
       console.error("Error adding product:", err);
-      // alert(`Failed to add product: ${err.response?.data?.message || err.message}`);
-      toast.error('Failed to add product');
-    } finally {
-      // setLoading(false);
+      toast.error("Failed to add product");
     }
   };
 
   return (
     <div className="p-6 bg-white shadow-md rounded-lg mb-6">
       <h3 className="text-lg font-bold mb-6">Add New Product</h3>
-      <p className="text-red-500 font-bold mb-3 animate-pulse"> * Note that product image you can upload after you can upload the product details. You can upload the product image by find using product name.</p>
+      <p className="text-red-500 font-bold mb-3 animate-pulse">
+        {" "}
+        * Note that product image you can upload after you can upload the
+        product details. You can upload the product image by find using product
+        name.
+      </p>
       <form onSubmit={handleProductSubmit}>
+        <div>
+          <label className="block text-gray-700 mb-1 font-medium">Upload Product Images</label>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="block w-full text-sm text-gray-700"
+          />
+        </div>
+
+        {/* Uploaded Image Preview */}
+        {productData.images.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {productData.images.map((img, index) => (
+              <div key={index} className="relative border p-2 rounded shadow">
+                <img src={img.url} alt={img.altText || "preview"} className="w-full h-32 object-cover rounded" />
+                <input
+                  type="text"
+                  value={img.altText}
+                  onChange={(e) => {
+                    const updated = [...productData.images];
+                    updated[index].altText = e.target.value;
+                    setProductData({ ...productData, images: updated });
+                  }}
+                  placeholder="Alt text"
+                  className="mt-1 px-2 py-1 w-full border rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleImageRemove(index)}
+                  className="absolute top-1 right-1 text-red-600 hover:text-red-800 text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Product Name */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Product Name *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Product Name *
+            </label>
             <input
               type="text"
               name="name"
@@ -181,7 +222,9 @@ const AddProduct = () => {
 
           {/* SKU */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">SKU *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              SKU *
+            </label>
             <input
               type="text"
               name="sku"
@@ -195,7 +238,9 @@ const AddProduct = () => {
 
           {/* Price */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Price *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Price *
+            </label>
             <input
               type="number"
               name="price"
@@ -208,9 +253,26 @@ const AddProduct = () => {
             />
           </div>
 
+          <div>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Offer Percentage
+            </label>
+            <input
+              type="number"
+              name="offerPercentage"
+              value={productData.offerPercentage}
+              onChange={handleProductChange}
+              min="0"
+              step="0.1"
+              placeholder="Enter discount %"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
           {/* Discount Price */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Discount Price</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Discount Price
+            </label>
             <input
               type="number"
               name="discountPrice"
@@ -224,7 +286,9 @@ const AddProduct = () => {
 
           {/* Count in Stock */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Count in Stock *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Count in Stock *
+            </label>
             <input
               type="number"
               name="countInStock"
@@ -238,7 +302,9 @@ const AddProduct = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Category *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Category *
+            </label>
             <select
               name="category"
               value={productData.category}
@@ -258,7 +324,9 @@ const AddProduct = () => {
 
           {/* Collections */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Collections *</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Collections *
+            </label>
             <select
               name="collections"
               value={productData.collections}
@@ -278,7 +346,9 @@ const AddProduct = () => {
 
           {/* Brand */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Brand</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Brand
+            </label>
             <input
               type="text"
               name="brand"
@@ -290,7 +360,9 @@ const AddProduct = () => {
 
           {/* Gender */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Gender</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Gender
+            </label>
             <select
               name="gender"
               value={productData.gender}
@@ -304,37 +376,40 @@ const AddProduct = () => {
             </select>
           </div>
 
-          {/* Sizes */}
+          {/* Sizes and Colors with react-select */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Sizes * (comma-separated)</label>
-            <input
-              type="text"
+            <label className="block text-gray-700 mb-1 font-medium">Sizes *</label>
+            <Select
+              isMulti
               name="sizes"
-              value={productData.sizes}
-              onChange={handleProductChange}
-              placeholder="e.g., S, M, L, XL"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              options={["XS", "S", "M", "L", "XL", "XXL"].map(size => ({ value: size, label: size }))}
+              value={productData.sizes.map(size => ({ value: size, label: size }))}
+              onChange={(selected) => handleMultiSelect(selected, "sizes")}
+              className="basic-multi-select"
+              classNamePrefix="select"
             />
           </div>
 
-          {/* Colors */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Colors * (comma-separated)</label>
-            <input
-              type="text"
+            <label className="block text-gray-700 mb-1 font-medium">Colors *</label>
+            <Select
+              isMulti
               name="colors"
-              value={productData.colors}
-              onChange={handleProductChange}
-              placeholder="e.g., Red, Blue, Green"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              options={["Red", "Blue", "Green", "Black", "White", "Yellow", "Pink"].map(color => ({ value: color, label: color }))}
+              value={productData.colors.map(color => ({ value: color, label: color }))}
+              onChange={(selected) => handleMultiSelect(selected, "colors")}
+              className="basic-multi-select"
+              classNamePrefix="select"
             />
           </div>
+        </div>
 
           {/* Material */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Material</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Material
+            </label>
             <input
               type="text"
               name="material"
@@ -346,7 +421,9 @@ const AddProduct = () => {
 
           {/* Weight */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Weight (kg)</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Weight (kg)
+            </label>
             <input
               type="number"
               name="weight"
@@ -360,7 +437,9 @@ const AddProduct = () => {
 
           {/* Tags */}
           <div>
-            <label className="block text-gray-700 mb-1 font-medium">Tags (comma-separated)</label>
+            <label className="block text-gray-700 mb-1 font-medium">
+              Tags (comma-separated)
+            </label>
             <input
               type="text"
               name="tags"
@@ -374,7 +453,9 @@ const AddProduct = () => {
 
         {/* Description */}
         <div className="mt-4">
-          <label className="block text-gray-700 mb-1 font-medium">Description *</label>
+          <label className="block text-gray-700 mb-1 font-medium">
+            Description *
+          </label>
           <textarea
             name="description"
             value={productData.description}
