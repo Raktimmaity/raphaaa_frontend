@@ -110,7 +110,7 @@ const OffersShowcase = () => {
                             </span>{" "}
                             {discountPrice < product.price && (
                               <span className="text-gray-500 line-through ml-2">
-                                ₹{product.price}
+                                ₹{Math.round(product.price)}
                               </span>
                             )}
                           </div>
