@@ -313,6 +313,50 @@ const AdminSidebar = () => {
             </details>
           </div>
         )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FaBoxOpen className="text-lg" />
+                  <span>Offers</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
+
+              <div className="ml-6 mt-1 space-y-1">
+                <NavLink
+                  to="/admin/create-offers"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  Create Offer
+                </NavLink>
+                <NavLink
+                  to="/admin/offers"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
+                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
+                  }
+                >
+                  View Offers
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
 
         {/* Only for admin */}
         {(user?.role === "admin" ||
@@ -387,7 +431,7 @@ const AdminSidebar = () => {
                 >
                   Top-Bar
                 </NavLink> */}
-                <NavLink
+                {/* <NavLink
                   to="/admin/website-settings/hero"
                   className={({ isActive }) =>
                     isActive
@@ -396,7 +440,7 @@ const AdminSidebar = () => {
                   }
                 >
                   Hero Section
-                </NavLink>
+                </NavLink> */}
 
                 <NavLink
                   to="/admin/website-settings/about"

@@ -49,6 +49,9 @@ import AdminCollabPreview from "./pages/AdminCollabPreview";
 import EditCollab from "./pages/EditCollab";
 import AdminAboutSettings from "./pages/AdminAboutSettings";
 import PrivacyPolicySettings from "./pages/PrivacyPolicySettings";
+import AddEditOffer from "./pages/AddEditOffer";
+import AdminOffersList from "./pages/AdminOffersList";
+import OffersShowcase from "./pages/OffersShowcase";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -88,6 +91,7 @@ const App = () => {
             <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
             <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
             <Route path="/forgot-password" element={<ForgotPassword/>} />
+            <Route path="/offers" element={<OffersShowcase/>} />
 
             {/* User Layout */}
           </Route>
@@ -224,6 +228,31 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="create-offers"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AddEditOffer/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="offers"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AdminOffersList/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+  path="edit-offer/:id"
+  element={
+    <ProtectedRoute role={["admin", "merchantise"]}>
+      <AddEditOffer />
+    </ProtectedRoute>
+  }
+/>
+
             <Route
               path="contact-messages"
               element={
