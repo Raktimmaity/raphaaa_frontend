@@ -413,7 +413,17 @@ const EditProductPage = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block font-semibold text-gray-700 mb-2">Count in stock</label>
+            <input
+              type="number"
+              name="countInStock"
+              value={productData.countInStock}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+            />
+          </div>
           <div>
             <label className="block font-semibold text-gray-700 mb-2">Price</label>
             <input
