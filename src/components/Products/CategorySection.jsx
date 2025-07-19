@@ -71,7 +71,7 @@ const CategorySection = () => {
                   />
                 </div>
 
-                <p className="text-lg md:text-xl font-semibold w-full py-2 text-white bg-gradient-to-r from-sky-500 to-blue-600 group-hover:opacity-95 z-10 shadow-inner">
+                <p className="text-lg md:text-xl font-semibold w-full py-2 text-white bg-gradient-to-r from-pink-500 to-red-600 group-hover:opacity-95 z-10 shadow-inner">
                   {category.name}
                 </p>
               </Link>
