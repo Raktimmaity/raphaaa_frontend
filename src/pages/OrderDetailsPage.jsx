@@ -234,7 +234,7 @@ const OrderDetailsPage = () => {
                 </p>
                 <p>
                   <span className="font-medium text-gray-900">Phone:</span>{" "}
-                  {orderDetails.user.phone || "N/A"}
+                  +91 {orderDetails.shippingAddress.phone || "N/A"}
                 </p>
               </div>
             </div>

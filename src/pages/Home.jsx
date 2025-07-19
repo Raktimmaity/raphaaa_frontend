@@ -103,7 +103,7 @@ const Home = () => {
     <div>
       {/* Hero section */}
       {/* <Collab/> */}
-      {showAlert && (
+      {/* {showAlert && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full relative">
             <h2 className="text-xl font-bold text-blue-700 mb-2">
@@ -126,7 +126,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {activeOffer && (
         <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border border-orange-300 text-orange-900 px-6 py-4 rounded-xl shadow-md mb-6 max-w-7xl mx-auto">

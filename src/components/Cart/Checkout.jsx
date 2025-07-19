@@ -203,18 +203,6 @@ const Checkout = () => {
   };
 
   const handleCreateOrder = async (e) => {
-    if (useNewAddress) {
-  await axios.put(
-    `${import.meta.env.VITE_BACKEND_URL}/api/users/address`,
-    { newAddress: shipping },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-      },
-    }
-  );
-}
-
     e.preventDefault();
     if (!validatePhone(shippingAddress.phone)) return;
     if (orderInitiated || submitDisabled) return;
@@ -385,33 +373,33 @@ const Checkout = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-7xl mx-auto py-12 px-6">
-      <div className="bg-white rounded-xl shadow-lg p-8 border">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 uppercase tracking-tight">
+      <div className="bg-gradient-to-br from-white to-gray-100 rounded-2xl shadow-2xl p-8 border border-gray-300">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 uppercase tracking-tight">
           Checkout
         </h2>
         <form onSubmit={handleCreateOrder}>
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Contact Details
           </h3>
           <div className="mb-6">
-            <label className="block text-sm text-gray-600 mb-1">Email</label>
+            <label className="block text-sm text-gray-500 mb-1">Email</label>
             <input
               type="email"
               value={user ? user.email : ""}
-              className="w-full p-3 border rounded-lg bg-gray-100 text-gray-600"
+              className="w-full p-3 border border-gray-300 rounded-xl bg-slate-100 text-gray-500"
               disabled
             />
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Delivery</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Delivery</h3>
           <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-600 mb-1">
+              <label className="block text-sm text-gray-500 mb-1">
                 First Name
               </label>
               <input
                 type="text"
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-xl"
                 required
                 value={shippingAddress.firstName}
                 onChange={(e) =>
@@ -423,12 +411,12 @@ const Checkout = () => {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">
+              <label className="block text-sm text-gray-500 mb-1">
                 Last Name
               </label>
               <input
                 type="text"
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-xl"
                 required
                 value={shippingAddress.lastName}
                 onChange={(e) =>
@@ -440,81 +428,44 @@ const Checkout = () => {
               />
             </div>
           </div>
-          {fullUser?.addresses?.length > 0 && !useNewAddress ? (
-  <div className="mb-6">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">
-      Select Saved Address
-    </h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {fullUser.addresses.map((addr, index) => (
-        <div
-          key={index}
-          className={`border rounded-lg p-4 cursor-pointer ${
-            selectedAddressIndex === index
-              ? "border-blue-600 bg-blue-50"
-              : "hover:border-gray-400"
-          }`}
-          onClick={() => {
-            handleAddressSelect(addr, index);
-            setUseNewAddress(false);
-          }}
-        >
-          <p className="text-sm font-medium text-gray-800">
-            {fullUser?.name}
-          </p>
-          <p className="text-sm text-gray-600">{addr.address}</p>
-          <p className="text-sm text-gray-600">
-            {addr.city}, {addr.postalCode}, {addr.country}
-          </p>
-          <p className="text-sm text-gray-600">Ph.: {addr.phone}</p>
-        </div>
-      ))}
-    </div>
-    <button
-      type="button"
-      onClick={() => {
-        setUseNewAddress(true);
-        setSelectedAddressIndex(null);
-        setShippingAddress({
-          firstName: "",
-          lastName: "",
-          address: "",
-          city: "",
-          postalCode: "",
-          country: "India",
-          phone: "+91",
-        });
-      }}
-      className="mt-4 text-sm text-blue-600 hover:underline"
-    >
-      + Add New Address
-    </button>
-  </div>
-) : (
-  <div className="mb-6">
-    <div className="flex items-center justify-between">
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">
-        Enter New Address
-      </h3>
-      {fullUser?.addresses?.length > 0 && (
-        <button
-          type="button"
-          onClick={() => {
-            setUseNewAddress(false);
-            setSelectedAddressIndex(null);
-          }}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Cancel
-        </button>
-      )}
-    </div>
+          {fullUser?.addresses?.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Select Saved Address
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {fullUser.addresses.map((addr, index) => (
+                  <div
+                    key={index}
+                    className={`border border-gray-300 rounded-xl p-4 cursor-pointer ${
+                      selectedAddressIndex === index
+                        ? "border border-gray-300-blue-600 bg-blue-50"
+                        : "hover:border border-gray-300-gray-400"
+                    }`}
+                    onClick={() => handleAddressSelect(addr, index)}
+                  >
+                    <p className="text-sm font-medium text-gray-900">
+                      {fullUser?.name}
+                    </p>
 
+                    <p className="text-sm text-gray-500">{addr.address}</p>
+                    <p className="text-sm text-gray-500">
+                      {addr.city}, {addr.postalCode}, {addr.country}
+                    </p>
+                    <p className="text-sm text-gray-500">Ph.: {addr.phone}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <span>
+            If you want to add custom address you can enter the address here:
+          </span>
           <div className="mb-4">
-            <label className="block text-sm text-gray-600 mb-1">Address</label>
+            <label className="block text-sm text-gray-500 mb-1">Address</label>
             <input
               type="text"
-              className="w-full p-3 border rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-xl"
               required
               value={shippingAddress.address}
               onChange={(e) =>
@@ -528,13 +479,13 @@ const Checkout = () => {
 
           <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-600 mb-1">
+              <label className="block text-sm text-gray-500 mb-1">
                 PIN Code
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border border-gray-300 rounded-xl"
                   required
                   value={shippingAddress.postalCode}
                   onChange={handlePinCodeChange}
@@ -544,16 +495,16 @@ const Checkout = () => {
                 />
                 {addressLoading && (
                   <div className="absolute right-3 top-3">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border border-gray-300-b-2 border border-gray-300-gray-600"></div>
                   </div>
                 )}
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">City</label>
+              <label className="block text-sm text-gray-500 mb-1">City</label>
               <input
                 type="text"
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-xl"
                 required
                 value={shippingAddress.city}
                 onChange={(e) =>
@@ -568,11 +519,11 @@ const Checkout = () => {
 
           <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-600 mb-1">
+              <label className="block text-sm text-gray-500 mb-1">
                 Country
               </label>
               <select
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-xl"
                 required
                 value={shippingAddress.country}
                 onChange={(e) =>
@@ -591,15 +542,15 @@ const Checkout = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Phone</label>
+              <label className="block text-sm text-gray-500 mb-1">Phone</label>
               <div className="flex">
-                <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-600 text-sm">
+                <span className="inline-flex items-center px-3 rounded-l-lg border border-gray-300 border border-gray-300-r-0 border border-gray-300-gray-300 bg-slate-100 text-gray-500 text-sm">
                   +91
                 </span>
                 <input
                   type="tel"
-                  className={`w-full p-3 border rounded-r-lg ${
-                    phoneError ? "border-red-500" : "border-gray-300"
+                  className={`w-full p-3 border border-gray-300 rounded-r-lg ${
+                    phoneError ? "border border-gray-300-red-500" : "border border-gray-300-gray-300"
                   }`}
                   required
                   value={shippingAddress.phone.replace("+91", "")}
@@ -613,19 +564,17 @@ const Checkout = () => {
                 />
               </div>
               {phoneError && (
-                <p className="text-sm text-red-600 mt-1">{phoneError}</p>
+                <p className="text-sm text-red-500 mt-1">{phoneError}</p>
               )}
             </div>
           </div>
-          </div>
-)}
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Payment Method
             </h3>
             <div className="space-y-3">
-              <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-50">
                 <input
                   type="radio"
                   name="paymentMethod"
@@ -643,7 +592,7 @@ const Checkout = () => {
                   </span>
                 </div>
               </label>
-              <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-blue-50">
                 <input
                   type="radio"
                   name="paymentMethod"
@@ -666,7 +615,7 @@ const Checkout = () => {
             {!razorpayOrderId ? (
               <button
                 type="submit"
-                className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-blue-700 text-white tracking-wide py-3 rounded-xl hover:bg-blue-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={
                   loading ||
                   orderProcessing ||
@@ -699,20 +648,20 @@ const Checkout = () => {
         </form>
       </div>
 
-      <div className="bg-gray-50 p-8 rounded-xl border shadow-md">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+      <div className="bg-blue-50 p-8 rounded-2xl border border-gray-300 shadow-md self-start">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-6">
           Order Summary
         </h3>
         <div className="space-y-6">
           {cart?.products?.map((product, index) => (
-            <div key={index} className="flex items-start gap-4 border-b pb-4">
+            <div key={index} className="flex items-start gap-4 pb-4">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-20 h-24 object-cover rounded-md border"
+                className="w-20 h-24 object-cover rounded-md border border-gray-300"
               />
               <div className="flex-1">
-                <h4 className="text-md font-semibold text-gray-700">
+                <h4 className="text-md font-semibold text-gray-800">
                   {product.name}
                 </h4>
                 <p className="text-sm text-gray-500">Size: {product.size}</p>
@@ -721,14 +670,14 @@ const Checkout = () => {
                   Quantity: {product.quantity}
                 </p>
               </div>
-              <p className="text-lg font-medium text-gray-800">
+              <p className="text-lg font-medium text-gray-900">
                 ₹{(product.price * product.quantity).toLocaleString()}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 space-y-2 text-lg text-gray-700">
+        <div className="mt-6 space-y-2 text-lg text-gray-800">
           <div className="flex justify-between">
             <span>Total Quantity</span>
             <span>
@@ -748,28 +697,29 @@ const Checkout = () => {
             <span className="text-green-600 font-medium">Free</span>
           </div>
           {paymentMethod === "cash_on_delivery" && (
-            <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex justify-between text-sm text-gray-500">
               <span>COD Charges</span>
               <span>₹0</span>
             </div>
           )}
-          <div className="flex justify-between border-t pt-4 font-semibold text-gray-900">
+          <hr />
+          <div className="flex justify-between pt-4 font-semibold text-gray-900">
             <span>Total</span>
             <span>₹{cart?.totalPrice?.toLocaleString()}</span>
           </div>
         </div>
 
         {/* {razorpayOrderId && (
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mt-6 p-4 bg-blue-50 border border-gray-300 border border-gray-300-blue-200 rounded-xl">
             <h4 className="font-semibold text-blue-800 mb-2">Payment Method Selected:</h4>
             <p className="text-sm text-blue-700">Online Payment via Razorpay</p>
-            <p className="text-xs text-blue-600 mt-1">Order ID: {razorpayOrderId}</p>
+            <p className="text-xs text-blue-500 mt-1">Order ID: {razorpayOrderId}</p>
             {orderId && (
-              <p className="text-xs text-blue-600 mt-1">MongoDB Order ID: {orderId}</p>
+              <p className="text-xs text-blue-500 mt-1">MongoDB Order ID: {orderId}</p>
             )}
             <button
               onClick={() => navigate("/order-status", { state: { orderId } })}
-              className="mt-2 text-sm text-blue-600 hover:underline"
+              className="mt-2 text-sm text-blue-500 hover:underline"
             >
               View or Cancel Order
             </button>
@@ -777,15 +727,15 @@ const Checkout = () => {
         )} */}
 
         {orderProcessing && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-sm text-yellow-700">
+          <div className="mt-4 p-4 bg-yellow-50 border border-gray-300 border border-gray-300-yellow-200 rounded-xl">
+            <p className="text-sm text-yellow-600">
               <strong>Processing your order...</strong> Please wait.
             </p>
           </div>
         )}
 
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="mt-4 p-4 bg-red-50 border border-gray-300 border border-gray-300-red-200 rounded-xl">
             <p className="text-sm text-red-700">
               <strong>Error:</strong> {error}
             </p>

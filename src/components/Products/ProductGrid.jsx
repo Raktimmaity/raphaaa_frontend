@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
 import { IoFlash } from "react-icons/io5";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import axios from "axios";
+import { toast } from "sonner"; // since you're already using toast
 
 const ProductGrid = ({ products = [], loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,10 +28,54 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const indexOfFirst = indexOfLast - productsPerPage;
   const currentProducts = safeProducts.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(safeProducts.length / productsPerPage);
-  const handleWishlistClick = (product) => {
-    toast.success(`${product.name} added to wishlist!`);
-    // Optionally dispatch an action or call backend
+  const [wishlistItems, setWishlistItems] = useState([]);
+
+useEffect(() => {
+  const fetchWishlist = async () => {
+    try {
+      const token = localStorage.getItem("userToken");
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/wishlist`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWishlistItems(data);
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+    }
   };
+
+  fetchWishlist();
+}, []);
+
+// 👇 Add this
+const isInWishlist = (productId) => {
+  return wishlistItems.some((item) => item._id === productId);
+};
+
+  const handleWishlistClick = async (product) => {
+  try {
+    const token = localStorage.getItem("userToken");
+
+    const alreadyWishlisted = isInWishlist(product._id);
+
+    const url = `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${alreadyWishlisted ? "remove" : "add"}/${product._id}`;
+
+    await axios[alreadyWishlisted ? "delete" : "post"](url, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    toast.success(`${product.name} ${alreadyWishlisted ? "removed from" : "added to"} wishlist`);
+
+    setWishlistItems((prev) =>
+      alreadyWishlisted
+        ? prev.filter((item) => item._id !== product._id)
+        : [...prev, product]
+    );
+  } catch (error) {
+    toast.error("Failed to update wishlist.");
+    console.error("Wishlist error:", error);
+  }
+};
+
 
   // Loading
   if (loading) {
@@ -150,18 +196,50 @@ const ProductGrid = ({ products = [], loading, error }) => {
                       ₹ {product.discountPrice}
                     </p>
                     <p className="text-sm text-gray-500 line-through">
-                      ₹{" "}
-                      {product.price}
+                      ₹ {product.price}
                     </p>
                     <p className="text-green-600 text-md font-semibold">
-                      {product.offerPercentage}
-                      % OFF
+                      {product.offerPercentage}% OFF
                     </p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleWishlistClick(product);
+                      }}
+                      title={
+                        isInWishlist(product._id)
+                          ? "Remove from Wishlist"
+                          : "Add to Wishlist"
+                      }
+                      className={`ml-auto rounded-full p-1 shadow-md transition ${
+                        isInWishlist(product._id)
+                          ? "bg-red-100 text-red-600 hover:bg-red-200"
+                          : "bg-white text-gray-800 hover:bg-pink-100"
+                      }`}
+                    >
+                      {isInWishlist(product._id) ? (
+                        <AiFillHeart className="text-2xl" />
+                      ) : (
+                        <AiOutlineHeart className="text-2xl" />
+                      )}
+                    </button>
                   </div>
                 ) : (
-                  <p className="text-blue-700 font-bold text-2xl tracking-wide">
-                    ₹ {product.price}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-blue-700 font-bold text-2xl tracking-wide">
+                      ₹ {product.price}
+                    </p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleWishlistClick(product);
+                      }}
+                      title="Add to Wishlist"
+                      className="ml-auto bg-white text-gray-800 rounded-full p-1 shadow-md hover:bg-pink-100 transition"
+                    >
+                      <AiOutlineHeart className="text-lg" />
+                    </button>
+                  </div>
                 )}
 
                 {product.rating > 0 && product.numReviews > 0 && (
