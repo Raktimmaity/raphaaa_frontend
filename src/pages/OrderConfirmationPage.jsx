@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { clearCart } from "../redux/slices/cartSlice";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -9,16 +9,27 @@ const OrderConfirmationPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { checkout } = useSelector((state) => state.checkout);
+  const { state } = useLocation();
+  const order = state?.order;
+
+  // useEffect(() => {
+  //   if (checkout && checkout._id) {
+  //     dispatch(clearCart());
+  //     localStorage.removeItem("cart");
+  //   } else {
+  //     navigate("/my-orders");
+  //   }
+  // }, [checkout, dispatch, navigate]);
 
   useEffect(() => {
-    if (checkout && checkout._id) {
+    if (order && order._id) {
       dispatch(clearCart());
       localStorage.removeItem("cart");
     } else {
       navigate("/my-orders");
     }
-  }, [checkout, dispatch, navigate]);
-
+  }, [order, dispatch, navigate]);
+  
   const calculateEstimatedDelivery = (createdAt) => {
     const orderDate = new Date(createdAt);
     orderDate.setDate(orderDate.getDate() + 10);
