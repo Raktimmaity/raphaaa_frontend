@@ -131,14 +131,14 @@ const isInWishlist = (productId) => {
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-0.5">
         {currentProducts.map((product, index) => (
           <Link
             key={index}
             to={`/product/${product._id}`}
             className="block group transition-transform transform hover:-translate-y-1"
           >
-            <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
+            <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded md:rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">
               <div className="w-full h-[220px] md:h-[300px] lg:h-[300px] mb-3 relative overflow-hidden rounded-lg">
                 <img
                   src={product.images?.[0]?.url || demoImg}
