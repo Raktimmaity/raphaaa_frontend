@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import ProductGrid from "./ProductGrid";
 import { HiOutlineShoppingBag } from "react-icons/hi";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchProductDetails,
@@ -12,10 +12,14 @@ import { addToCart } from "../../redux/slices/cartSlice";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import axios from "axios";
+import { FiShoppingCart, FiZap } from "react-icons/fi";
 
 const ProductDetails = ({ productId }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { selectedProduct, loading, error, similarProducts } = useSelector(
     (state) => state.products
   );
@@ -47,33 +51,180 @@ const ProductDetails = ({ productId }) => {
   const [modalImage, setModalImage] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [finalPrice, setFinalPrice] = useState(null);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [isBuyNowDisabled, setIsBuyNowDisabled] = useState(false);
+
+  const cart = useSelector((state) => state.cart);
 
   useEffect(() => {
-  const applyCoupon = () => {
-    if (selectedProduct && user) {
-      const regDate = new Date(user.createdAt);
-      const today = new Date();
-      const daysSinceRegistration = Math.floor(
-        (today - regDate) / (1000 * 60 * 60 * 24)
-      );
-
-      if (
-        couponCode.trim().toUpperCase() === "FIRST10" &&
-        daysSinceRegistration <= 10
-      ) {
-        const discounted =
-          selectedProduct.price - selectedProduct.price * 0.1;
-        setFinalPrice(Math.round(discounted));
-        return;
+    const fetchWishlist = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/wishlist`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setWishlistItems(data);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
       }
-    }
-    setFinalPrice(null); // fallback
+    };
+
+    fetchWishlist();
+  }, []);
+
+  // 👇 Add this
+  const isInWishlist = (productId) => {
+    return wishlistItems.some((item) => item._id === productId); // ✅ Correct
   };
 
-  applyCoupon();
-}, [couponCode, selectedProduct, user]);
+  //   const handleWishlistClick = async (product) => {
+  //   try {
+  //     const token = localStorage.getItem("userToken");
 
-  
+  //     const alreadyWishlisted = isInWishlist(product._id);
+
+  //     const url = `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${alreadyWishlisted ? "remove" : "add"}/${product._id}`;
+
+  //     await axios[alreadyWishlisted ? "delete" : "post"](url, {}, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     toast.success(`${product.name} ${alreadyWishlisted ? "removed from" : "added to"} wishlist`);
+
+  //     setWishlistItems((prev) =>
+  //       alreadyWishlisted
+  //         ? prev.filter((item) => item._id !== product._id)
+  //         : [...prev, product]
+  //     );
+  //   } catch (error) {
+  //     toast.error("Failed to update wishlist.");
+  //     console.error("Wishlist error:", error);
+  //   }
+  // };
+  const handleRemoveFromWishlist = async (productId) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/remove/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Removed from wishlist");
+      setWishlistItems((prev) => prev.filter((item) => item._id !== productId));
+    } catch (err) {
+      console.error("Failed to remove from wishlist:", err);
+      toast.error("Failed to remove from wishlist");
+    }
+  };
+
+  const handleAddToWishlist = async (product) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/add/${product._id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success(`${product.name} added to wishlist`);
+      setWishlistItems((prev) => [...prev, product]);
+    } catch (error) {
+      console.error("Failed to add to wishlist:", error);
+      toast.error("Failed to add to wishlist");
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedSize || !selectedColor) {
+      toast.error("Please select a size and color.");
+      return;
+    }
+
+    const cartItems = cart?.products || [];
+    const totalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.quantity,
+      0
+    );
+
+    if (totalQuantity >= 10) {
+      toast.error("You can buy up to 10 items only.");
+      return;
+    }
+
+    setIsBuyingNow(true);
+    setIsBuyNowDisabled(true);
+
+    const alreadyInCart = cartItems.find(
+      (item) =>
+        item.productId === selectedProduct._id &&
+        item.size === selectedSize &&
+        item.color === selectedColor
+    );
+
+    try {
+      if (!alreadyInCart) {
+        const user = JSON.parse(localStorage.getItem("userInfo"));
+        const guestId = localStorage.getItem("guestId");
+
+        const res = await dispatch(
+          addToCart({
+            productId: selectedProduct._id,
+            quantity,
+            size: selectedSize,
+            color: selectedColor,
+            userId: user?._id,
+            guestId,
+          })
+        );
+
+        if (res.meta.requestStatus !== "fulfilled") {
+          toast.error("Failed to add product. Try again.");
+          return;
+        }
+      }
+
+      navigate("/checkout");
+    } catch (error) {
+      console.error("Buy Now Error:", error);
+      toast.error("Error while adding to cart.");
+    } finally {
+      setIsBuyingNow(false);
+      setIsBuyNowDisabled(false);
+    }
+  };
+
+  useEffect(() => {
+    const applyCoupon = () => {
+      if (selectedProduct && user) {
+        const regDate = new Date(user.createdAt);
+        const today = new Date();
+        const daysSinceRegistration = Math.floor(
+          (today - regDate) / (1000 * 60 * 60 * 24)
+        );
+
+        if (
+          couponCode.trim().toUpperCase() === "FIRST10" &&
+          daysSinceRegistration <= 10
+        ) {
+          const discounted =
+            selectedProduct.price - selectedProduct.price * 0.1;
+          setFinalPrice(Math.round(discounted));
+          return;
+        }
+      }
+      setFinalPrice(null); // fallback
+    };
+
+    applyCoupon();
+  }, [couponCode, selectedProduct, user]);
 
   // ✅ Function to handle image click
   const handleImageClick = (imgUrl) => {
@@ -410,10 +561,9 @@ const ProductDetails = ({ productId }) => {
       percentage: Math.round((count / totalReviews) * 100),
     };
   });
-
- 
-
-
+  const totalQuantity =
+    cart?.products?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  const maxLimitReached = totalQuantity >= 10;
 
   return (
     <div className=" min-h-screen py-10 px-4">
@@ -427,7 +577,7 @@ const ProductDetails = ({ productId }) => {
                   key={index}
                   src={image.url}
                   alt={image.altText || `Thumb ${index}`}
-                  className={`w-20 h-20 rounded-xl cursor-pointer border transition-all duration-300 ${
+                  className={`w-20 h-20 rounded-full cursor-pointer border transition-all duration-300 ${
                     mainImage === image.url
                       ? "border-sky-600 shadow-lg scale-105"
                       : "border-gray-300 hover:border-sky-400"
@@ -440,12 +590,39 @@ const ProductDetails = ({ productId }) => {
             {/* Main Image + Characteristics */}
             <div className="md:w-1/2 w-full">
               {mainImage ? (
-                <img
-                  src={mainImage}
-                  alt="Main Product"
-                  onClick={() => handleImageClick(mainImage)}
-                  className="w-full h-[400px] object-contain rounded-lg transition-all duration-500 bg-white p-4 border border-gray-300 cursor-zoom-in"
-                />
+                <div className="relative w-full h-[400px] bg-white p-4 border border-gray-300">
+                  <img
+                    src={mainImage}
+                    alt="Main Product"
+                    onClick={() => handleImageClick(mainImage)}
+                    className="w-full h-full object-contain cursor-zoom-in"
+                  />
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      isInWishlist(selectedProduct._id)
+                        ? handleRemoveFromWishlist(selectedProduct._id)
+                        : handleAddToWishlist(selectedProduct);
+                    }}
+                    title={
+                      isInWishlist(selectedProduct._id)
+                        ? "Remove from Wishlist"
+                        : "Add to Wishlist"
+                    }
+                    className={`absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
+                      isInWishlist(selectedProduct._id)
+                        ? "bg-red-100 text-red-600 hover:bg-red-200"
+                        : "bg-white text-gray-800 hover:bg-pink-100"
+                    }`}
+                  >
+                    {isInWishlist(selectedProduct._id) ? (
+                      <AiFillHeart className="text-2xl animate-pulse" />
+                    ) : (
+                      <AiOutlineHeart className="text-2xl" />
+                    )}
+                  </button>
+                </div>
               ) : (
                 <div className="w-full h-[300px] flex items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
                   No image available
@@ -474,7 +651,7 @@ const ProductDetails = ({ productId }) => {
                 <h3 className="text-lg font-semibold mb-2 text-gray-700">
                   Characteristics
                 </h3>
-                <table className="w-full text-sm text-gray-800 bg-white rounded-xl overflow-hidden shadow-md border border-gray-200">
+                <table className="w-full text-sm text-gray-800 bg-white overflow-hidden shadow-md border border-gray-200">
                   <thead className="bg-gray-100 text-left text-xs uppercase tracking-wider text-gray-600">
                     <tr>
                       <th className="px-4 py-3">Attribute</th>
@@ -494,6 +671,22 @@ const ProductDetails = ({ productId }) => {
                       <td className="px-4 py-3 font-medium">Gender</td>
                       <td className="px-4 py-3">{selectedProduct.gender}</td>
                     </tr>
+                    {selectedProduct.dimensions && (
+                      <tr className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-medium">Dimensions</td>
+                        <td className="px-4 py-3">
+                          {selectedProduct.dimensions.length || 0} x{" "}
+                          {selectedProduct.dimensions.width || 0} x{" "}
+                          {selectedProduct.dimensions.height || 0} cm
+                        </td>
+                      </tr>
+                    )}
+                    {selectedProduct.weight && (
+                    <tr className="hover:bg-gray-50 transition">
+                      <td className="px-4 py-3 font-medium">Weight</td>
+                      <td className="px-4 py-3">{selectedProduct.weight} gm</td>
+                    </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -566,7 +759,11 @@ const ProductDetails = ({ productId }) => {
                   <div className="flex gap-3">
                     {selectedProduct.colors.map((color) => (
                       <button
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() =>
+                          setSelectedColor((prev) =>
+                            prev === color ? null : color
+                          )
+                        }
                         key={color}
                         className={`w-9 h-9 rounded-full border transition-all duration-300 ${
                           selectedColor === color
@@ -585,9 +782,13 @@ const ProductDetails = ({ productId }) => {
                   <div className="flex gap-3">
                     {selectedProduct.sizes.map((size) => (
                       <button
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() =>
+                          setSelectedSize((prev) =>
+                            prev === size ? null : size
+                          )
+                        }
                         key={size}
-                        className={`px-4 py-2 rounded-xl border transition-all duration-200 font-medium ${
+                        className={`px-4 py-2 rounded-full border transition-all duration-200 font-medium ${
                           selectedSize === size
                             ? "bg-sky-600 text-white"
                             : "border-gray-300 hover:bg-sky-50"
@@ -625,14 +826,14 @@ const ProductDetails = ({ productId }) => {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => handleQuantityChange("minus")}
-                      className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md"
+                      className="w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg"
                     >
-                      -
+                      −
                     </button>
                     <span className="text-lg">{quantity}</span>
                     <button
                       onClick={() => handleQuantityChange("plus")}
-                      className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md"
+                      className="w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg"
                     >
                       +
                     </button>
@@ -681,7 +882,7 @@ const ProductDetails = ({ productId }) => {
 </div> */}
 
                 {/* Add to Cart */}
-                <button
+                {/* <button
                   onClick={handleAddToCart}
                   disabled={isButtonDisabled}
                   className={`group relative w-full inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full font-semibold text-white shadow-md transition-all duration-300 ease-in-out
@@ -702,7 +903,38 @@ const ProductDetails = ({ productId }) => {
                   {!isButtonDisabled && (
                     <span className="absolute inset-0 rounded-full bg-white opacity-10 group-hover:animate-pulse z-0" />
                   )}
-                </button>
+                </button> */}
+                <div className="flex gap-4 mt-4">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isButtonDisabled || totalQuantity >= 10}
+                    className={`w-1/2 flex items-center justify-center gap-2 py-3 font-semibold transition ${
+                      isButtonDisabled
+                        ? "bg-sky-400 text-white cursor-not-allowed"
+                        : "bg-sky-600 text-white hover:bg-sky-700"
+                    }`}
+                  >
+                    <FiShoppingCart className="text-xl" />
+                    {isAddingToCart ? "Adding..." : "Add to Cart"}
+                  </button>
+
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={isBuyNowDisabled || totalQuantity >= 10}
+                    className={`w-1/2 flex items-center justify-center gap-2 py-3 font-semibold transition ${
+                      isBuyNowDisabled
+                        ? "bg-emerald-400 text-white cursor-not-allowed"
+                        : "bg-emerald-600 text-white hover:bg-emerald-700"
+                    }`}
+                  >
+                    <FiZap
+                      className={`text-xl ${
+                        isBuyingNow ? "animate-pulse" : ""
+                      }`}
+                    />
+                    {isBuyingNow ? "Processing..." : "Buy Now"}
+                  </button>
+                </div>
 
                 {/* Pincode Delivery Check */}
                 {/* <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
@@ -787,7 +1019,7 @@ const ProductDetails = ({ productId }) => {
 
           <div className="mt-16 mb-16 flex flex-col lg:flex-row gap-8">
             {/* Left Sidebar: Rating Breakdown with Bars */}
-            <div className="lg:w-1/4 w-full bg-gradient-to-b from-white via-sky-50 to-sky-100 border border-sky-100 rounded-2xl p-6 shadow-lg h-fit">
+            <div className="lg:w-1/4 w-full bg-gradient-to-b from-white via-sky-50 to-sky-100 border border-sky-100 p-6 shadow-lg h-fit">
               <h3 className="text-lg font-semibold text-sky-800 mb-4">
                 Rating Breakdown
               </h3>
@@ -837,7 +1069,7 @@ const ProductDetails = ({ productId }) => {
                     {sortedReviews.slice(0, 3).map((review, index) => (
                       <div
                         key={index}
-                        className="bg-gradient-to-br from-white to-sky-50 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl p-6"
+                        className="bg-gradient-to-br from-white to-sky-50 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded p-6"
                       >
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-4">

@@ -36,9 +36,12 @@ const BestSellersSection = () => {
       {/* <h2 className="text-2xl font-bold text-blue-900 mb-4">🔥 Best Sellers</h2> */}
       <div className="best-seller-wrapper">
         <div className="best-seller-marquee">
-          {bestSellers.map((item, idx) => (
+          {[...bestSellers, ...bestSellers].map((item, idx) => (
             <div key={idx} className="product-card-wrapper">
-              <ProductCard product={item} badge={`Total ${item.totalSold} users buy this product. Now your turn!!`} />
+              <ProductCard
+                product={item}
+                badge={`Total ${item.totalSold} users buy this product. Now your turn!!`}
+              />
             </div>
           ))}
         </div>

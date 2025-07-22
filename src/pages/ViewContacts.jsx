@@ -190,7 +190,7 @@ const ViewContacts = () => {
             <form onSubmit={handleReplySubmit} className="space-y-4">
               <input
                 type="text"
-                value={replyContent.subject}
+                // value={replyContent.subject}
                 onChange={(e) => setReplyContent({ ...replyContent, subject: e.target.value })}
                 placeholder="Subject"
                 className="w-full border border-gray-300 px-3 py-2 rounded-md"

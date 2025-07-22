@@ -238,7 +238,6 @@
 
 // export default EditProductPage;
 
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -273,7 +272,7 @@ const EditProductPage = () => {
     gender: "",
     images: [],
     offerPercentage: 0,
-    discountPrice: 0
+    discountPrice: 0,
   });
 
   const [uploading, setUploading] = useState(false);
@@ -290,29 +289,38 @@ const EditProductPage = () => {
   }, [selectedProduct]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    let updatedData = { ...productData, [name]: value };
+  const { name, value } = e.target;
+  let updatedData = { ...productData };
 
-    if (name === "offerPercentage") {
-      const price = parseFloat(productData.price);
-      const offer = parseFloat(value);
+  // Handle nested dimension fields
+  if (name.startsWith("dimensions.")) {
+    const key = name.split(".")[1];
+    updatedData.dimensions = {
+      ...updatedData.dimensions,
+      [key]: value,
+    };
+  } else {
+    updatedData[name] = value;
+
+    // Offer calculation logic
+    if (name === "offerPercentage" || name === "price") {
+      const price = parseFloat(
+        name === "price" ? value : updatedData.price
+      );
+      const offer = parseFloat(
+        name === "offerPercentage" ? value : updatedData.offerPercentage
+      );
+
       if (!isNaN(price) && !isNaN(offer)) {
         const discount = price - (price * offer) / 100;
         updatedData.discountPrice = Math.round(discount);
       }
     }
+  }
 
-    if (name === "price") {
-      const offer = parseFloat(productData.offerPercentage);
-      const price = parseFloat(value);
-      if (!isNaN(price) && !isNaN(offer)) {
-        const discount = price - (price * offer) / 100;
-        updatedData.discountPrice = Math.round(discount);
-      }
-    }
+  setProductData(updatedData);
+};
 
-    setProductData(updatedData);
-  };
 
   const handleMultiSelect = (selectedOptions, name) => {
     const values = selectedOptions.map((opt) => opt.value);
@@ -340,7 +348,10 @@ const EditProductPage = () => {
 
       setProductData((prevData) => ({
         ...prevData,
-        images: [...prevData.images, { url: data.imageUrl, altText: "", publicId: data.publicId }],
+        images: [
+          ...prevData.images,
+          { url: data.imageUrl, altText: "", publicId: data.publicId },
+        ],
       }));
       setUploading(false);
       e.target.value = "";
@@ -390,7 +401,9 @@ const EditProductPage = () => {
       <h2 className="text-3xl font-bold mb-8 text-gray-800">Edit Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-semibold text-gray-700 mb-2">Product Name</label>
+          <label className="block font-semibold text-gray-700 mb-2">
+            Product Name
+          </label>
           <input
             type="text"
             name="name"
@@ -402,7 +415,9 @@ const EditProductPage = () => {
         </div>
 
         <div>
-          <label className="block font-semibold text-gray-700 mb-2">Description</label>
+          <label className="block font-semibold text-gray-700 mb-2">
+            Description
+          </label>
           <textarea
             name="description"
             value={productData.description}
@@ -415,7 +430,9 @@ const EditProductPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Count in stock</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Count in stock
+            </label>
             <input
               type="number"
               name="countInStock"
@@ -425,7 +442,9 @@ const EditProductPage = () => {
             />
           </div>
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Price</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Price
+            </label>
             <input
               type="number"
               name="price"
@@ -435,7 +454,9 @@ const EditProductPage = () => {
             />
           </div>
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Offer Percentage</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Offer Percentage
+            </label>
             <input
               type="number"
               name="offerPercentage"
@@ -446,7 +467,9 @@ const EditProductPage = () => {
             />
           </div>
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Discount Price</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Discount Price
+            </label>
             <input
               type="number"
               name="discountPrice"
@@ -456,32 +479,165 @@ const EditProductPage = () => {
             />
           </div>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Length
+            </label>
+            <input
+              type="number"
+              name="dimensions.length"
+              placeholder="Length"
+              value={productData.dimensions?.length || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Dimensions
+            </label>
+            <input
+              type="number"
+              name="dimensions.width"
+              placeholder="Width"
+              value={productData.dimensions?.width || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Height
+            </label>
+            <input
+              type="number"
+              name="dimensions.height"
+              placeholder="Height"
+              value={productData.dimensions?.height || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Weight
+            </label>
+            <input
+              type="number"
+              name="weight"
+              placeholder="Weight"
+              value={productData.weight || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+        {/* Dimensions & Weight */}
+        {/* <div>
+          <label className="block font-semibold text-gray-700 mb-2">
+            Dimensions (cm) & Weight (kg)
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <input
+              type="number"
+              name="dimensions.length"
+              placeholder="Length"
+              value={productData.dimensions?.length || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+            <input
+              type="number"
+              name="dimensions.width"
+              placeholder="Width"
+              value={productData.dimensions?.width || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+            <input
+              type="number"
+              name="dimensions.height"
+              placeholder="Height"
+              value={productData.dimensions?.height || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.1"
+            />
+            <input
+              type="number"
+              name="weight"
+              placeholder="Weight"
+              value={productData.weight || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-3"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div> */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Sizes</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Sizes
+            </label>
             <Select
               isMulti
               name="sizes"
-              options={["XS", "S", "M", "L", "XL", "XXL"].map((size) => ({ value: size, label: size }))}
-              value={productData.sizes.map((size) => ({ value: size, label: size }))}
+              options={["XS", "S", "M", "L", "XL", "XXL"].map((size) => ({
+                value: size,
+                label: size,
+              }))}
+              value={productData.sizes.map((size) => ({
+                value: size,
+                label: size,
+              }))}
               onChange={(selected) => handleMultiSelect(selected, "sizes")}
             />
           </div>
           <div>
-            <label className="block font-semibold text-gray-700 mb-2">Colors</label>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Colors
+            </label>
             <Select
               isMulti
               name="colors"
-              options={["Red", "Blue", "Green", "Black", "White", "Yellow", "Pink"].map((color) => ({ value: color, label: color }))}
-              value={productData.colors.map((color) => ({ value: color, label: color }))}
+              options={[
+                "Red",
+                "Blue",
+                "Green",
+                "Black",
+                "White",
+                "Yellow",
+                "Pink",
+              ].map((color) => ({ value: color, label: color }))}
+              value={productData.colors.map((color) => ({
+                value: color,
+                label: color,
+              }))}
               onChange={(selected) => handleMultiSelect(selected, "colors")}
             />
           </div>
         </div>
 
         <div>
-          <label className="block font-semibold text-gray-700 mb-2">Upload Image</label>
+          <label className="block font-semibold text-gray-700 mb-2">
+            Upload Image
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -489,18 +645,28 @@ const EditProductPage = () => {
             disabled={uploading}
             className="block w-full text-sm text-gray-500"
           />
-          {uploading && <p className="text-blue-600 text-sm mt-2">Uploading Image...</p>}
+          {uploading && (
+            <p className="text-blue-600 text-sm mt-2">Uploading Image...</p>
+          )}
           <div className="flex gap-4 mt-4 flex-wrap">
             {productData.images.map((image, index) => (
               <div key={index} className="relative w-24 h-24 group">
-                <img src={image.url} alt={image.altText || "Product"} className="w-full h-full object-cover rounded-md shadow border" />
+                <img
+                  src={image.url}
+                  alt={image.altText || "Product"}
+                  className="w-full h-full object-cover rounded-md shadow border"
+                />
                 <button
                   type="button"
                   onClick={() => handleImageRemove(index, image.url)}
                   disabled={deleting === index}
                   className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold"
                 >
-                  {deleting === index ? <span className="animate-spin">⟳</span> : "×"}
+                  {deleting === index ? (
+                    <span className="animate-spin">⟳</span>
+                  ) : (
+                    "×"
+                  )}
                 </button>
               </div>
             ))}

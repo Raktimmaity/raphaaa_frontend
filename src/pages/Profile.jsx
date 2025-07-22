@@ -4,7 +4,7 @@ import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../redux/slices/authSlice";
 import { clearCart } from "../redux/slices/cartSlice";
 import axios from "axios";
@@ -291,47 +291,46 @@ const Profile = () => {
                           key={item._id}
                           className="flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-white via-blue-50 to-blue-100 border border-blue-100 rounded-2xl p-6 shadow hover:shadow-lg transition-all"
                         >
-                          <img
-                            src={item.images?.[0]?.url || "/placeholder.png"}
-                            alt={item.name}
-                            className="w-full md:w-48 h-48 object-cover rounded-xl shadow"
-                          />
-                          <div className="flex-1 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">
-                              {item.name}
-                            </h3>
-                            <p className="mb-2 text-sm text-gray-600">
-                              {item.description}
-                            </p>
-                            <p
-                              className={`text-sm font-medium mb-2 ${
-                                item.countInStock < 5
-                                  ? "text-red-600"
-                                  : "text-green-600"
-                              }`}
-                            >
-                              {item.countInStock < 5
-                                ? `Hurry! Only ${item.countInStock} left in stock`
-                                : `In Stock`}
-                            </p>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-3">
-                              <button
-                                onClick={() =>
-                                  handleRemoveFromWishlist(item._id)
-                                }
-                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition"
+                          <Link
+                            to={`/product/${item._id}`}
+                            className="flex flex-col md:flex-row items-center gap-6 w-full"
+                          >
+                            <img
+                              src={item.images?.[0]?.url || "/placeholder.png"}
+                              alt={item.name}
+                              className="w-full md:w-48 h-48 object-cover rounded-xl shadow"
+                            />
+                            <div className="flex-1 text-center md:text-left">
+                              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                                {item.name}
+                              </h3>
+                              <p className="mb-2 text-sm text-gray-600">
+                                {item.description}
+                              </p>
+                              <p
+                                className={`text-sm font-medium mb-2 ${
+                                  item.countInStock < 5
+                                    ? "text-red-600"
+                                    : "text-green-600"
+                                }`}
                               >
-                                <FaTrash /> Remove
-                              </button>
-                              {/* <button
-                                onClick={() =>
-                                  navigate(`/checkout`)
-                                }
-                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition"
-                              >
-                                Buy Now
-                              </button> */}
+                                {item.countInStock < 5
+                                  ? `Hurry! Only ${item.countInStock} left in stock`
+                                  : `In Stock`}
+                              </p>
                             </div>
+                          </Link>
+
+                          <div className="flex justify-center md:justify-start gap-4 mt-3 md:mt-0">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // ⛔ Prevent navigation
+                                handleRemoveFromWishlist(item._id);
+                              }}
+                              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition"
+                            >
+                              <FaTrash /> Remove
+                            </button>
                           </div>
                         </div>
                       ))}

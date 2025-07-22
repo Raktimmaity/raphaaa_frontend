@@ -30,52 +30,90 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const totalPages = Math.ceil(safeProducts.length / productsPerPage);
   const [wishlistItems, setWishlistItems] = useState([]);
 
-useEffect(() => {
-  const fetchWishlist = async () => {
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/wishlist`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setWishlistItems(data);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
+      }
+    };
+
+    fetchWishlist();
+  }, []);
+
+  // 👇 Add this
+  const isInWishlist = (productId) => {
+    return wishlistItems.some((item) => item._id === productId); // ✅ Correct
+  };
+
+  //   const handleWishlistClick = async (product) => {
+  //   try {
+  //     const token = localStorage.getItem("userToken");
+
+  //     const alreadyWishlisted = isInWishlist(product._id);
+
+  //     const url = `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${alreadyWishlisted ? "remove" : "add"}/${product._id}`;
+
+  //     await axios[alreadyWishlisted ? "delete" : "post"](url, {}, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     toast.success(`${product.name} ${alreadyWishlisted ? "removed from" : "added to"} wishlist`);
+
+  //     setWishlistItems((prev) =>
+  //       alreadyWishlisted
+  //         ? prev.filter((item) => item._id !== product._id)
+  //         : [...prev, product]
+  //     );
+  //   } catch (error) {
+  //     toast.error("Failed to update wishlist.");
+  //     console.error("Wishlist error:", error);
+  //   }
+  // };
+  const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("userToken");
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/wishlist`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setWishlistItems(data);
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/remove/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Removed from wishlist");
+      setWishlistItems((prev) => prev.filter((item) => item._id !== productId));
     } catch (err) {
-      console.error("Error fetching wishlist:", err);
+      console.error("Failed to remove from wishlist:", err);
+      toast.error("Failed to remove from wishlist");
     }
   };
 
-  fetchWishlist();
-}, []);
-
-// 👇 Add this
-const isInWishlist = (productId) => {
-  return wishlistItems.some((item) => item._id === productId);
-};
-
-  const handleWishlistClick = async (product) => {
-  try {
-    const token = localStorage.getItem("userToken");
-
-    const alreadyWishlisted = isInWishlist(product._id);
-
-    const url = `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${alreadyWishlisted ? "remove" : "add"}/${product._id}`;
-
-    await axios[alreadyWishlisted ? "delete" : "post"](url, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    toast.success(`${product.name} ${alreadyWishlisted ? "removed from" : "added to"} wishlist`);
-
-    setWishlistItems((prev) =>
-      alreadyWishlisted
-        ? prev.filter((item) => item._id !== product._id)
-        : [...prev, product]
-    );
-  } catch (error) {
-    toast.error("Failed to update wishlist.");
-    console.error("Wishlist error:", error);
-  }
-};
-
+  const handleAddToWishlist = async (product) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/add/${product._id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success(`${product.name} added to wishlist`);
+      setWishlistItems((prev) => [...prev, product]);
+    } catch (error) {
+      console.error("Failed to add to wishlist:", error);
+      toast.error("Failed to add to wishlist");
+    }
+  };
 
   // Loading
   if (loading) {
@@ -204,24 +242,29 @@ const isInWishlist = (productId) => {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        handleWishlistClick(product);
+                        e.stopPropagation();
+                        isInWishlist(product._id)
+                          ? handleRemoveFromWishlist(product._id)
+                          : handleAddToWishlist(product);
                       }}
                       title={
                         isInWishlist(product._id)
                           ? "Remove from Wishlist"
                           : "Add to Wishlist"
                       }
-                      className={`ml-auto rounded-full p-1 shadow-md transition ${
+                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
                         isInWishlist(product._id)
                           ? "bg-red-100 text-red-600 hover:bg-red-200"
                           : "bg-white text-gray-800 hover:bg-pink-100"
                       }`}
                     >
-                      {isInWishlist(product._id) ? (
-                        <AiFillHeart className="text-2xl" />
-                      ) : (
-                        <AiOutlineHeart className="text-2xl" />
-                      )}
+                      <span className="relative inline-block transition-transform duration-300 ease-in-out">
+                        {isInWishlist(product._id) ? (
+                          <AiFillHeart className="text-2xl animate-pulse" />
+                        ) : (
+                          <AiOutlineHeart className="text-2xl" />
+                        )}
+                      </span>
                     </button>
                   </div>
                 ) : (
@@ -232,12 +275,29 @@ const isInWishlist = (productId) => {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        handleWishlistClick(product);
+                        e.stopPropagation();
+                        isInWishlist(product._id)
+                          ? handleRemoveFromWishlist(product._id)
+                          : handleAddToWishlist(product);
                       }}
-                      title="Add to Wishlist"
-                      className="ml-auto bg-white text-gray-800 rounded-full p-1 shadow-md hover:bg-pink-100 transition"
+                      title={
+                        isInWishlist(product._id)
+                          ? "Remove from Wishlist"
+                          : "Add to Wishlist"
+                      }
+                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
+                        isInWishlist(product._id)
+                          ? "bg-red-100 text-red-600 hover:bg-red-200"
+                          : "bg-white text-gray-800 hover:bg-pink-100"
+                      }`}
                     >
-                      <AiOutlineHeart className="text-lg" />
+                      <span className="relative inline-block transition-transform duration-300 ease-in-out">
+                        {isInWishlist(product._id) ? (
+                          <AiFillHeart className="text-2xl animate-pulse" />
+                        ) : (
+                          <AiOutlineHeart className="text-2xl" />
+                        )}
+                      </span>
                     </button>
                   </div>
                 )}
