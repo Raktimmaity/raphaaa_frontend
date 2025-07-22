@@ -371,7 +371,7 @@ export const updateProfile = createAsyncThunk(
 
       // ✅ Fixed: Better token handling
       const authToken = token || localStorage.getItem("userToken");
-      
+
       if (!authToken) {
         toast.error("Authentication token not found. Please login again.");
         return rejectWithValue({ message: "No authentication token" });
@@ -408,10 +408,10 @@ export const updateProfile = createAsyncThunk(
       };
     } catch (error) {
       console.error("Update profile error:", error);
-      
+
       // ✅ Enhanced error handling for server issues
       let errorMessage = "Failed to update profile";
-      
+
       if (error.code === "ECONNABORTED") {
         errorMessage = "Request timeout. Please try again.";
       } else if (error.response?.status === 401) {
@@ -425,9 +425,7 @@ export const updateProfile = createAsyncThunk(
       }
 
       toast.error(errorMessage);
-      return rejectWithValue(
-        error.response?.data || { message: errorMessage }
-      );
+      return rejectWithValue(error.response?.data || { message: errorMessage });
     }
   }
 );
@@ -451,6 +449,12 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    googleLoginSuccess: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      localStorage.setItem("userInfo", JSON.stringify(action.payload.user));
+      localStorage.setItem("userToken", action.payload.token);
     },
   },
   extraReducers: (builder) => {
@@ -496,5 +500,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, generateNewGuestId, clearError } = authSlice.actions;
+export const { logout, generateNewGuestId, clearError, googleLoginSuccess  } = authSlice.actions;
 export default authSlice.reducer;

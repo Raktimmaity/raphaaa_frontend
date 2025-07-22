@@ -131,7 +131,7 @@ const isInWishlist = (productId) => {
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2 p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
         {currentProducts.map((product, index) => (
           <Link
             key={index}

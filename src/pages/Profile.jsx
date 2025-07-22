@@ -9,6 +9,8 @@ import { logout } from "../redux/slices/authSlice";
 import { clearCart } from "../redux/slices/cartSlice";
 import axios from "axios";
 import { FaHeart, FaMapMarkerAlt, FaCog, FaBoxOpen } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { RiCoupon2Fill } from "react-icons/ri";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -27,6 +29,38 @@ const Profile = () => {
   });
   const [wishlistItems, setWishlistItems] = useState([]);
   const [wishlistDrawerOpen, setWishlistDrawerOpen] = useState(false);
+  const [editField, setEditField] = useState(null); // e.g. "name", "email"
+  const [editValue, setEditValue] = useState("");
+  const [coupon, setCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchCoupon = async () => {
+      try {
+        const token = user?.token || localStorage.getItem("userToken");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/my-coupon`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCoupon(data);
+        setCouponError("");
+      } catch (err) {
+        setCoupon(null);
+        setCouponError(
+          err.response?.data?.message || "Could not fetch coupon details"
+        );
+      }
+    };
+
+    if (activeTab === "coupon" && user?.role === "customer") {
+      fetchCoupon();
+    }
+  }, [activeTab, user]);
 
   useEffect(() => {
     if (!user) navigate("/login");
@@ -162,11 +196,12 @@ const Profile = () => {
                 <img
                   src={profileImage}
                   alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md hover:scale-105 transition-transform"
+                  className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md hover:scale-105 transition-transform"
                 />
               ) : (
-                <FaUserCircle className="text-blue-400 text-8xl hover:scale-105 transition-transform drop-shadow-sm" />
+                <FaUserCircle className="text-blue-400 text-5xl hover:scale-105 transition-transform drop-shadow-sm" />
               )}
+
               <span
                 className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${
                   isOnline ? "bg-green-500" : "bg-gray-400"
@@ -197,13 +232,23 @@ const Profile = () => {
             </p>
 
             <div className="w-full mt-4 space-y-2 text-left">
-              {["orders", "wishlist", "address", "settings"].map((key) => {
+              {[
+                "orders",
+                "wishlist",
+                "address",
+                "profile",
+                "coupon",
+                "settings",
+              ].map((key) => {
                 const icons = {
                   orders: <FaBoxOpen className="mr-2" />,
                   wishlist: <FaHeart className="mr-2" />,
                   address: <FaMapMarkerAlt className="mr-2" />,
                   settings: <FaCog className="mr-2" />,
+                  profile: <FaUserCircle className="mr-2" />,
+                  coupon: <RiCoupon2Fill className="mr-2" />,
                 };
+
                 return (
                   <button
                     key={key}
@@ -435,13 +480,220 @@ const Profile = () => {
                   </div>
                 </div>
               )}
+              {activeTab === "profile" && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-2">
+                    My Profile
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Name */}
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        value={user?.name}
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                      {/* <FaEdit
+                        onClick={() => {
+                          setEditField("name");
+                          setEditValue(user?.name);
+                        }}
+                        className="absolute right-2 top-8 text-gray-500 hover:text-blue-600 cursor-pointer"
+                      /> */}
+                    </div>
+
+                    {/* Email */}
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={user?.email}
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                      {/* <FaEdit
+                        onClick={() => {
+                          setEditField("email");
+                          setEditValue(user?.email);
+                        }}
+                        className="absolute right-2 top-8 text-gray-500 hover:text-blue-600 cursor-pointer"
+                      /> */}
+                    </div>
+
+                    {/* Mobile */}
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Mobile
+                      </label>
+                      <input
+                        type="text"
+                        value={user?.mobile || "Not Available"}
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                      {/* <FaEdit
+                        onClick={() => {
+                          setEditField("mobile");
+                          setEditValue(user?.mobile || "");
+                        }}
+                        className="absolute right-2 top-8 text-gray-500 hover:text-blue-600 cursor-pointer"
+                      /> */}
+                    </div>
+
+                    {/* Role */}
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Role
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          user?.role === "admin"
+                            ? "Admin"
+                            : user?.role === "merchantise"
+                            ? "Merchandise"
+                            : user?.role === "delivery_boy"
+                            ? "Delivery Boy"
+                            : user?.role
+                        }
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                      {/* No edit option for role */}
+                    </div>
+                  </div>
+
+                  {/* <hr className="my-4" /> */}
+
+                  {/* <h3 className="text-lg font-semibold text-gray-800">
+                    Update Password
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="password"
+                      placeholder="New Password"
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="mt-4 bg-blue-600 text-white font-medium px-6 py-2 rounded-md hover:bg-blue-700 transition"
+                  >
+                    Update Profile
+                  </button> */}
+                </div>
+              )}
+
               {activeTab === "settings" && (
                 <div>
                   <h2 className="text-xl font-semibold">Settings Page</h2>
                   <p>Settings coming soon.</p>
                 </div>
               )}
+              {activeTab === "coupon" && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    {/* <img
+                      src="https://cdn-icons-png.flaticon.com/512/514/514677.png"
+                      alt="Coupon Icon"
+                      className="w-6 h-6"
+                    /> */}
+                    My Coupons
+                  </h2>
+
+                  {/* {user?.role === "customer" ? (
+                    coupon ? (
+                      <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-lg p-4 shadow-md w-fit">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src="https://cdn-icons-png.flaticon.com/512/726/726476.png"
+                            alt="Discount"
+                            className="w-8 h-8"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-lg font-bold text-blue-700">
+                                {coupon.code}
+                              </p>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(coupon.code);
+                                  setCopied(true);
+                                  setTimeout(() => setCopied(false), 2000);
+                                }}
+                                className="text-xs text-blue-600 border border-blue-500 px-2 py-0.5 rounded hover:bg-blue-100 transition"
+                              >
+                                {copied ? "Copied" : "Copy"}
+                              </button>
+                            </div>
+                            <p className="text-sm text-green-600 font-medium">
+                              {coupon.discount}% off – valid until{" "}
+                              {new Date(coupon.expiresAt).toLocaleDateString(
+                                "en-IN"
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : couponError ? (
+                      <p className="text-red-600 mt-2">{couponError}</p>
+                    ) : (
+                      <p className="text-gray-500">Loading your coupon...</p>
+                    )
+                  ) : (
+                    <p className="text-gray-600">
+                      Coupons are only for customers.
+                    </p>
+                  )} */}
+                </div>
+              )}
             </div>
+            {editField && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+                  <h3 className="text-lg font-semibold mb-4 capitalize">
+                    Edit {editField}
+                  </h3>
+                  <input
+                    type={editField === "email" ? "email" : "text"}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => setEditField(null)}
+                      className="px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Call update API here if needed
+                        toast.success(`${editField} updated to "${editValue}"`);
+                        setEditField(null);
+                      }}
+                      className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

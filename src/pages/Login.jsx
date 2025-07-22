@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import login from "../assets/login.jpg";
 import logo from "../assets/logo1.png";
-import { loginUser } from "../redux/slices/authSlice";
+import { loginUser, googleLoginSuccess } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { mergecart } from "../redux/slices/cartSlice";
 import { toast } from "sonner"; // ✅ Sonner import
 import { FiRefreshCcw } from "react-icons/fi";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,6 +37,23 @@ const Login = () => {
       }
     }
   }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
+
+//   useEffect(() => {
+//   if (user) {
+//     if (!user.mobileVerified) {
+//       navigate("/verify-mobile");
+//       return;
+//     }
+
+//     if (cart?.products.length > 0 && guestId) {
+//       dispatch(mergecart({ guestId, user })).then(() => {
+//         navigate(isCheckoutRedirect ? "/checkout" : "/");
+//       });
+//     } else {
+//       navigate(isCheckoutRedirect ? "/checkout" : "/");
+//     }
+//   }
+// }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
   useEffect(() => {
     const a = Math.floor(Math.random() * 10) + 1;
@@ -145,7 +165,7 @@ const Login = () => {
               type="number"
               value={captchaAnswer}
               onChange={(e) => setCaptchaAnswer(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
               placeholder="Answer"
             />
           </div>
@@ -158,12 +178,49 @@ const Login = () => {
             </Link>
           </div>
 
+          {/* Existing Login Button */}
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white p-2.5 rounded-lg font-semibold hover:opacity-90 transition duration-300"
           >
             {loading ? "Signing..." : "Sign In"}
           </button>
+
+          {/* Divider */}
+          <div className="flex items-center my-4">
+            <div className="flex-grow h-px bg-gradient-to-r from-blue-600 to-sky-400" />
+            <span className="mx-3 text-gray-600 text-sm font-medium">or</span>
+            <div className="flex-grow h-px bg-gradient-to-r from-sky-400 to-blue-600" />
+          </div>
+
+          {/* Google Login */}
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const decoded = jwtDecode(credentialResponse.credential);
+                  const { name, email, picture } = decoded;
+
+                  const { data } = await axios.post(
+                    `${
+                      import.meta.env.VITE_BACKEND_URL
+                    }/api/users/google-login`,
+                    { name, email, photo: picture }
+                  );
+
+                  dispatch(
+                    googleLoginSuccess({ user: data.user, token: data.token })
+                  );
+                  toast.success("Login successful!");
+                  navigate(redirect);
+                } catch (error) {
+                  console.error(error);
+                  toast.error(error.response?.data?.message || "Login failed");
+                }
+              }}
+              onError={() => toast.error("Login failed")}
+            />
+          </div>
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{" "}

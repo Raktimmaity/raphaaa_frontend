@@ -11,6 +11,7 @@ import { IoLogoInstagram } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import axios from "axios";
+import { GiTreasureMap } from "react-icons/gi"; // example icon
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import register from "../assets/register.jpg";
 import logo from "../assets/logo1.png";
-import { registerUser } from "../redux/slices/authSlice";
+import { registerUser, googleLoginSuccess } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { mergecart } from "../redux/slices/cartSlice";
 import { toast } from "sonner"; // ✅ Sonner toast
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -156,6 +159,41 @@ const Register = () => {
           >
             {loading ? "Registering..." : "Register"}
           </button>
+
+          <div className="flex items-center my-4">
+            <div className="flex-grow h-px bg-gradient-to-r from-blue-600 to-sky-400" />
+            <span className="mx-3 text-gray-600 text-sm font-medium">or</span>
+            <div className="flex-grow h-px bg-gradient-to-r from-sky-400 to-blue-600" />
+          </div>
+
+          <div className="mt-4 flex justify-center">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const decoded = jwtDecode(credentialResponse.credential);
+                  const { name, email, picture } = decoded;
+
+                  const { data } = await axios.post(
+                    `${
+                      import.meta.env.VITE_BACKEND_URL
+                    }/api/users/google-login`,
+                    { name, email, photo: picture }
+                  );
+
+                  dispatch(
+                    googleLoginSuccess({ user: data.user, token: data.token })
+                  );
+
+                  toast.success("Login successful!");
+                  navigate(redirect);
+                } catch (error) {
+                  console.error(error);
+                  toast.error(error.response?.data?.message || "Login failed");
+                }
+              }}
+              onError={() => toast.error("Login failed")}
+            />
+          </div>
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}

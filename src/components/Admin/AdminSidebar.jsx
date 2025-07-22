@@ -22,12 +22,35 @@ import { FaTasks } from "react-icons/fa";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { FaRupeeSign } from "react-icons/fa";
 import { LuMessageSquareText } from "react-icons/lu";
+import axios from "axios";
+import { toast } from "sonner";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [profile, setProfile] = useState(null);
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      setProfile(data); // Save full user object from DB
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+      toast.error("Could not fetch profile");
+    }
+  };
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -64,24 +87,49 @@ const AdminSidebar = () => {
                   : "Customer"} Dashboard</h2> */}
 
         {user && (
-          <div className="flex items-center justify-center gap-4 bg-gray-800 p-3 rounded-lg">
-            {user.photo ? (
+          <div className="flex items-center gap-4 bg-gray-800 p-3 rounded-lg overflow-hidden">
+            {profile?.photo ? (
               <img
-                src={user.photo}
+                src={profile.photo}
                 alt={user.name || user.email}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/default-avatar.png";
+                }}
+                className="w-12 h-12 rounded-full object-cover border-2 border-white shrink-0"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center text-lg font-bold border-2 border-white">
+              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center text-lg font-bold border-2 border-white shrink-0">
                 {user.name
                   ? user.name.charAt(0).toUpperCase()
                   : user.email?.charAt(0).toUpperCase()}
               </div>
             )}
 
-            <div className="text-left text-sm text-gray-200">
-              <p className="font-semibold">{user.name}</p>
-              <p className="text-xs text-gray-400">{user.email}</p>
+            <div className="flex-1 min-w-0 text-left text-sm text-gray-200">
+              <p className="font-semibold break-words">{user.name}</p>
+              <p className="text-xs">
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    user.role === "admin"
+                      ? "bg-red-100 text-red-700"
+                      : user.role === "merchantise"
+                      ? "bg-purple-100 text-purple-700"
+                      : user.role === "delivery_boy"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {user.role === "admin"
+                    ? "Admin"
+                    : user.role === "merchantise"
+                    ? "Merchandise"
+                    : user.role === "delivery_boy"
+                    ? "Delivery Boy"
+                    : user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}
+                </span>
+              </p>
+
               <p
                 className={`text-xs ${
                   isOnline ? "text-green-400" : "text-red-400"

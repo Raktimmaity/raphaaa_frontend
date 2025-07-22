@@ -40,6 +40,7 @@ const ProductDetails = ({ productId }) => {
   const productFetchId = productId || id;
   const [sortOption, setSortOption] = useState("newest");
   const [expandedReviews, setExpandedReviews] = useState({});
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   // ✅ Inside your ProductDetails component (near useState declarations)
   const [showModal, setShowModal] = useState(false);
@@ -52,10 +53,16 @@ const ProductDetails = ({ productId }) => {
     if (selectedProduct && user) {
       const regDate = new Date(user.createdAt);
       const today = new Date();
-      const daysSinceRegistration = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
+      const daysSinceRegistration = Math.floor(
+        (today - regDate) / (1000 * 60 * 60 * 24)
+      );
 
-      if (couponCode.trim().toUpperCase() === "FIRST10" && daysSinceRegistration <= 10) {
-        const discounted = selectedProduct.price - selectedProduct.price * 0.1;
+      if (
+        couponCode.trim().toUpperCase() === "FIRST10" &&
+        daysSinceRegistration <= 10
+      ) {
+        const discounted =
+          selectedProduct.price - selectedProduct.price * 0.1;
         setFinalPrice(Math.round(discounted));
         return;
       }
@@ -65,6 +72,8 @@ const ProductDetails = ({ productId }) => {
 
   applyCoupon();
 }, [couponCode, selectedProduct, user]);
+
+  
 
   // ✅ Function to handle image click
   const handleImageClick = (imgUrl) => {
@@ -94,6 +103,9 @@ const ProductDetails = ({ productId }) => {
     if (productFetchId) {
       dispatch(fetchProductDetails(productFetchId));
       dispatch(fetchSimilarProducts(productFetchId));
+
+      setSelectedColor("");
+      setSelectedSize("");
     }
   }, [dispatch, productFetchId]);
 
@@ -328,44 +340,48 @@ const ProductDetails = ({ productId }) => {
   // };
 
   const handleAddToCart = () => {
-  if (!selectedSize || !selectedColor) {
-    toast.error("Please select a size and color before adding to cart.", {
-      duration: 1500,
-    });
-    return;
-  }
+    if (!selectedSize || !selectedColor) {
+      toast.error("Please select a size and color before adding to cart.", {
+        duration: 1500,
+      });
+      return;
+    }
 
-  const currentCartItems = JSON.parse(localStorage.getItem("persist:root"))?.cart;
-  const totalProductsInCart = currentCartItems
-    ? JSON.parse(currentCartItems)?.cartItems?.reduce((acc, item) => acc + item.quantity, 0)
-    : 0;
+    const currentCartItems = JSON.parse(
+      localStorage.getItem("persist:root")
+    )?.cart;
+    const totalProductsInCart = currentCartItems
+      ? JSON.parse(currentCartItems)?.cartItems?.reduce(
+          (acc, item) => acc + item.quantity,
+          0
+        )
+      : 0;
 
-  if (totalProductsInCart + quantity > 10) {
-    toast.error("You can buy up to 10 items", { duration: 2000 });
-    return;
-  }
+    if (totalProductsInCart + quantity > 10) {
+      toast.error("You can buy up to 10 items", { duration: 2000 });
+      return;
+    }
 
-  setIsButtonDisabled(true);
-  setIsAddingToCart(true);
-  dispatch(
-    addToCart({
-      productId: productFetchId,
-      quantity,
-      size: selectedSize,
-      color: selectedColor,
-      guestId,
-      userId: user?._id,
-    })
-  )
-    .then(() => {
-      toast.success("Product added to cart!!", { duration: 1000 });
-    })
-    .finally(() => {
-      setIsButtonDisabled(false);
-      setIsAddingToCart(false);
-    });
-};
-
+    setIsButtonDisabled(true);
+    setIsAddingToCart(true);
+    dispatch(
+      addToCart({
+        productId: productFetchId,
+        quantity,
+        size: selectedSize,
+        color: selectedColor,
+        guestId,
+        userId: user?._id,
+      })
+    )
+      .then(() => {
+        toast.success("Product added to cart!!", { duration: 1000 });
+      })
+      .finally(() => {
+        setIsButtonDisabled(false);
+        setIsAddingToCart(false);
+      });
+  };
 
   if (loading) return <ProductDetailsSkeleton />;
 
@@ -394,6 +410,8 @@ const ProductDetails = ({ productId }) => {
       percentage: Math.round((count / totalReviews) * 100),
     };
   });
+
+ 
 
 
 
@@ -580,6 +598,26 @@ const ProductDetails = ({ productId }) => {
                     ))}
                   </div>
                 </div>
+                {/* 🏷️ Apply Coupon */}
+                {/* <div className="mb-6">
+                  <p className="font-medium text-gray-700 mb-2">
+                    Apply Coupon Code:
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter your coupon code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                  {finalPrice && (
+                    <p className="text-green-600 mt-2 font-medium">
+                      Coupon Applied! Discounted Price: ₹{finalPrice}
+                    </p>
+                  )}
+                </div> */}
+
+                {/* Quantity */}
 
                 {/* Quantity */}
                 <div className="mb-6">
@@ -641,7 +679,6 @@ const ProductDetails = ({ productId }) => {
     </p>
   )}
 </div> */}
-
 
                 {/* Add to Cart */}
                 <button
@@ -795,119 +832,111 @@ const ProductDetails = ({ productId }) => {
               </div>
 
               {sortedReviews.length > 0 ? (
-                <div className="space-y-8">
-                  {sortedReviews.map((review, index) => (
-                    <div
-                      key={index}
-                      className="bg-gradient-to-br from-white to-sky-50 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner ring-1 ring-sky-300">
-                            {review.user?.name?.charAt(0).toUpperCase() || "U"}
-                          </div>
-                          <div>
-                            <h4 className="text-lg font-semibold text-gray-800 tracking-wide">
-                              {review.user?.name || "Anonymous"}
-                            </h4>
-                            <div className="flex items-center gap-1 mt-1">
-                              {Array.from({ length: 5 }, (_, i) => (
-                                <span
-                                  key={i}
-                                  className={`text-xl ${
-                                    i < review.rating
-                                      ? "text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                              <span className="ml-2 text-sm text-gray-500">
-                                {review.rating}/5
-                              </span>
+                <>
+                  <div className="space-y-8">
+                    {sortedReviews.slice(0, 3).map((review, index) => (
+                      <div
+                        key={index}
+                        className="bg-gradient-to-br from-white to-sky-50 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl p-6"
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner ring-1 ring-sky-300">
+                              {review.user?.name?.charAt(0).toUpperCase() ||
+                                "U"}
                             </div>
-
-                            {review.isVerifiedPurchase && (
-                              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white text-xs font-semibold rounded-full shadow-md ring-1 ring-green-300">
-                                <BsPatchCheckFill className="text-white text-sm drop-shadow" />
-                                <span className="tracking-wide">
-                                  Verified Purchase
+                            <div>
+                              <h4 className="text-lg font-semibold text-gray-800 tracking-wide">
+                                {review.user?.name || "Anonymous"}
+                              </h4>
+                              <div className="flex items-center gap-1 mt-1">
+                                {Array.from({ length: 5 }, (_, i) => (
+                                  <span
+                                    key={i}
+                                    className={`text-xl ${
+                                      i < review.rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }`}
+                                  >
+                                    ★
+                                  </span>
+                                ))}
+                                <span className="ml-2 text-sm text-gray-500">
+                                  {review.rating}/5
                                 </span>
                               </div>
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-700 font-medium">
+                            <span className="text-black">Posted On: </span>
+                            {new Date(review.createdAt).toLocaleDateString(
+                              "en-IN"
                             )}
                           </div>
                         </div>
-                        <div className="text-sm text-gray-400 font-medium">
-                          {review.createdAt
-                            ? new Date(review.createdAt).toLocaleDateString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "long",
-                                  year: "numeric",
-                                }
-                              )
-                            : "Recently"}
-                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
                       </div>
+                    ))}
+                  </div>
 
-                      <div className="relative">
-                        <p className="text-gray-700 leading-relaxed mb-2 text-[15px]">
-                          {expandedReviews[index]
-                            ? review.comment
-                            : `${review.comment.slice(0, 200)}${
-                                review.comment.length > 200 ? "..." : ""
-                              }`}
-                        </p>
-
-                        {review.comment.length > 200 && (
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() =>
-                                setExpandedReviews((prev) => ({
-                                  ...prev,
-                                  [index]: !prev[index],
-                                }))
-                              }
-                              className="text-sm text-sky-600 hover:underline font-medium"
-                            >
-                              {expandedReviews[index]
-                                ? "Show less"
-                                : "Read more"}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      {(Array.isArray(review.image) &&
-                        review.image.length > 0 && (
-                          <div className="flex flex-wrap gap-3">
-                            {review.image.map((img, idx) => (
-                              <img
-                                key={idx}
-                                src={img}
-                                alt={`review-img-${idx}`}
-                                className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-md hover:scale-105 transition-transform"
-                              />
-                            ))}
-                          </div>
-                        )) ||
-                        (typeof review.image === "string" && review.image && (
-                          <div className="mt-3">
-                            <img
-                              src={review.image}
-                              alt="review-img"
-                              className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-md hover:scale-105 transition-transform"
-                            />
-                          </div>
-                        ))}
+                  {sortedReviews.length > 3 && (
+                    <div className="text-center mt-6">
+                      <button
+                        onClick={() => setShowAllReviews(true)}
+                        className="px-4 py-2 text-sm font-semibold text-sky-700 border border-sky-400 rounded hover:bg-sky-50 transition"
+                      >
+                        View More Reviews
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="bg-sky-50 border border-sky-100 text-center p-8 rounded-xl text-gray-500 shadow-inner">
                   <p>No reviews yet.</p>
+                </div>
+              )}
+
+              {showAllReviews && (
+                <div
+                  className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+                  onClick={() => setShowAllReviews(false)}
+                >
+                  <div
+                    className="bg-white max-w-3xl w-full max-h-[80vh] overflow-y-auto rounded-xl shadow-xl p-6 relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setShowAllReviews(false)}
+                      className="absolute top-3 right-4 text-gray-600 hover:text-red-600 text-2xl"
+                    >
+                      ✕
+                    </button>
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">
+                      All Reviews
+                    </h3>
+                    <div className="space-y-6">
+                      {sortedReviews.map((review, index) => (
+                        <div key={index} className="border-b pb-4">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-semibold text-gray-800">
+                              {review.user?.name || "Anonymous"}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              {new Date(review.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="text-yellow-400 mb-1">
+                            {"★".repeat(review.rating)}
+                            {"☆".repeat(5 - review.rating)}
+                          </div>
+                          <p className="text-gray-700 text-sm">
+                            {review.comment}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

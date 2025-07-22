@@ -29,6 +29,27 @@ const UpdateProfile = () => {
     const interval = setInterval(updateGreeting, 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+  const [profile, setProfile] = useState(null);
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      setProfile(data); // Save full user object from DB
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+      toast.error("Could not fetch profile");
+    }
+  };
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -79,7 +100,8 @@ const UpdateProfile = () => {
     }
     const result = await dispatch(updateProfile(formData));
     if (result?.meta?.requestStatus === "fulfilled") {
-      toast.success("Profile updated successfully");
+      // toast.success("Profile updated successfully");
+      fetchUserProfile(); // 🔄 refresh from DB
     } else {
       toast.error("Failed to update profile");
     }
@@ -94,17 +116,22 @@ const UpdateProfile = () => {
       {user && (
         <div className="relative bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-100 shadow-xl rounded-xl mb-8 p-6 sm:flex sm:items-center sm:justify-between transition-all duration-300">
           <div className="flex items-center gap-4">
-            {formData.photo ? (
+            {profile?.photo ? (
               <img
-                src={formData.photo}
+                src={profile.photo}
                 alt="Profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/default-avatar.png";
+                }}
                 className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md"
               />
             ) : (
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white flex items-center justify-center text-2xl font-bold shadow-md ring-4 ring-white">
-                {user.name?.charAt(0).toUpperCase()}
+                {profile?.name?.charAt(0).toUpperCase() || "?"}
               </div>
             )}
+
             <div>
               <h3 className="text-2xl font-bold text-blue-800 mb-1">
                 {greeting}, {user.name}

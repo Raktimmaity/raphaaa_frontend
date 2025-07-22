@@ -52,6 +52,7 @@ import PrivacyPolicySettings from "./pages/PrivacyPolicySettings";
 import AddEditOffer from "./pages/AddEditOffer";
 import AdminOffersList from "./pages/AdminOffersList";
 import OffersShowcase from "./pages/OffersShowcase";
+import VerifyMobile from "./pages/VerifyMobile";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -92,6 +93,7 @@ const App = () => {
             <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
             <Route path="/forgot-password" element={<ForgotPassword/>} />
             <Route path="/offers" element={<OffersShowcase/>} />
+            <Route path="/verify-mobile" element={<VerifyMobile/>} />
 
             {/* User Layout */}
           </Route>
