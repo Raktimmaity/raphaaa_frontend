@@ -495,7 +495,7 @@ const Checkout = () => {
                 />
                 {addressLoading && (
                   <div className="absolute right-3 top-3">
-                    <div className="animate-spin rounded-full h-5 w-5 border border-gray-300-b-2 border border-gray-300-gray-600"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border border-gray-300-b-2 border-gray-300-gray-600"></div>
                   </div>
                 )}
               </div>
@@ -544,7 +544,7 @@ const Checkout = () => {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Phone</label>
               <div className="flex">
-                <span className="inline-flex items-center px-3 rounded-l-lg border border-gray-300 border border-gray-300-r-0 border border-gray-300-gray-300 bg-slate-100 text-gray-500 text-sm">
+                <span className="inline-flex items-center px-3 rounded-l-lg border border-gray-300 border-gray-300-r-0 border-gray-300-gray-300 bg-slate-100 text-gray-500 text-sm">
                   +91
                 </span>
                 <input
@@ -727,7 +727,7 @@ const Checkout = () => {
         )} */}
 
         {orderProcessing && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-gray-300 border border-gray-300-yellow-200 rounded-xl">
+          <div className="mt-4 p-4 bg-yellow-50 border border-gray-300 border-gray-300-yellow-200 rounded-xl">
             <p className="text-sm text-yellow-600">
               <strong>Processing your order...</strong> Please wait.
             </p>
@@ -735,7 +735,7 @@ const Checkout = () => {
         )}
 
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-gray-300 border border-gray-300-red-200 rounded-xl">
+          <div className="mt-4 p-4 bg-red-50 border border-gray-300 border-gray-300-red-200 rounded-xl">
             <p className="text-sm text-red-700">
               <strong>Error:</strong> {error}
             </p>
