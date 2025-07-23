@@ -305,7 +305,7 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 {product.rating > 0 && product.numReviews > 0 && (
                   <div className="flex items-center space-x-1 mt-1">
                     <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">
-                      {product.rating} ★
+                      {(product.rating).toFixed(1)} ★
                     </span>
                     <span className="text-xs text-gray-500 ml-1">
                       {product.numReviews} Reviews

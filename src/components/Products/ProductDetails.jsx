@@ -704,7 +704,7 @@ const ProductDetails = ({ productId }) => {
                   selectedProduct.numReviews > 0 && (
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
-                        {selectedProduct.rating} ★
+                        {(selectedProduct.rating).toFixed(1)} ★
                       </span>
                       <span className="text-sm text-gray-600">
                         {selectedProduct.numReviews} review
