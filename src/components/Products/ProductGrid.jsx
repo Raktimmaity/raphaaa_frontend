@@ -252,13 +252,13 @@ const ProductGrid = ({ products = [], loading, error }) => {
                           ? "Remove from Wishlist"
                           : "Add to Wishlist"
                       }
-                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
+                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md hover:scale-110 ${
                         isInWishlist(product._id)
                           ? "bg-red-100 text-red-600 hover:bg-red-200"
                           : "bg-white text-gray-800 hover:bg-pink-100"
                       }`}
                     >
-                      <span className="relative inline-block transition-transform duration-300 ease-in-out">
+                      <span className="relative inline-block">
                         {isInWishlist(product._id) ? (
                           <AiFillHeart className="text-2xl animate-pulse" />
                         ) : (
@@ -285,13 +285,13 @@ const ProductGrid = ({ products = [], loading, error }) => {
                           ? "Remove from Wishlist"
                           : "Add to Wishlist"
                       }
-                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
+                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md hover:scale-110 ${
                         isInWishlist(product._id)
                           ? "bg-red-100 text-red-600 hover:bg-red-200"
                           : "bg-white text-gray-800 hover:bg-pink-100"
                       }`}
                     >
-                      <span className="relative inline-block transition-transform duration-300 ease-in-out">
+                      <span className="relative inline-block">
                         {isInWishlist(product._id) ? (
                           <AiFillHeart className="text-2xl animate-pulse" />
                         ) : (

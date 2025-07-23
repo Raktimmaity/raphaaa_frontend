@@ -53,6 +53,7 @@ import AddEditOffer from "./pages/AddEditOffer";
 import AdminOffersList from "./pages/AdminOffersList";
 import OffersShowcase from "./pages/OffersShowcase";
 import VerifyMobile from "./pages/VerifyMobile";
+import AutoLogout from "./components/Common/AutoLogout";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -61,6 +62,7 @@ const App = () => {
       <ToastContainer position="top-right" autoClose={2000} />
       <Toaster position="top-right" />
       <BrowserRouter>
+      <AutoLogout/>
       <ScrollToTop/>
         <Routes>
           <Route path="/" element={<UserLayout />}>
