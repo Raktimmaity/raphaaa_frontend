@@ -682,10 +682,12 @@ const ProductDetails = ({ productId }) => {
                       </tr>
                     )}
                     {selectedProduct.weight && (
-                    <tr className="hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 font-medium">Weight</td>
-                      <td className="px-4 py-3">{selectedProduct.weight} gm</td>
-                    </tr>
+                      <tr className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-medium">Weight</td>
+                        <td className="px-4 py-3">
+                          {selectedProduct.weight} gm
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -704,7 +706,7 @@ const ProductDetails = ({ productId }) => {
                   selectedProduct.numReviews > 0 && (
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-green-600 text-white px-2 p-0.5 rounded-md">
-                        {(selectedProduct.rating).toFixed(1)} ★
+                        {selectedProduct.rating.toFixed(1)} ★
                       </span>
                       <span className="text-sm text-gray-600">
                         {selectedProduct.numReviews} review
@@ -1108,6 +1110,17 @@ const ProductDetails = ({ productId }) => {
                           </div>
                         </div>
                         <p className="text-gray-700">{review.comment}</p>
+
+                        {/* Display Image if available */}
+                        {review.image && (
+                          <div className="mt-4">
+                            <img
+                              src={review.image} // Assuming `review.image` contains the image URL
+                              alt="Review image"
+                              className="w-24 h-24 rounded-lg"
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
