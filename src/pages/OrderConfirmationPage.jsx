@@ -8,7 +8,7 @@ import autoTable from "jspdf-autotable";
 const OrderConfirmationPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { checkout } = useSelector((state) => state.checkout);
+  const { order: checkout } = useSelector((state) => state.checkout);
   const { state } = useLocation();
   const order = state?.order;
 
@@ -84,6 +84,7 @@ const OrderConfirmationPage = () => {
       <h1 className="text-3xl md:text-4xl font-bold text-center text-emerald-700 mb-10">
         Thank you for your Order!
       </h1>
+      <p className="text-center text-gray-500">An email has been sent to your registered email id</p>
 
       {checkout && (
         <div className="space-y-10">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
 import { IoFlash } from "react-icons/io5";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
@@ -11,6 +11,7 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const [productsPerPage, setProductsPerPage] = useState(
     window.innerWidth < 640 ? 10 : 9
   );
+  const navigate = useNavigate();
 
   // Dynamic resizing
   useEffect(() => {
@@ -81,6 +82,11 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("userToken");
+      if (!token) {
+        toast.warning("Please login to add items to wishlist");
+        navigate("/login");
+        return; // Prevent further execution
+      }
       await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/remove/${productId}`,
         {
@@ -100,6 +106,11 @@ const ProductGrid = ({ products = [], loading, error }) => {
   const handleAddToWishlist = async (product) => {
     try {
       const token = localStorage.getItem("userToken");
+      if (!token) {
+        toast.warning("Please login to add items to wishlist");
+        navigate("/login");
+        return; // Prevent further execution
+      }
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/add/${product._id}`,
         {},
@@ -227,85 +238,61 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 <h3 className="text-base font-semibold text-blue-900 mb-1 truncate">
                   {product.name}
                 </h3>
-                {product.discountPrice &&
-                product.discountPrice < product.price ? (
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
-                      ₹ {product.discountPrice}
-                    </p>
-                    <p className="text-sm text-gray-500 line-through">
-                      ₹ {product.price}
-                    </p>
-                    <p className="text-green-600 text-md font-semibold">
-                      {product.offerPercentage}% OFF
-                    </p>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        isInWishlist(product._id)
-                          ? handleRemoveFromWishlist(product._id)
-                          : handleAddToWishlist(product);
-                      }}
-                      title={
-                        isInWishlist(product._id)
-                          ? "Remove from Wishlist"
-                          : "Add to Wishlist"
-                      }
-                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md hover:scale-110 ${
-                        isInWishlist(product._id)
-                          ? "bg-red-100 text-red-600 hover:bg-red-200"
-                          : "bg-white text-gray-800 hover:bg-pink-100"
-                      }`}
-                    >
-                      <span className="relative inline-block">
-                        {isInWishlist(product._id) ? (
-                          <AiFillHeart className="text-2xl animate-pulse" />
-                        ) : (
-                          <AiOutlineHeart className="text-2xl" />
-                        )}
-                      </span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  {/* Display Discounted Price if Available */}
+                  {product.discountPrice &&
+                  product.discountPrice < product.price ? (
+                    <>
+                      <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
+                        ₹ {product.discountPrice}
+                      </p>
+                      <p className="text-sm text-gray-500 line-through">
+                        ₹ {product.price}
+                      </p>
+                      <p className="text-green-600 text-md font-semibold">
+                        {product.offerPercentage}% OFF
+                      </p>
+                    </>
+                  ) : (
                     <p className="text-blue-700 font-bold text-2xl tracking-wide">
                       ₹ {product.price}
                     </p>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        isInWishlist(product._id)
-                          ? handleRemoveFromWishlist(product._id)
-                          : handleAddToWishlist(product);
-                      }}
-                      title={
-                        isInWishlist(product._id)
-                          ? "Remove from Wishlist"
-                          : "Add to Wishlist"
-                      }
-                      className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md hover:scale-110 ${
-                        isInWishlist(product._id)
-                          ? "bg-red-100 text-red-600 hover:bg-red-200"
-                          : "bg-white text-gray-800 hover:bg-pink-100"
-                      }`}
-                    >
-                      <span className="relative inline-block">
-                        {isInWishlist(product._id) ? (
-                          <AiFillHeart className="text-2xl animate-pulse" />
-                        ) : (
-                          <AiOutlineHeart className="text-2xl" />
-                        )}
-                      </span>
-                    </button>
-                  </div>
-                )}
+                  )}
+
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      isInWishlist(product._id)
+                        ? handleRemoveFromWishlist(product._id)
+                        : handleAddToWishlist(product);
+                    }}
+                    title={
+                      isInWishlist(product._id)
+                        ? "Remove from Wishlist"
+                        : "Add to Wishlist"
+                    }
+                    className={`ml-auto w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md hover:scale-110 ${
+                      isInWishlist(product._id)
+                        ? "bg-red-100 text-red-600 hover:bg-red-200"
+                        : "bg-white text-gray-800 hover:bg-pink-100"
+                    }`}
+                  >
+                    <span className="relative inline-block">
+                      {isInWishlist(product._id) ? (
+                        <AiFillHeart className="text-2xl animate-pulse" />
+                      ) : (
+                        <AiOutlineHeart className="text-2xl" />
+                      )}
+                    </span>
+                  </button>
+                </div>
 
                 {product.rating > 0 && product.numReviews > 0 && (
                   <div className="flex items-center space-x-1 mt-1">
                     <span className="text-sm bg-green-600 p-[0.2px] rounded-xl text-white px-2">
-                      {(product.rating).toFixed(1)} ★
+                      {product.rating.toFixed(1)} ★
                     </span>
                     <span className="text-xs text-gray-500 ml-1">
                       {product.numReviews} Reviews

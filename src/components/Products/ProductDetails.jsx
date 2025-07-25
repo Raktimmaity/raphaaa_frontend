@@ -108,6 +108,11 @@ const ProductDetails = ({ productId }) => {
   const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("userToken");
+      if (!token) {
+        toast.warning("Please login to add itmes to wishlist");
+        navigate("/login");
+        return;
+      }
       await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/remove/${productId}`,
         {
@@ -127,6 +132,11 @@ const ProductDetails = ({ productId }) => {
   const handleAddToWishlist = async (product) => {
     try {
       const token = localStorage.getItem("userToken");
+      if (!token) {
+        toast.warning("Please login to add itmes to wishlist");
+        navigate("/login");
+        return;
+      }
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/add/${product._id}`,
         {},
@@ -1022,9 +1032,21 @@ const ProductDetails = ({ productId }) => {
           <div className="mt-16 mb-16 flex flex-col lg:flex-row gap-8">
             {/* Left Sidebar: Rating Breakdown with Bars */}
             <div className="lg:w-1/4 w-full bg-gradient-to-b from-white via-sky-50 to-sky-100 border border-sky-100 p-6 shadow-lg h-fit">
-              <h3 className="text-lg font-semibold text-sky-800 mb-4">
+              <h3 className="text-lg font-semibold text-sky-800 mb-2">
                 Rating Breakdown
               </h3>
+
+              {/* ⭐ Static average rating display */}
+              {selectedProduct.rating > 0 && selectedProduct.numReviews > 0 && (
+                <div className="text-2xl font-bold mb-4">
+                  {selectedProduct.rating.toFixed(1)}/5
+                  <span className="text-sm font-medium text-gray-500 ml-2">
+                    {selectedProduct.numReviews} review
+                    {selectedProduct.numReviews === 1 ? "" : "s"}
+                  </span>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {ratingCounts.map(({ star, count, percentage }) => (
                   <div key={star} className="space-y-1">
@@ -1112,13 +1134,16 @@ const ProductDetails = ({ productId }) => {
                         <p className="text-gray-700">{review.comment}</p>
 
                         {/* Display Image if available */}
-                        {review.image && (
-                          <div className="mt-4">
-                            <img
-                              src={review.image} // Assuming `review.image` contains the image URL
-                              alt="Review image"
-                              className="w-24 h-24 rounded-lg"
-                            />
+                        {review.image && review.image.length > 0 && (
+                          <div className="mt-4 flex flex-wrap">
+                            {review.image.map((imgUrl, index) => (
+                              <img
+                                key={index}
+                                src={imgUrl} // Dynamically rendering all images in the array
+                                alt={`Review image ${index + 1}`}
+                                className="w-24 h-24 rounded-lg mr-2"
+                              />
+                            ))}
                           </div>
                         )}
                       </div>
