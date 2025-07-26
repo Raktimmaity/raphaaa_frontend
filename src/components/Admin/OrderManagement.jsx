@@ -425,6 +425,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { FaBoxOpen } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { toast } from "sonner";
+import { FaCheckCircle } from "react-icons/fa";
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -777,7 +778,7 @@ const OrderManagement = () => {
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="relative bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full animate-fade-in"
+            className="relative bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-fade-in"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -791,48 +792,193 @@ const OrderManagement = () => {
               🧾 Order Summary
             </h3>
 
-            <div className="space-y-3 text-sm text-gray-700">
-              <div className="flex justify-between">
-                <span className="font-medium">Order ID:</span>
-                <span className="text-gray-900">{selectedOrder.orderId}</span>
+            <div className="flex flex-col md:flex-row gap-6 text-sm text-gray-700">
+              {/* Left Section: Order Summary */}
+              <div className="w-full md:w-1/2 space-y-3">
+                <div className="flex justify-between">
+                  <span className="font-medium">Order ID:</span>
+                  <span className="text-gray-900">{selectedOrder.orderId}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Customer:</span>
+                  <span>{selectedOrder.user?.name || "Unknown"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Email:</span>
+                  <span>{selectedOrder.user?.email || "N/A"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Status:</span>
+                  <span className="font-semibold text-blue-600">
+                    {selectedOrder.status}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Total:</span>
+                  <span className="text-green-600 font-bold">
+                    ₹{selectedOrder.totalPrice?.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Payment:</span>
+                  <span>{selectedOrder.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Ordered On:</span>
+                  <span>
+                    {new Date(selectedOrder.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">Shipping Address:</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {selectedOrder.shippingAddress
+                      ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Customer:</span>
-                <span>{selectedOrder.user?.name || "Unknown"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Email:</span>
-                <span>{selectedOrder.user?.email || "N/A"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Status:</span>
-                <span className="font-semibold text-blue-600">
-                  {selectedOrder.status}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Total:</span>
-                <span className="text-green-600 font-bold">
-                  ₹{selectedOrder.totalPrice?.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Payment:</span>
-                <span>{selectedOrder.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Ordered On:</span>
-                <span>
-                  {new Date(selectedOrder.createdAt).toLocaleString()}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Shipping Address:</span>
-                <p className="text-sm text-gray-600 mt-1">
-                  {selectedOrder.shippingAddress
-                    ? `${selectedOrder.shippingAddress.address}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.postalCode}, ${selectedOrder.shippingAddress.country}`
-                    : "N/A"}
-                </p>
+
+              {/* Right Section: Order Items */}
+              <div className="w-full md:w-1/2 flex flex-col md:flex-row gap-6">
+                {/* Order Items List */}
+                <div className="w-full md:w-2/3">
+                  <span className="font-medium block mb-2">Items Ordered:</span>
+                  <div className="space-y-3">
+                    {selectedOrder.orderItems &&
+                    selectedOrder.orderItems.length > 0 ? (
+                      selectedOrder.orderItems.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-start justify-between bg-gray-50 p-3 rounded-lg shadow-sm"
+                        >
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-12 h-12 rounded object-cover border"
+                            />
+                            <div>
+                              <p className="text-sm font-semibold text-gray-800">
+                                {item.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Color: {item.color} | Size: {item.size}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Qty: {item.quantity}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-800 font-semibold">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 italic text-sm">
+                        No items found
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Vertical Status Tracker */}
+                <div className="w-full md:w-1/3 mt-6 md:mt-0">
+                  <span className="font-medium block mb-2">Order Status:</span>
+                  <div className="relative pl-6">
+                    {/* Vertical progress line */}
+                    <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gray-300 z-0">
+                      <div
+                        className="absolute top-0 w-full bg-blue-500 transition-all duration-700 ease-in-out"
+                        style={{
+                          height: `${
+                            [
+                              "Ordered",
+                              "Processing",
+                              "Shipped",
+                              selectedOrder.status === "Cancelled"
+                                ? "Cancelled"
+                                : "Delivered",
+                            ].indexOf(selectedOrder.status) * 33.3
+                          }%`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Status Timeline */}
+                    <div className="space-y-8 relative z-10">
+                      {[
+                        { label: "Ordered", time: selectedOrder.createdAt },
+                        { label: "Processing", time: selectedOrder.updatedAt },
+                        {
+                          label: "Shipped",
+                          time:
+                            selectedOrder.shippedAt || selectedOrder.updatedAt,
+                        },
+                        {
+                          label:
+                            selectedOrder.status === "Cancelled"
+                              ? "Cancelled"
+                              : "Delivered",
+                          time:
+                            selectedOrder.status === "Cancelled"
+                              ? selectedOrder.cancelledAt ||
+                                selectedOrder.updatedAt
+                              : selectedOrder.deliveredAt ||
+                                selectedOrder.updatedAt,
+                        },
+                      ].map((step, index, steps) => {
+                        const currentIndex = steps.findIndex(
+                          (s) =>
+                            s.label ===
+                            (selectedOrder.status === "Cancelled"
+                              ? "Cancelled"
+                              : selectedOrder.status)
+                        );
+
+                        const isCompleted = index < currentIndex;
+                        const isCurrent = index === currentIndex;
+
+                        return (
+                          <div
+                            key={step.label}
+                            className="relative flex items-start gap-3"
+                          >
+                            {/* Dot / Checkmark */}
+                            <div className="relative z-20 w-5 h-5 flex items-center justify-center">
+                              {isCompleted ? (
+                                <FaCheckCircle className="text-green-600 text-lg" />
+                              ) : isCurrent ? (
+                                <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse" />
+                              ) : (
+                                <div className="w-3 h-3 bg-gray-300 rounded-full" />
+                              )}
+                            </div>
+
+                            {/* Label & Time */}
+                            <div>
+                              <p
+                                className={`text-sm font-medium ${
+                                  isCompleted || isCurrent
+                                    ? "text-blue-600"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {step.label}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {step.time
+                                  ? new Date(step.time).toLocaleString()
+                                  : "Pending"}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

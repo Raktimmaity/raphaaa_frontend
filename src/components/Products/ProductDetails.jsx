@@ -920,7 +920,7 @@ const ProductDetails = ({ productId }) => {
                   <button
                     onClick={handleAddToCart}
                     disabled={isButtonDisabled || totalQuantity >= 10}
-                    className={`w-1/2 flex items-center justify-center gap-2 py-3 font-semibold transition ${
+                    className={`w-full flex items-center justify-center gap-2 py-3 font-semibold transition ${
                       isButtonDisabled
                         ? "bg-sky-400 text-white cursor-not-allowed"
                         : "bg-sky-600 text-white hover:bg-sky-700"
@@ -930,7 +930,7 @@ const ProductDetails = ({ productId }) => {
                     {isAddingToCart ? "Adding..." : "Add to Cart"}
                   </button>
 
-                  <button
+                  {/* <button
                     onClick={handleBuyNow}
                     disabled={isBuyNowDisabled || totalQuantity >= 10}
                     className={`w-1/2 flex items-center justify-center gap-2 py-3 font-semibold transition ${
@@ -945,7 +945,7 @@ const ProductDetails = ({ productId }) => {
                       }`}
                     />
                     {isBuyingNow ? "Processing..." : "Buy Now"}
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Pincode Delivery Check */}

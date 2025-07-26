@@ -115,7 +115,18 @@ const OrderDetailsPage = () => {
 
     autoTable(doc, {
       startY: 70,
-      head: [["Sl", "Description", "HSN/SAC", "Qty", "Rate", "per", "Disc.%", "Amount"]],
+      head: [
+        [
+          "Sl",
+          "Description",
+          "HSN/SAC",
+          "Qty",
+          "Rate",
+          "per",
+          "Disc.%",
+          "Amount",
+        ],
+      ],
       body: orderDetails.orderItems.map((item, index) => [
         index + 1,
         item.name,
@@ -148,7 +159,9 @@ const OrderDetailsPage = () => {
     );
 
     doc.text(
-      `Tax Amount (in words): INR ${convertNumberToWords(Math.round(igst))} Only`,
+      `Tax Amount (in words): INR ${convertNumberToWords(
+        Math.round(igst)
+      )} Only`,
       14,
       baseY + 30
     );
@@ -209,12 +222,14 @@ const OrderDetailsPage = () => {
               </span>
               <span
                 className={`${
-                  orderDetails.isDelivered
+                  orderDetails.status === "Delivered"
                     ? "bg-green-100 text-green-700"
-                    : "bg-yellow-100 text-yellow-700"
+                    : orderDetails.status === "Shipped"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-700"
                 } px-3 py-1 rounded-full text-sm font-medium mb-2`}
               >
-                {orderDetails.isDelivered ? "Delivered" : "Pending Delivery"}
+                {orderDetails.status || "Pending"}
               </span>
             </div>
           </div>
@@ -233,8 +248,8 @@ const OrderDetailsPage = () => {
                   {orderDetails.user.email}
                 </p>
                 <p>
-                  <span className="font-medium text-gray-900">Phone:</span>{" "}
-                  +91 {orderDetails.shippingAddress.phone || "N/A"}
+                  <span className="font-medium text-gray-900">Phone:</span> +91{" "}
+                  {orderDetails.shippingAddress.phone || "N/A"}
                 </p>
               </div>
             </div>
@@ -280,13 +295,19 @@ const OrderDetailsPage = () => {
                         />
                         <div className="text-sm">
                           <Link
-                            to={`/product/${item.productId?._id || item.productId}`}
+                            to={`/product/${
+                              item.productId?._id || item.productId
+                            }`}
                             className="text-blue-600 hover:underline font-medium"
                           >
                             {item.name}
                           </Link>
-                          <p className="text-gray-500">Color: {item.color || "N/A"}</p>
-                          <p className="text-gray-500">Size: {item.size || "N/A"}</p>
+                          <p className="text-gray-500">
+                            Color: {item.color || "N/A"}
+                          </p>
+                          <p className="text-gray-500">
+                            Size: {item.size || "N/A"}
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -304,12 +325,9 @@ const OrderDetailsPage = () => {
             <Link to="/my-orders" className="text-blue-500 hover:underline">
               Back to my Orders
             </Link>
-            {/* <button
-              onClick={generatePDF}
-              className="bg-sky-600 text-white px-4 py-2 rounded hover:bg-sky-700 transition text-sm font-medium"
-            >
-              Download Invoice
-            </button> */}
+            <div className="text-lg font-semibold text-gray-900">
+              Total Price: ₹{orderDetails.totalPrice?.toFixed(0) || "0.00"}
+            </div>
           </div>
         </div>
       )}

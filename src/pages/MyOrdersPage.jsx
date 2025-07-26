@@ -1,4 +1,3 @@
-// components/MyOrdersPage.jsx
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +15,9 @@ const MyOrders = () => {
     direction: "desc",
   });
   const [reviewedProducts, setReviewedProducts] = useState(new Set());
+  const [showGuide, setShowGuide] = useState(true); // Guide alert state
 
   const itemsPerPage = 3;
-
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.orders);
   const { user } = useSelector((state) => state.auth);
@@ -137,6 +136,18 @@ const MyOrders = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      {showGuide && (
+        <div className="p-4 mb-6 bg-blue-100 text-blue-800 rounded-lg flex justify-between items-center">
+          <span>Click on any product to view more details!</span>
+          <button
+            onClick={() => setShowGuide(false)}
+            className="text-blue-800 font-semibold"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h2 className="text-xl sm:text-2xl font-bold">My Orders</h2>
 
@@ -177,7 +188,6 @@ const MyOrders = () => {
                   </span>
                 )}
               </th>
-              {/* <th className="py-3 px-4">Shipping Address</th> */}
               <th className="py-3 px-4">Items</th>
               <th className="py-3 px-4">Price</th>
               <th className="py-3 px-4">Status</th>
@@ -205,15 +215,12 @@ const MyOrders = () => {
                 >
                   <td className="py-3 px-4">
                     <img
-                      src={
-                        order.orderItems[0]?.image || "/placeholder-image.jpg"
-                      }
+                      src={order.orderItems[0]?.image || "/placeholder-image.jpg"}
                       alt={order.orderItems[0]?.name || "Product"}
                       className="w-12 h-12 object-cover rounded-md border"
                     />
                   </td>
                   <td className="py-3 px-4 font-medium text-gray-900 whitespace-nowrap">
-                    {/* #{order._id.slice(-8)} */}
                     {order.orderItems[0]?.name}
                   </td>
                   <td className="py-3 px-4">
@@ -222,10 +229,6 @@ const MyOrders = () => {
                       {new Date(order.createdAt).toLocaleTimeString()}
                     </span>
                   </td>
-                  {/* <td className="py-3 px-4">
-                    {order.shippingAddress.city},{" "}
-                    {order.shippingAddress.country}
-                  </td> */}
                   <td className="py-3 px-4">
                     <span className="font-medium">
                       {order.orderItems.length}
@@ -250,7 +253,6 @@ const MyOrders = () => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex flex-col gap-2">
-                      {/* 🏷️ Show Status Always */}
                       <span
                         className={`text-xs w-fit font-medium px-2 py-1 rounded border ${
                           order.status === "Delivered"
@@ -261,7 +263,6 @@ const MyOrders = () => {
                         {order.status}
                       </span>
 
-                      {/* ✍️ Write Review Buttons (Only if Delivered) */}
                       {order.status === "Delivered" &&
                         order.orderItems.map((item) => {
                           const rawProductId =
