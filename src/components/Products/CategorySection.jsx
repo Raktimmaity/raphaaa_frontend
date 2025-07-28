@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Tshirt from "../../assets/t-shirt.png";
-import women from "../../assets/women.png";
-import casual from "../../assets/casual.png";
-import classic from "../../assets/classic.png";
+import Tshirt from "../../assets/t-shirt.webp";
+import women from "../../assets/women.webp";
+import casual from "../../assets/casual.webp";
+import classic from "../../assets/classic.webp";
 import useSmartLoader from "../../hooks/useSmartLoader";
 
 const categories = [
@@ -30,12 +30,6 @@ const categories = [
 ];
 
 const CategorySection = () => {
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => setLoading(false), 1000); // simulate load
-  //   return () => clearTimeout(timer);
-  // }, []);
   const { loading } = useSmartLoader(async () => {
   await new Promise((res) => setTimeout(res, 300));
   return true;
@@ -72,6 +66,8 @@ const CategorySection = () => {
                   <img
                     src={category.image}
                     alt={category.name}
+                    width={200}
+                    height={200}
                     className="w-44 h-44 sm:w-52 sm:h-52 object-contain relative z-10 transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />

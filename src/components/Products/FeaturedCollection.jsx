@@ -65,8 +65,11 @@ const FeaturedCollection = () => {
       {/* right content */}
       <div className="lg:w-1/2 relative z-10">
         <img
-          src={featuredCollab.image}
+          src={featuredCollab.image.replace(/\.(jpeg|jpg|png)$/i, ".webp")}
           alt="Featured Collection"
+          loading="lazy"
+          width={800}
+          height={700}
           className="w-full h-[700px] object-cover lg:rounded-tr-3xl lg:rounded-br-3xl transition-transform duration-500 group-hover:scale-105"
         />
       </div>

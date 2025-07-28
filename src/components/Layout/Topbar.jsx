@@ -64,6 +64,7 @@ const Topbar = () => {
               className="hover:text-blue-600 transition-transform duration-200 hover:scale-110"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Facebook"
             >
               <FaFacebook className="h-5 w-5" />
             </a>
@@ -74,6 +75,7 @@ const Topbar = () => {
               className="hover:text-pink-600 transition-transform duration-200 hover:scale-110"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Instagram"
             >
               <IoLogoInstagram className="h-5 w-5" />
             </a>

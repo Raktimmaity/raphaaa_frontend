@@ -3,19 +3,15 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import menImg from "../../assets/mens-collection.jpg";
 import womenImg from "../../assets/womens-collection.jpg";
-import product1 from "../../assets/product1.jpg";
-import product2 from "../../assets/product2.jpg";
+import product1 from "../../assets/product1.webp";
+import product2 from "../../assets/product2.webp";
+import useSmartLoader from "../../hooks/useSmartLoader";
 
 const GenderCollectionSection = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading for 1.5s
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+  const { loading } = useSmartLoader(async () => {
+    await new Promise((res) => setTimeout(res, 300));
+    return true;
+  });
 
   if (loading) {
     return (
@@ -46,6 +42,8 @@ const GenderCollectionSection = () => {
           <img
             src={product1}
             alt="Women-collection-img"
+            width={1000}
+            height={700}
             className="w-full h-[500px] md:h-[600px] lg:h-[700px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
@@ -72,6 +70,8 @@ const GenderCollectionSection = () => {
           <img
             src={product2}
             alt="Men-collection-img"
+            width={1000}
+            height={700}
             className="w-full h-[500px] md:h-[600px] lg:h-[800px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />

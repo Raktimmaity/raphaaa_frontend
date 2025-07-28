@@ -8,8 +8,6 @@ const NewArrivals = () => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  // const [newArrivals, setNewArrivals] = useState([]);
-  // const [loading, setLoading] = useState(true);
 
   // ✅ Auto-scroll with infinite loop (left to right) + pause on hover
   useEffect(() => {
@@ -42,22 +40,6 @@ const NewArrivals = () => {
     };
   }, []);
 
-  // ✅ Fetch latest products
-  // useEffect(() => {
-  //   const fetchNewArrivals = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
-  //       );
-  //       setNewArrivals(response.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchNewArrivals();
-  // }, []);
   const { loading, data: newArrivals = [] } = useSmartLoader(async () => {
   const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`);
   return res.data;
@@ -135,9 +117,11 @@ const NewArrivals = () => {
             >
               <div className="w-full h-80 relative overflow-hidden rounded-t-xl">
                 <img
-                  src={product.images?.[0]?.url}
+                  src={product.images?.[0]?.url.replace(/\.(jpeg|jpg|png)$/i, ".webp")}
                   alt={product.images?.[0]?.altText || product.name}
                   loading="lazy"
+                  width={300}
+                  height={320}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {new Date() - new Date(product.createdAt) <

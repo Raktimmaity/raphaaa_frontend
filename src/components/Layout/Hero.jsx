@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import heroImg from "../../assets/heroimg.jpeg";
-import heroImg2 from "../../assets/hero_img.png";
-import heroImg3 from "../../assets/hero3.jpeg";
+import heroImg from "../../assets/heroimg.webp";
+import heroImg2 from "../../assets/hero_img.webp";
+import heroImg3 from "../../assets/hero3.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import useSmartLoader from "../../hooks/useSmartLoader";
 
-
 const Hero = () => {
   const heroImages = [heroImg, heroImg2, heroImg3];
-  // const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => setLoading(false), 1000);
-  //   return () => clearTimeout(timer);
-  // }, []);
   const { loading } = useSmartLoader(async () => {
-  // Simulate remote resource fetch
-  await new Promise((res) => setTimeout(res, 300));
-  return true;
-});
-
+    // Simulate remote resource fetch
+    await new Promise((res) => setTimeout(res, 300));
+    return true;
+  });
 
   // Countdown to 11:59 PM today
   useEffect(() => {
@@ -57,7 +54,6 @@ const Hero = () => {
 
   return (
     <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8  relative transition-all duration-700">
-      
       {/* 🔥 Floating Offer Badge */}
       <div className="absolute top-4 md:top-12 right-4 sm:right-10 md:right-[500px] z-10">
         <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md animate-pulse">
@@ -73,7 +69,9 @@ const Hero = () => {
         <div className="text-[#202020] px-4 space-y-4">
           <div className="flex items-center gap-2">
             <span className="w-8 h-[2px] bg-gradient-to-r from-blue-600 to-sky-400 rounded-full"></span>
-            <p className="text-xs md:text-sm font-semibold tracking-wider text-sky-700 uppercase">Trending Now</p>
+            <p className="text-xs md:text-sm font-semibold tracking-wider text-sky-700 uppercase">
+              Trending Now
+            </p>
           </div>
 
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-black to-blue-600">
@@ -102,7 +100,9 @@ const Hero = () => {
             >
               Shop Now
             </Link>
-            <span className="text-xs text-gray-500">Free delivery on first order</span>
+            <span className="text-xs text-gray-500">
+              Free delivery on first order
+            </span>
           </div>
         </div>
       </div>
@@ -120,7 +120,10 @@ const Hero = () => {
               <img
                 src={img}
                 alt={`Hero ${idx}`}
+                width={1000}
+                height={1000}
                 className="w-full h-full object-cover transition-transform duration-1000 scale-100 hover:scale-105"
+                loading="lazy"
               />
             </SwiperSlide>
           ))}
