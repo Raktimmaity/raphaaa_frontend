@@ -62,8 +62,8 @@ const App = () => {
       <ToastContainer position="top-right" autoClose={2000} />
       <Toaster position="top-right" />
       <BrowserRouter>
-      <AutoLogout/>
-      <ScrollToTop/>
+        <AutoLogout />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
@@ -87,15 +87,18 @@ const App = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/review" element={<ReviewForm />} />
             <Route path="/review/:productId" element={<ReviewForm />} />
-            <Route path="/register-delivery" element={<RegisterDeliveryBoy/>} />
+            <Route
+              path="/register-delivery"
+              element={<RegisterDeliveryBoy />}
+            />
             {/* <Route path="/review-order/:orderId" element={<SubmitReviewFromOrder />} /> */}
 
             {/* extra added */}
             <Route path="/exclusive-drop" element={<ExclusiveDrop />} />
             <Route path="/exclusive-drop/:slug" element={<DropDetail />} />
-            <Route path="/forgot-password" element={<ForgotPassword/>} />
-            <Route path="/offers" element={<OffersShowcase/>} />
-            <Route path="/verify-mobile" element={<VerifyMobile/>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/offers" element={<OffersShowcase />} />
+            <Route path="/verify-mobile" element={<VerifyMobile />} />
 
             {/* User Layout */}
           </Route>
@@ -124,7 +127,7 @@ const App = () => {
               path="add-task"
               element={
                 <ProtectedRoute role={["merchantise"]}>
-                  <CreateTask/>
+                  <CreateTask />
                 </ProtectedRoute>
               }
             />
@@ -132,7 +135,7 @@ const App = () => {
               path="view-tasks"
               element={
                 <ProtectedRoute role={["merchantise"]}>
-                  <ViewTasks/>
+                  <ViewTasks />
                 </ProtectedRoute>
               }
             />
@@ -140,7 +143,7 @@ const App = () => {
               path="all-tasks"
               element={
                 <ProtectedRoute role={["admin"]}>
-                  <ViewTasks/>
+                  <ViewTasks />
                 </ProtectedRoute>
               }
             />
@@ -148,7 +151,7 @@ const App = () => {
               path="inventory"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <InventoryPage/>
+                  <InventoryPage />
                 </ProtectedRoute>
               }
             />
@@ -156,7 +159,7 @@ const App = () => {
               path="trend-analysis"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <SalesTrendsPage/>
+                  <SalesTrendsPage />
                 </ProtectedRoute>
               }
             />
@@ -164,7 +167,7 @@ const App = () => {
               path="revenue"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <RevenueReport/>
+                  <RevenueReport />
                 </ProtectedRoute>
               }
             />
@@ -188,7 +191,7 @@ const App = () => {
               path="collab-settings"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AdminCollabSettings/>
+                  <AdminCollabSettings />
                 </ProtectedRoute>
               }
             />
@@ -196,7 +199,7 @@ const App = () => {
               path="collabs"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AdminCollabPreview/>
+                  <AdminCollabPreview />
                 </ProtectedRoute>
               }
             />
@@ -204,7 +207,7 @@ const App = () => {
               path="edit-collab/:id"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <EditCollab/>
+                  <EditCollab />
                 </ProtectedRoute>
               }
             />
@@ -236,7 +239,7 @@ const App = () => {
               path="create-offers"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AddEditOffer/>
+                  <AddEditOffer />
                 </ProtectedRoute>
               }
             />
@@ -244,24 +247,24 @@ const App = () => {
               path="offers"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AdminOffersList/>
+                  <AdminOffersList />
                 </ProtectedRoute>
               }
             />
             <Route
-  path="edit-offer/:id"
-  element={
-    <ProtectedRoute role={["admin", "merchantise"]}>
-      <AddEditOffer />
-    </ProtectedRoute>
-  }
-/>
+              path="edit-offer/:id"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AddEditOffer />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="contact-messages"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <ViewContacts/>
+                  <ViewContacts />
                 </ProtectedRoute>
               }
             />
@@ -269,7 +272,7 @@ const App = () => {
               path="website-settings/hero"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <HeroSettings/>
+                  <HeroSettings />
                 </ProtectedRoute>
               }
             />
@@ -277,7 +280,7 @@ const App = () => {
               path="website-settings/about"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AdminAboutSettings/>
+                  <AdminAboutSettings />
                 </ProtectedRoute>
               }
             />
@@ -285,7 +288,7 @@ const App = () => {
               path="website-settings/privacy&policy"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <PrivacyPolicySettings/>
+                  <PrivacyPolicySettings />
                 </ProtectedRoute>
               }
             />
@@ -293,7 +296,7 @@ const App = () => {
               path="website-settings/contact"
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
-                  <AdminContactSettings/>
+                  <AdminContactSettings />
                 </ProtectedRoute>
               }
             />
