@@ -777,7 +777,7 @@ const ProductDetails = ({ productId }) => {
                           )
                         }
                         key={color}
-                        className={`w-9 h-9 rounded-full border transition-all duration-300 ${
+                        className={`w-9 h-9 rounded border transition-all duration-300 ${
                           selectedColor === color
                             ? "border-4 border-sky-600 scale-110"
                             : "border-gray-300 hover:border-gray-500"

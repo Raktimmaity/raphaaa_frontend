@@ -4,29 +4,35 @@ import { IoLogoInstagram } from "react-icons/io5";
 import { RiTwitterXLine } from "react-icons/ri";
 import { FaFacebook } from "react-icons/fa";
 import axios from "axios";
+import useSmartLoader from "../../hooks/useSmartLoader";
 
 const Topbar = () => {
-  const [loading, setLoading] = useState(true);
-  const [contactInfo, setContactInfo] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [contactInfo, setContactInfo] = useState(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => setLoading(false), 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  useEffect(() => {
-    const fetchContactInfo = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`
-        );
-        setContactInfo(res.data);
-      } catch (err) {
-        console.error("Failed to load contact settings", err);
-      }
-    };
-    fetchContactInfo();
-  }, []);
+  const { loading, data: contactInfo } = useSmartLoader(async () => {
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
+    return res.data;
+  })
+
+  // useEffect(() => {
+  //   const fetchContactInfo = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`
+  //       );
+  //       setContactInfo(res.data);
+  //     } catch (err) {
+  //       console.error("Failed to load contact settings", err);
+  //     }
+  //   };
+  //   fetchContactInfo();
+  // }, []);
 
   if (loading) {
     return (

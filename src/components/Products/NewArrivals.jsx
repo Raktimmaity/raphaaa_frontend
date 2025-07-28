@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import useSmartLoader from "../../hooks/useSmartLoader";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [newArrivals, setNewArrivals] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   // ✅ Auto-scroll with infinite loop (left to right) + pause on hover
   useEffect(() => {
@@ -42,21 +43,26 @@ const NewArrivals = () => {
   }, []);
 
   // ✅ Fetch latest products
-  useEffect(() => {
-    const fetchNewArrivals = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
-        );
-        setNewArrivals(response.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNewArrivals();
-  }, []);
+  // useEffect(() => {
+  //   const fetchNewArrivals = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+  //       );
+  //       setNewArrivals(response.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchNewArrivals();
+  // }, []);
+  const { loading, data: newArrivals = [] } = useSmartLoader(async () => {
+  const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`);
+  return res.data;
+});
+
 
   const scroll = (direction) => {
     const container = scrollRef.current;

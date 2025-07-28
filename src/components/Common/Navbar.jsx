@@ -12,11 +12,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import axios from "axios";
 import { GiTreasureMap } from "react-icons/gi"; // example icon
+import useSmartLoader from "../../hooks/useSmartLoader";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const { cart } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
@@ -24,7 +25,12 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [contactInfo, setContactInfo] = useState(null);
+  // const [contactInfo, setContactInfo] = useState(null);
+
+  const { loading, data: contactInfo } = useSmartLoader(async () => {
+  const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
+  return res.data;
+});
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -58,17 +64,17 @@ const Navbar = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  useEffect(() => {
-    const fecthContactInfo = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
-        setContactInfo(res.data);
-      } catch (err) {
-        console.error("Failed to load contact settings", err);
-      }
-    };
-    fecthContactInfo();
-  }, [])
+  // useEffect(() => {
+  //   const fecthContactInfo = async () => {
+  //     try {
+  //       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
+  //       setContactInfo(res.data);
+  //     } catch (err) {
+  //       console.error("Failed to load contact settings", err);
+  //     }
+  //   };
+  //   fecthContactInfo();
+  // }, [])
 
   if (loading) {
     return (

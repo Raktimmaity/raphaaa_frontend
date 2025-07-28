@@ -4,6 +4,7 @@ import Tshirt from "../../assets/t-shirt.png";
 import women from "../../assets/women.png";
 import casual from "../../assets/casual.png";
 import classic from "../../assets/classic.png";
+import useSmartLoader from "../../hooks/useSmartLoader";
 
 const categories = [
   {
@@ -29,12 +30,17 @@ const categories = [
 ];
 
 const CategorySection = () => {
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000); // simulate load
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => setLoading(false), 1000); // simulate load
+  //   return () => clearTimeout(timer);
+  // }, []);
+  const { loading } = useSmartLoader(async () => {
+  await new Promise((res) => setTimeout(res, 300));
+  return true;
+});
+
 
   return (
     <section className="px-4 md:px-16 py-12">

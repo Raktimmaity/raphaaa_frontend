@@ -6,17 +6,24 @@ import heroImg3 from "../../assets/hero3.jpeg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import useSmartLoader from "../../hooks/useSmartLoader";
 
-const heroImages = [heroImg, heroImg2, heroImg3];
 
 const Hero = () => {
-  const [loading, setLoading] = useState(true);
+  const heroImages = [heroImg, heroImg2, heroImg3];
+  // const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => setLoading(false), 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
+  const { loading } = useSmartLoader(async () => {
+  // Simulate remote resource fetch
+  await new Promise((res) => setTimeout(res, 300));
+  return true;
+});
+
 
   // Countdown to 11:59 PM today
   useEffect(() => {
