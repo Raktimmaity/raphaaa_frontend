@@ -122,13 +122,13 @@ const AddProduct = () => {
           : 0,
         discountPrice: productData.offerPercentage
           ? Math.round(
-              Number(productData.price) -
-                (Number(productData.price) * Number(productData.offerPercentage)) /
-                  100
-            )
+            Number(productData.price) -
+            (Number(productData.price) * Number(productData.offerPercentage)) /
+            100
+          )
           : productData.discountPrice
-          ? Math.round(Number(productData.discountPrice))
-          : undefined,
+            ? Math.round(Number(productData.discountPrice))
+            : undefined,
         countInStock: Number(productData.countInStock),
         weight: productData.weight ? Number(productData.weight) : undefined,
         tags: productData.tags
@@ -167,13 +167,22 @@ const AddProduct = () => {
       <form onSubmit={handleProductSubmit}>
         <div>
           <label className="block text-gray-700 mb-1 font-medium">Upload Product Images</label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="block w-full text-sm text-gray-700"
-          />
+          <div className="relative inline-block">
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition duration-200"
+            >
+              📁 Upload Images
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
         </div>
 
         {/* Uploaded Image Preview */}
@@ -377,33 +386,33 @@ const AddProduct = () => {
           </div>
 
           {/* Sizes and Colors with react-select */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div>
-            <label className="block text-gray-700 mb-1 font-medium">Sizes *</label>
-            <Select
-              isMulti
-              name="sizes"
-              options={["XS", "S", "M", "L", "XL", "XXL"].map(size => ({ value: size, label: size }))}
-              value={productData.sizes.map(size => ({ value: size, label: size }))}
-              onChange={(selected) => handleMultiSelect(selected, "sizes")}
-              className="basic-multi-select"
-              classNamePrefix="select"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-gray-700 mb-1 font-medium">Sizes *</label>
+              <Select
+                isMulti
+                name="sizes"
+                options={["XS", "S", "M", "L", "XL", "XXL"].map(size => ({ value: size, label: size }))}
+                value={productData.sizes.map(size => ({ value: size, label: size }))}
+                onChange={(selected) => handleMultiSelect(selected, "sizes")}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </div>
 
-          <div>
-            <label className="block text-gray-700 mb-1 font-medium">Colors *</label>
-            <Select
-              isMulti
-              name="colors"
-              options={["Red", "Blue", "Green", "Black", "White", "Yellow", "Pink"].map(color => ({ value: color, label: color }))}
-              value={productData.colors.map(color => ({ value: color, label: color }))}
-              onChange={(selected) => handleMultiSelect(selected, "colors")}
-              className="basic-multi-select"
-              classNamePrefix="select"
-            />
+            <div>
+              <label className="block text-gray-700 mb-1 font-medium">Colors *</label>
+              <Select
+                isMulti
+                name="colors"
+                options={["Red", "Blue", "Green", "Black", "White", "Yellow", "Pink"].map(color => ({ value: color, label: color }))}
+                value={productData.colors.map(color => ({ value: color, label: color }))}
+                onChange={(selected) => handleMultiSelect(selected, "colors")}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </div>
           </div>
-        </div>
 
           {/* Material */}
           <div>
