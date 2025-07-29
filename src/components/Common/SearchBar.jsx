@@ -22,6 +22,15 @@ const SearchBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const searchRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+
+  useEffect(() => {
+  if (isOpen && searchInputRef.current) {
+    searchInputRef.current.focus();
+  }
+}, [isOpen]);
+
 
   // Toggle search bar
   const handleSearchToggle = () => setIsOpen(!isOpen);
@@ -134,6 +143,7 @@ const SearchBar = () => {
         >
           <div className="relative w-4/5 md:w-1/2 lg:w-1/2">
             <input
+              ref={searchInputRef}
               type="text"
               className="bg-gray-100 py-3 px-4 pr-12 rounded-lg focus:outline-none w-full placeholder:text-gray-700"
               placeholder="Search for products..."
