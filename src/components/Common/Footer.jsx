@@ -39,6 +39,7 @@ const Footer = () => {
       );
 
       toast.success(response.data.message || "Subscribed successfully!");
+      await subscribeToPush(subscribe); // 🔔 call push registration
       setSubscribe("");
     } catch (error) {
       toast.error(
@@ -48,6 +49,32 @@ const Footer = () => {
       setLoading(false);
     }
   };
+
+  const subscribeToPush = async (email) => {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    console.warn("Push messaging is not supported");
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: BIfPA4HUUcJVRPAqn4NEAcE8Bzg9cYmLTVNqGYCY5SqJvPKjp6JPva2C2aTyXKcKoUrwbwjrj7puKNPHWIgdvls
+    });
+
+    await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/subscribe/push`, {
+      email,
+      subscription,
+    });
+
+    console.log("Push subscription saved!");
+  } catch (error) {
+    console.error("Push subscription failed:", error);
+  }
+};
+
 
   useEffect(() => {
       const fetchContactInfo = async () => {
