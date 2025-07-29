@@ -62,7 +62,7 @@ const CategorySection = () => {
                 className="bg-white/20 backdrop-blur-md border border-white/20 hover:shadow-xl rounded-t-full rounded-b-xl flex flex-col items-center justify-between text-center transition-all duration-300 group relative overflow-hidden hover:ring-2 hover:ring-sky-400 hover:ring-offset-2"
               >
                 <div className="flex items-center justify-center min-h-[130px] relative z-10">
-                  <div className="absolute w-40 h-40 rounded-full blur-2xl bg-sky-300 opacity-30 z-0 group-hover:scale-125 transition-transform duration-500" />
+                  <div className="absolute w-40 h-40 rounded-full blur-lg bg-sky-800 opacity-30 z-0 group-hover:scale-125 transition-transform duration-500" />
                   <img
                     src={category.image}
                     alt={category.name}
