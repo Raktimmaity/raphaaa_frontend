@@ -205,8 +205,9 @@ const ProductGrid = ({ products = [], loading, error }) => {
 
                 {/* 💎 Raphaaa Badge */}
                 <div className="absolute top-2 left-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md tracking-wide flex items-center gap-1">
-                  <IoFlash className="text-yellow-300 text-xs" />
-                  Raphaaa Assured
+                  {/* <IoFlash className="text-yellow-300 text-xs" /> */}
+                  <img src="/favicon-16x16.png" alt="raphaaa-assured" />
+                  Assured
                 </div>
 
                 {/* 🛒 Stock */}
