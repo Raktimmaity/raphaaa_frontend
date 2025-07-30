@@ -54,6 +54,7 @@ import AdminOffersList from "./pages/AdminOffersList";
 import OffersShowcase from "./pages/OffersShowcase";
 import VerifyMobile from "./pages/VerifyMobile";
 import AutoLogout from "./components/Common/AutoLogout";
+import ViewSubscribers from "./pages/ViewSubscribers";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -305,6 +306,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise", "delivery_boy"]}>
                   <UpdateProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="subscribed-users"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <ViewSubscribers/>
                 </ProtectedRoute>
               }
             />

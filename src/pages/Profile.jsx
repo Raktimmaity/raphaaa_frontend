@@ -11,6 +11,7 @@ import axios from "axios";
 import { FaHeart, FaMapMarkerAlt, FaCog, FaBoxOpen } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { RiCoupon2Fill } from "react-icons/ri";
+import { FaLocationCrosshairs } from "react-icons/fa6";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -183,6 +184,76 @@ const Profile = () => {
     }
   };
 
+  const handleUseCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      return alert("Geolocation is not supported by your browser.");
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        // console.log("📍 Latitude:", latitude);
+        // console.log("📍 Longitude:", longitude);
+        // toast.success(`Lat: ${latitude.toFixed(4)} | Lon: ${longitude.toFixed(4)}`);
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data = await response.json();
+          const { address } = data;
+
+          if (!address) {
+            toast.error("Unable to extract address.");
+            return;
+          }
+
+          setNewAddress((prev) => ({
+            ...prev,
+            address:
+              address.road ||
+              address.neighbourhood ||
+              address.suburb ||
+              address.display_name ||
+              "",
+            city: address.city || address.town || address.village || "",
+            postalCode: address.postcode || "",
+            country: address.country || "",
+          }));
+
+          toast.success("Address auto-filled from current location!");
+        } catch (err) {
+          console.error("Geolocation fetch error:", err);
+          toast.error("Failed to fetch address from coordinates.");
+        }
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        switch (err.code) {
+          case 1:
+            toast.error("Permission denied. Please allow location access.");
+            break;
+          case 2:
+            toast.error("Location unavailable.");
+            break;
+          case 3:
+            toast.error("Request timed out.");
+            break;
+          default:
+            toast.error("Unknown geolocation error.");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex-grow container mx-auto p-4 md:p-6">
@@ -203,23 +274,20 @@ const Profile = () => {
               )}
 
               <span
-                className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${
-                  isOnline ? "bg-green-500" : "bg-gray-400"
-                }`}
+                className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${isOnline ? "bg-green-500" : "bg-gray-400"
+                  }`}
               ></span>
             </div>
 
             <p
-              className={`mt-3 text-sm font-medium flex items-center gap-2 ${
-                isOnline
-                  ? "text-green-600 bg-green-100"
-                  : "text-red-500 bg-red-100"
-              } px-3 py-1 rounded-full shadow-inner`}
+              className={`mt-3 text-sm font-medium flex items-center gap-2 ${isOnline
+                ? "text-green-600 bg-green-100"
+                : "text-red-500 bg-red-100"
+                } px-3 py-1 rounded-full shadow-inner`}
             >
               <span
-                className={`w-2 h-2 rounded-full ${
-                  isOnline ? "bg-green-600" : "bg-red-500"
-                }`}
+                className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-600" : "bg-red-500"
+                  }`}
               ></span>
               {isOnline ? "Online" : "Offline"}
             </p>
@@ -253,11 +321,10 @@ const Profile = () => {
                   <button
                     key={key}
                     onClick={() => setActiveTab(key)}
-                    className={`w-full flex items-center text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 ${
-                      activeTab === key
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-blue-50"
-                    }`}
+                    className={`w-full flex items-center text-sm font-medium px-4 py-2 transition-all duration-200 ${activeTab === key
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-blue-50"
+                      }`}
                   >
                     {icons[key]}{" "}
                     {key === "orders"
@@ -270,14 +337,14 @@ const Profile = () => {
 
             <button
               onClick={handleLogout}
-              className="w-full mt-6 bg-gradient-to-r from-red-500 to-red-700 text-white py-2 px-4 rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full mt-6 bg-gradient-to-r from-red-500 to-red-700 text-white py-2 px-4 rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <AiOutlineLogout className="text-lg" /> Logout
             </button>
           </div>
 
           <div className="w-full md:h-2/3 lg:w-3/4">
-            <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="p-6">
               {activeTab === "orders" && <MyOrders />}
               {activeTab === "wishlist" && (
                 <div>
@@ -308,11 +375,10 @@ const Profile = () => {
                                 {item.description}
                               </p>
                               <p
-                                className={`text-sm font-medium mb-2 ${
-                                  item.countInStock < 5
-                                    ? "text-red-600"
-                                    : "text-green-600"
-                                }`}
+                                className={`text-sm font-medium mb-2 ${item.countInStock < 5
+                                  ? "text-red-600"
+                                  : "text-green-600"
+                                  }`}
                               >
                                 {item.countInStock < 5
                                   ? `Hurry! Only ${item.countInStock} left in stock`
@@ -346,7 +412,7 @@ const Profile = () => {
                   </h3>
                   <form
                     onSubmit={handleAddressSubmit}
-                    className="space-y-6 bg-gradient-to-tr from-white to-blue-50 p-6 rounded-xl border border-blue-100 shadow-md"
+                    className="space-y-6 "
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input
@@ -360,7 +426,7 @@ const Profile = () => {
                           })
                         }
                         placeholder="Street Address"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
                       <input
@@ -371,7 +437,7 @@ const Profile = () => {
                           setNewAddress({ ...newAddress, city: e.target.value })
                         }
                         placeholder="City"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
                     </div>
@@ -387,7 +453,7 @@ const Profile = () => {
                           })
                         }
                         placeholder="Postal Code"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
                       <input
@@ -401,23 +467,33 @@ const Profile = () => {
                           })
                         }
                         placeholder="Country"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
                     </div>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={newAddress.phone}
-                      onChange={(e) =>
-                        setNewAddress({ ...newAddress, phone: e.target.value })
-                      }
-                      placeholder="Phone (optional)"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
+                    <div className="flex justify-between items-center">
+                      <input
+                        type="number"
+                        name="phone"
+                        value={newAddress.phone}
+                        onChange={(e) =>
+                          setNewAddress({ ...newAddress, phone: e.target.value })
+                        }
+                        placeholder="Phone"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleUseCurrentLocation}
+                        className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
+                      >
+                      <FaLocationCrosshairs className="inline" size={25}/>  Use my current Location
+                      </button>
+                    </div>
+
                     <button
                       type="submit"
-                      className="w-full py-3 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
+                      className="w-full py-3 text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
                     >
                       Save Address
                     </button>
@@ -430,7 +506,7 @@ const Profile = () => {
                     {addresses.map((addr, idx) => (
                       <div
                         key={idx}
-                        className="relative bg-gradient-to-br from-white to-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300"
+                        className="relative bg-gradient-to-br from-white to-blue-50 border border-blue-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300"
                       >
                         <button
                           onClick={() => handleDeleteAddress(idx)}
@@ -470,7 +546,7 @@ const Profile = () => {
                               <span className="font-semibold text-gray-900">
                                 Phone:
                               </span>{" "}
-                              {addr.phone}
+                              +91 {addr.phone}
                             </p>
                           )}
                         </div>
@@ -495,7 +571,7 @@ const Profile = () => {
                         type="text"
                         value={user?.name}
                         disabled
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white mt-1 block w-full border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       />
                       {/* <FaEdit
                         onClick={() => {
@@ -515,7 +591,7 @@ const Profile = () => {
                         type="email"
                         value={user?.email}
                         disabled
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white mt-1 block w-full border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       />
                       {/* <FaEdit
                         onClick={() => {
@@ -535,7 +611,7 @@ const Profile = () => {
                         type="text"
                         value={user?.mobile || "Not Available"}
                         disabled
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white mt-1 block w-full border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       />
                       {/* <FaEdit
                         onClick={() => {
@@ -557,13 +633,13 @@ const Profile = () => {
                           user?.role === "admin"
                             ? "Admin"
                             : user?.role === "merchantise"
-                            ? "Merchandise"
-                            : user?.role === "delivery_boy"
-                            ? "Delivery Boy"
-                            : user?.role
+                              ? "Merchandise"
+                              : user?.role === "delivery_boy"
+                                ? "Delivery Boy"
+                                : user?.role
                         }
                         disabled
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white mt-1 block w-full border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       />
                       {/* No edit option for role */}
                     </div>
@@ -670,7 +746,7 @@ const Profile = () => {
                     type={editField === "email" ? "email" : "text"}
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="bg-white w-full border border-gray-300 px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                   <div className="flex justify-end space-x-3">
                     <button

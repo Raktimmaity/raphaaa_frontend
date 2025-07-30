@@ -24,6 +24,10 @@ import { FaRupeeSign } from "react-icons/fa";
 import { LuMessageSquareText } from "react-icons/lu";
 import axios from "axios";
 import { toast } from "sonner";
+import { GiLetterBomb } from "react-icons/gi";
+import { BiSolidOffer } from "react-icons/bi";
+import { FaUsers } from "react-icons/fa";
+import { FaPeopleCarryBox } from "react-icons/fa6";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -267,7 +271,7 @@ const AdminSidebar = () => {
                 : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
             }
           >
-            <FaUser />
+            <FaUsers />
             <span>Users</span>
           </NavLink>
         )}
@@ -322,7 +326,7 @@ const AdminSidebar = () => {
             <details className="group">
               <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
                 <span className="flex items-center gap-2">
-                  <FaBoxOpen className="text-lg" />
+                  <FaPeopleCarryBox className="text-lg" />
                   <span>Collab</span>
                 </span>
                 <svg
@@ -366,7 +370,7 @@ const AdminSidebar = () => {
             <details className="group">
               <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
                 <span className="flex items-center gap-2">
-                  <FaBoxOpen className="text-lg" />
+                  <BiSolidOffer className="text-lg" />
                   <span>Offers</span>
                 </span>
                 <svg
@@ -433,6 +437,19 @@ const AdminSidebar = () => {
           >
             <LuMessageSquareText />
             <span>Contact</span>
+          </NavLink>
+        )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <NavLink
+            to="/admin/subscribed-users"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <GiLetterBomb />
+            <span>Subscribers</span>
           </NavLink>
         )}
 
