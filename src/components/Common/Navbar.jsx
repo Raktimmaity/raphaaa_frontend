@@ -83,7 +83,7 @@ const Navbar = () => {
     <>
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2 group">
+        <Link to="/" className="flex items-center space-x-2 group" title="Raphaaa">
           <img src={logo} alt="Logo" className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" />
         </Link>
 
@@ -168,12 +168,13 @@ const Navbar = () => {
             <Link
               to="/login"
               className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 rounded-full shadow hover:from-sky-600 hover:to-blue-700 transition duration-300"
+              title="Login"
             >
               Login
             </Link>
           )}
 
-          <button onClick={toggleCartDrawer} className="relative hover:scale-105 transition-transform">
+          <button onClick={toggleCartDrawer} className="relative hover:scale-105 transition-transform" title="Cart">
             <HiOutlineShoppingBag className="h-6 w-6 text-gray-700" />
             {cartItemCount > 0 && (
               <span className="absolute -top-1 -right-2 bg-sky-500 text-white text-xs rounded-full px-2 py-0.5 shadow">
@@ -182,7 +183,7 @@ const Navbar = () => {
             )}
           </button>
 
-          <div className="overflow-hidden">
+          <div className="overflow-hidden" title="Search">
             <SearchBar />
           </div>
 
