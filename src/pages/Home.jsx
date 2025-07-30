@@ -99,6 +99,103 @@ const Home = () => {
     fetchOffers();
   }, []);
 
+  useEffect(() => {
+    let timerInterval;
+    if (activeOffer && new Date() < new Date(activeOffer.startDate)) {
+      const start = new Date(activeOffer.startDate).getTime();
+
+      timerInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = start - now;
+
+        if (distance <= 0) {
+          document.getElementById("offer-timer").innerText = "Now Live!";
+          clearInterval(timerInterval);
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor(
+          (distance % (1000 * 60 * 60)) / (1000 * 60)
+        );
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("offer-timer").innerText =
+          `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }, 1000);
+    }
+
+    return () => clearInterval(timerInterval);
+  }, [activeOffer]);
+  useEffect(() => {
+    const lastSeen = localStorage.getItem("seenOfferBanner");
+    const today = new Date().toISOString().slice(0, 10);
+    if (lastSeen !== today) {
+      setShowAlert(true);
+      localStorage.setItem("seenOfferBanner", today);
+    }
+  }, []);
+
+  const popupStyle = `
+  @keyframes scaleIn {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-popup {
+    animation: scaleIn 0.4s ease-out;
+  }
+`;
+  useEffect(() => {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = popupStyle;
+    document.head.appendChild(styleTag);
+
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
+useEffect(() => {
+  // Delay alert appearance by 6 seconds
+  const delay = setTimeout(() => {
+    setShowAlert(true);
+  }, 6000);
+  return () => clearTimeout(delay);
+}, []);
+
+useEffect(() => {
+  let timer;
+  if (activeOffer && new Date() < new Date(activeOffer.startDate)) {
+    const start = new Date(activeOffer.startDate).getTime();
+    timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = start - now;
+
+      if (distance <= 0) {
+        const el = document.getElementById("alert-offer-timer");
+        if (el) el.innerText = "Now Live!";
+        clearInterval(timer);
+        return;
+      }
+
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const el = document.getElementById("alert-offer-timer");
+      if (el) el.innerText = `${d}d ${h}h ${m}m ${s}s`;
+    }, 1000);
+  }
+
+  return () => clearInterval(timer);
+}, [activeOffer]);
+
+
+
   return (
     <div>
       {/* Hero section */}
@@ -129,42 +226,64 @@ const Home = () => {
       )} */}
 
       {activeOffer && (
-        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border border-orange-300 text-orange-900 px-6 py-4 rounded-xl shadow-md mb-6 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            {/* Offer Banner Image */}
-            {activeOffer.bannerImage && (
-              <div className="w-full md:w-48 flex-shrink-0">
-                <img
-                  src={activeOffer.bannerImage}
-                  alt={activeOffer.title}
-                  className="w-full h-32 object-cover rounded-lg shadow-md border border-orange-200"
-                />
-              </div>
-            )}
+        <div className="relative w-full mb-8">
+          {/* Full Width Banner */}
+          {activeOffer.bannerImage && (
+            <img
+              src={activeOffer.bannerImage}
+              alt={activeOffer.title}
+              className="w-full h-[220px] md:h-[420px] object-cover"
+            />
+          )}
 
-            {/* Offer Text and Button */}
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold">
-                🎊 {activeOffer.title} - {activeOffer.offerPercentage}% OFF!
+          {/* Overlay Content */}
+          <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-6 bg-black/40 text-white">
+            <div
+              className="flex-1 mix-blend-screen"
+              style={{
+                textShadow: "1px 1px 3px rgba(0,0,0,0.8)",
+              }}
+            >
+              <h2 className="text-2xl md:text-4xl font-extrabold mb-2 uppercase">
+                {activeOffer.title}
               </h2>
-              <p className="text-sm text-gray-700">
-                Valid from {activeOffer.startDate.slice(0, 10)} to{" "}
-                {activeOffer.endDate.slice(0, 10)}
+              <p className="text-sm md:text-lg font-medium">
+                Save up to{" "}
+                <span className="bg-red-500 font-bold text-xl text-white px-5 py-1">
+                  {activeOffer.offerPercentage}% OFF
+                </span>{" "}
+                from{" "}
+                <span className="font-semibold text-amber-200">
+                  {activeOffer.startDate.slice(0, 10)}
+                </span>{" "}
+                to{" "}
+                <span className="font-semibold text-amber-200">
+                  {activeOffer.endDate.slice(0, 10)}
+                </span>
               </p>
+
+              {/* Countdown Timer (only before start) */}
+              {new Date() < new Date(activeOffer.startDate) && (
+                <div className="mt-3 inline-block bg-amber-600 text-white px-4 py-1 rounded-full text-xs md:text-sm font-semibold tracking-wider">
+                  Starts in: <span id="offer-timer" className="ml-1" />
+                </div>
+              )}
             </div>
 
-            {/* Button */}
-            <div>
+            {/* View Offers Button: Only when offer is active */}
+            {new Date() >= new Date(activeOffer.startDate) && (
               <Link
                 to="/offers"
-                className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition"
+                className="mt-6 md:mt-0 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg transition duration-200"
               >
                 View Offers
               </Link>
-            </div>
+            )}
           </div>
         </div>
       )}
+
+
 
       <Hero />
       <CategorySection />
@@ -212,6 +331,45 @@ const Home = () => {
 
       {/* Feature collections */}
       <FeaturedCollection />
+
+      {activeOffer && showAlert && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+    <div className="relative bg-orange-100 border border-orange-300 shadow-lg rounded-lg overflow-hidden animate-popup p-4 max-w-xs md:max-w-sm w-full text-center">
+      <img
+        src={activeOffer.alertImage}
+        alt={activeOffer.title}
+        className="w-auto max-w-full max-h-[70vh] object-contain mx-auto mb-4"
+      />
+
+      {/* Countdown Timer OR Shop Now */}
+      {new Date() < new Date(activeOffer.startDate) ? (
+        <div className="bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm inline-block mb-2">
+          Offer starts in: <span id="alert-offer-timer" className="ml-1" />
+        </div>
+      ) : (
+        <Link
+          to="/offers"
+          onClick={() => setShowAlert(false)}
+          className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full font-semibold text-sm transition mb-2"
+        >
+          🛍 Shop Now
+        </Link>
+      )}
+
+      {/* Close Button */}
+      <button
+        onClick={() => setShowAlert(false)}
+        className="absolute top-2 right-2 text-orange-800 hover:text-red-500 text-xl font-bold bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
+        title="Close"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
+
+
+
     </div>
   );
 };

@@ -11,6 +11,7 @@ const AddEditOffer = () => {
     startDate: "",
     endDate: "",
     bannerImage: "",
+    alertImage: "", // 🆕
     productIds: [],
   });
   const [products, setProducts] = useState([]);
@@ -48,6 +49,7 @@ const AddEditOffer = () => {
       startDate: data.startDate?.slice(0, 10) || "",
       endDate: data.endDate?.slice(0, 10) || "",
       bannerImage: data.bannerImage || "",
+      alertImage: data.alertImage || "",
       productIds: data.productIds?.map(p => p._id) || [],
     });
   } catch (err) {
@@ -276,6 +278,50 @@ const AddEditOffer = () => {
               />
             )}
           </div>
+
+          <div className="col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Alert Portrait Image (Optional)
+  </label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const imgData = new FormData();
+      imgData.append("image", file);
+      try {
+        setUploading(true);
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
+          imgData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
+          }
+        );
+        setFormData((prev) => ({ ...prev, alertImage: data.imageUrl }));
+      } catch {
+        toast.error("Alert image upload failed");
+      } finally {
+        setUploading(false);
+      }
+    }}
+    className="w-full"
+  />
+  {uploading && <p className="text-sm text-blue-500 mt-1">Uploading...</p>}
+  {formData.alertImage && (
+    <img
+      src={formData.alertImage}
+      alt="Alert"
+      className="mt-3 max-h-64 rounded-lg border mx-auto"
+    />
+  )}
+</div>
+
 
           <div className="col-span-2">
             <button
