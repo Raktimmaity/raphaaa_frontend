@@ -158,13 +158,13 @@ const Home = () => {
       document.head.removeChild(styleTag);
     };
   }, []);
-useEffect(() => {
-  // Delay alert appearance by 6 seconds
-  const delay = setTimeout(() => {
-    setShowAlert(true);
-  }, 6000);
-  return () => clearTimeout(delay);
-}, []);
+// useEffect(() => {
+//   // Delay alert appearance by 6 seconds
+//   const delay = setTimeout(() => {
+//     setShowAlert(true);
+//   }, 6000);
+//   return () => clearTimeout(delay);
+// }, []);
 
 useEffect(() => {
   let timer;
