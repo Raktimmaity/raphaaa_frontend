@@ -689,7 +689,7 @@ const Profile = () => {
                     My Coupons
                   </h2>
 
-                  {/* {user?.role === "customer" ? (
+                  {user?.role === "customer" ? (
                     coupon ? (
                       <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-lg p-4 shadow-md w-fit">
                         <div className="flex items-center gap-3">
@@ -732,7 +732,7 @@ const Profile = () => {
                     <p className="text-gray-600">
                       Coupons are only for customers.
                     </p>
-                  )} */}
+                  )}
                 </div>
               )}
             </div>

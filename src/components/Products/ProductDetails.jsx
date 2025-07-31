@@ -212,29 +212,44 @@ const ProductDetails = ({ productId }) => {
   };
 
   useEffect(() => {
-    const applyCoupon = () => {
-      if (selectedProduct && user) {
-        const regDate = new Date(user.createdAt);
-        const today = new Date();
-        const daysSinceRegistration = Math.floor(
-          (today - regDate) / (1000 * 60 * 60 * 24)
-        );
-
-        if (
-          couponCode.trim().toUpperCase() === "FIRST10" &&
-          daysSinceRegistration <= 10
-        ) {
-          const discounted =
-            selectedProduct.price - selectedProduct.price * 0.1;
-          setFinalPrice(Math.round(discounted));
+    const validateUserCoupon = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        if (!token || !couponCode.trim()) {
+          setFinalPrice(null);
           return;
         }
+
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/validate-coupon`,
+          { couponCode },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (data.valid && selectedProduct) {
+          const discount = data.discount || 0;
+          const discounted =
+            selectedProduct.discountPrice - selectedProduct.discountPrice * (discount / 100);
+          setFinalPrice(Math.round(discounted));
+          toast.success("Coupon applied successfully!");
+        } else {
+          setFinalPrice(null);
+          toast.error("Invalid or expired coupon");
+        }
+      } catch (err) {
+        console.error("Coupon validation error:", err);
+        toast.error("Failed to validate coupon");
+        setFinalPrice(null);
       }
-      setFinalPrice(null); // fallback
     };
 
-    applyCoupon();
-  }, [couponCode, selectedProduct, user]);
+    validateUserCoupon();
+  }, [couponCode, selectedProduct]);
+
 
   // ✅ Function to handle image click
   const handleImageClick = (imgUrl) => {
@@ -292,8 +307,7 @@ const ProductDetails = ({ productId }) => {
     const fetchReviews = async () => {
       try {
         const res = await fetch(
-          `${
-            import.meta.env.VITE_BACKEND_URL
+          `${import.meta.env.VITE_BACKEND_URL
           }/api/reviews/product/${productFetchId}`
         );
         const data = await res.json();
@@ -388,25 +402,25 @@ const ProductDetails = ({ productId }) => {
       const deliveryDate = new Date(currentDate);
       deliveryDate.setDate(
         currentDate.getDate() +
-          (isDeliverable ? Math.floor(Math.random() * 5) + 2 : 0)
+        (isDeliverable ? Math.floor(Math.random() * 5) + 2 : 0)
       ); // 2-6 days
 
       setDeliveryInfo({
         isDeliverable,
         message: isDeliverable
           ? `Delivery available - within 30km radius (${distance.toFixed(
-              1
-            )}km away)`
+            1
+          )}km away)`
           : `Not deliverable - beyond 30km radius (${distance.toFixed(
-              1
-            )}km away)`,
+            1
+          )}km away)`,
         deliveryDate: isDeliverable
           ? deliveryDate.toLocaleDateString("en-IN", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
           : null,
         deliveryDays: isDeliverable
           ? Math.ceil((deliveryDate - currentDate) / (1000 * 60 * 60 * 24))
@@ -456,9 +470,9 @@ const ProductDetails = ({ productId }) => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
@@ -513,9 +527,9 @@ const ProductDetails = ({ productId }) => {
     )?.cart;
     const totalProductsInCart = currentCartItems
       ? JSON.parse(currentCartItems)?.cartItems?.reduce(
-          (acc, item) => acc + item.quantity,
-          0
-        )
+        (acc, item) => acc + item.quantity,
+        0
+      )
       : 0;
 
     if (totalProductsInCart + quantity > 10) {
@@ -552,7 +566,7 @@ const ProductDetails = ({ productId }) => {
     if (selectedProduct.discountPrice && selectedProduct.offerPercentage > 0) {
       return Math.floor(
         (selectedProduct.discountPrice * 100) /
-          (100 - selectedProduct.offerPercentage)
+        (100 - selectedProduct.offerPercentage)
       );
     }
     return selectedProduct.discountPrice || selectedProduct.price;
@@ -587,11 +601,10 @@ const ProductDetails = ({ productId }) => {
                   key={index}
                   src={image.url}
                   alt={image.altText || `Thumb ${index}`}
-                  className={`w-20 h-20 rounded-full cursor-pointer border transition-all duration-300 ${
-                    mainImage === image.url
+                  className={`w-20 h-20 rounded-full cursor-pointer border transition-all duration-300 ${mainImage === image.url
                       ? "border-sky-600 shadow-lg scale-105"
                       : "border-gray-300 hover:border-sky-400"
-                  }`}
+                    }`}
                   onClick={() => setMainImage(image.url)}
                 />
               ))}
@@ -620,11 +633,10 @@ const ProductDetails = ({ productId }) => {
                         ? "Remove from Wishlist"
                         : "Add to Wishlist"
                     }
-                    className={`absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${
-                      isInWishlist(selectedProduct._id)
+                    className={`absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${isInWishlist(selectedProduct._id)
                         ? "bg-red-100 text-red-600 hover:bg-red-200"
                         : "bg-white text-gray-800 hover:bg-pink-100"
-                    }`}
+                      }`}
                   >
                     {isInWishlist(selectedProduct._id) ? (
                       <AiFillHeart className="text-2xl animate-pulse" />
@@ -646,11 +658,10 @@ const ProductDetails = ({ productId }) => {
                     key={index}
                     src={image.url}
                     alt={image.altText || `Thumb ${index}`}
-                    className={`w-20 h-20 rounded-xl cursor-pointer border transition-all duration-300 ${
-                      mainImage === image.url
+                    className={`w-20 h-20 rounded-xl cursor-pointer border transition-all duration-300 ${mainImage === image.url
                         ? "border-sky-600 shadow-lg scale-105"
                         : "border-gray-300 hover:border-sky-400"
-                    }`}
+                      }`}
                     onClick={() => setMainImage(image.url)}
                   />
                 ))}
@@ -727,7 +738,7 @@ const ProductDetails = ({ productId }) => {
 
                 {/* Pricing */}
                 {selectedProduct.discountPrice &&
-                selectedProduct.offerPercentage ? (
+                  selectedProduct.offerPercentage ? (
                   <div className="mb-4">
                     <div className="flex items-end gap-4">
                       <div className="text-4xl font-semibold text-sky-700">
@@ -751,7 +762,7 @@ const ProductDetails = ({ productId }) => {
                         ₹
                         {Math.floor(
                           (selectedProduct.price * 100) /
-                            (100 - selectedProduct.discountPrice)
+                          (100 - selectedProduct.discountPrice)
                         )}
                       </div>
                     </div>
@@ -777,11 +788,10 @@ const ProductDetails = ({ productId }) => {
                           )
                         }
                         key={color}
-                        className={`w-9 h-9 rounded border transition-all duration-300 ${
-                          selectedColor === color
+                        className={`w-9 h-9 rounded border transition-all duration-300 ${selectedColor === color
                             ? "border-4 border-sky-600 scale-110"
                             : "border-gray-300 hover:border-gray-500"
-                        }`}
+                          }`}
                         style={{ backgroundColor: color.toLowerCase() }}
                       />
                     ))}
@@ -800,11 +810,10 @@ const ProductDetails = ({ productId }) => {
                           )
                         }
                         key={size}
-                        className={`px-4 py-2 rounded-full border transition-all duration-200 font-medium ${
-                          selectedSize === size
+                        className={`px-4 py-2 rounded-full border transition-all duration-200 font-medium ${selectedSize === size
                             ? "bg-sky-600 text-white"
                             : "border-gray-300 hover:bg-sky-50"
-                        }`}
+                          }`}
                       >
                         {size}
                       </button>
@@ -812,13 +821,11 @@ const ProductDetails = ({ productId }) => {
                   </div>
                 </div>
                 {/* 🏷️ Apply Coupon */}
-                {/* <div className="mb-6">
-                  <p className="font-medium text-gray-700 mb-2">
-                    Apply Coupon Code:
-                  </p>
+                <div className="mb-6">
+                  <p className="font-medium text-gray-700 mb-2">Apply Coupon Code:</p>
                   <input
                     type="text"
-                    placeholder="Enter your coupon code"
+                    placeholder="Enter coupon (e.g., FIRST10)"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -828,7 +835,8 @@ const ProductDetails = ({ productId }) => {
                       Coupon Applied! Discounted Price: ₹{finalPrice}
                     </p>
                   )}
-                </div> */}
+                </div>
+
 
                 {/* Quantity */}
 
@@ -920,11 +928,10 @@ const ProductDetails = ({ productId }) => {
                   <button
                     onClick={handleAddToCart}
                     disabled={isButtonDisabled || totalQuantity >= 10}
-                    className={`w-full flex items-center justify-center gap-2 py-3 font-semibold transition ${
-                      isButtonDisabled
+                    className={`w-full flex items-center justify-center gap-2 py-3 font-semibold transition ${isButtonDisabled
                         ? "bg-sky-400 text-white cursor-not-allowed"
                         : "bg-sky-600 text-white hover:bg-sky-700"
-                    }`}
+                      }`}
                   >
                     <FiShoppingCart className="text-xl" />
                     {isAddingToCart ? "Adding..." : "Add to Cart"}
@@ -1109,11 +1116,10 @@ const ProductDetails = ({ productId }) => {
                                 {Array.from({ length: 5 }, (_, i) => (
                                   <span
                                     key={i}
-                                    className={`text-xl ${
-                                      i < review.rating
+                                    className={`text-xl ${i < review.rating
                                         ? "text-yellow-400"
                                         : "text-gray-300"
-                                    }`}
+                                      }`}
                                   >
                                     ★
                                   </span>
