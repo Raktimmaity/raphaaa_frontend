@@ -54,13 +54,19 @@ const ViewSubscribers = () => {
       <Toaster position="top-right" />
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Newsletter Subscribers</h2>
 
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by email..."
-        className="bg-white mb-4 w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
-      />
+      <div className="flex justify-between items-center gap-4 mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by email..."
+          className="bg-white w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+        />
+        <span className="inline-block px-3 py-1 bg-sky-600 text-white rounded-full text-sm font-semibold shadow-sm">
+          Total: {subscribers.length}
+        </span>
+      </div>
+
 
       {loading ? (
         <p className="text-center text-gray-500">Loading subscribers...</p>
@@ -113,11 +119,10 @@ const ViewSubscribers = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
-                currentPage === i + 1
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${currentPage === i + 1
                   ? "bg-sky-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
+                }`}
             >
               {i + 1}
             </button>
