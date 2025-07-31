@@ -821,7 +821,7 @@ const ProductDetails = ({ productId }) => {
                   </div>
                 </div>
                 {/* 🏷️ Apply Coupon */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <p className="font-medium text-gray-700 mb-2">Apply Coupon Code:</p>
                   <input
                     type="text"
@@ -835,7 +835,7 @@ const ProductDetails = ({ productId }) => {
                       Coupon Applied! Discounted Price: ₹{finalPrice}
                     </p>
                   )}
-                </div>
+                </div> */}
 
 
                 {/* Quantity */}
