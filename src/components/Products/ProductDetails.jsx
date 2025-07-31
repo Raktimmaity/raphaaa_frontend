@@ -731,10 +731,10 @@ const ProductDetails = ({ productId }) => {
                   <div className="mb-4">
                     <div className="flex items-end gap-4">
                       <div className="text-4xl font-semibold text-sky-700">
-                        ₹{selectedProduct.discountPrice}
+                        ₹{Math.floor(selectedProduct.discountPrice)}
                       </div>
                       <div className="text-gray-500 line-through text-xl">
-                        ₹{selectedProduct.price}
+                        ₹{Math.floor(selectedProduct.price)}
                       </div>
                     </div>
                     <div className="text-green-600 font-medium mt-1">
@@ -745,7 +745,7 @@ const ProductDetails = ({ productId }) => {
                   <div className="mb-4">
                     <div className="flex items-end gap-4">
                       <div className="text-4xl font-semibold text-sky-700">
-                        ₹{selectedProduct.price}
+                        ₹{Math.floor(selectedProduct.price)}
                       </div>
                       <div className="text-gray-500 line-through text-xl">
                         ₹

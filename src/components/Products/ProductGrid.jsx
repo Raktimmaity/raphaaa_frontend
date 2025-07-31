@@ -245,10 +245,10 @@ const ProductGrid = ({ products = [], loading, error }) => {
                   product.discountPrice < product.price ? (
                     <>
                       <p className="text-blue-700 font-bold text-2xl md:text-3xl tracking-wide">
-                        ₹ {product.discountPrice}
+                        ₹ {Math.floor(product.discountPrice)}
                       </p>
                       <p className="text-sm text-gray-500 line-through">
-                        ₹ {product.price}
+                        ₹ {Math.floor(product.price)}
                       </p>
                       <p className="text-green-600 text-md font-semibold">
                         {product.offerPercentage}% OFF
