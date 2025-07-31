@@ -278,15 +278,14 @@ const UserManagement = () => {
                     <td className="p-4">{u.email}</td>
                     <td className="p-4">
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${
-                          u.role === "admin"
+                        className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${u.role === "admin"
                             ? "bg-gradient-to-r from-purple-500 to-indigo-500"
                             : u.role === "merchantise"
-                            ? "bg-gradient-to-r from-orange-400 to-pink-500"
-                            : u.role === "delivery_boy"
-                            ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
-                            : "bg-gradient-to-r from-green-400 to-blue-400"
-                        }`}
+                              ? "bg-gradient-to-r from-orange-400 to-pink-500"
+                              : u.role === "delivery_boy"
+                                ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
+                                : "bg-gradient-to-r from-green-400 to-blue-400"
+                          }`}
                       >
                         {u.role.charAt(0).toUpperCase() +
                           u.role.slice(1).replace("_", " ")}
@@ -358,11 +357,10 @@ const UserManagement = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-md border ${
-                  page === currentPage
+                className={`px-4 py-2 rounded-md border ${page === currentPage
                     ? "bg-blue-500 text-white"
                     : "bg-white text-gray-700"
-                } hover:bg-blue-100`}
+                  } hover:bg-blue-100`}
               >
                 {page}
               </button>
@@ -408,11 +406,11 @@ const UserManagement = () => {
               {viewedUser.addresses?.length > 0 && (
                 <div>
                   <p className="font-semibold mt-2 mb-2">Saved Addresses:</p>
-                  <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                  <div className="flex flex-wrap gap-3 max-h-40 overflow-y-auto pr-1">
                     {viewedUser.addresses.map((addr, idx) => (
                       <div
                         key={addr._id || idx}
-                        className="border p-3 rounded-md shadow-sm bg-gray-50 relative"
+                        className="w-full sm:w-[48%] border p-3 rounded-md shadow-sm bg-gray-50 relative"
                       >
                         {addr.isDefault && (
                           <span className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-blue-600 text-white font-semibold">
@@ -439,6 +437,7 @@ const UserManagement = () => {
                       </div>
                     ))}
                   </div>
+
                 </div>
               )}
 
