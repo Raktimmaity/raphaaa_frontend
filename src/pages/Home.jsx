@@ -90,8 +90,10 @@ const Home = () => {
         const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/offers/public`
         );
-        const active = data.find((offer) => offer.isActive);
-        if (active) setActiveOffer(active);
+        if (data.length > 0) {
+  setActiveOffer(data[0]); // always show the first offer
+}
+
       } catch (err) {
         console.error("Failed to load active offer", err);
       }
