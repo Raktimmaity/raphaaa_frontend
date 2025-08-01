@@ -158,41 +158,41 @@ const Home = () => {
       document.head.removeChild(styleTag);
     };
   }, []);
-// useEffect(() => {
-//   // Delay alert appearance by 6 seconds
-//   const delay = setTimeout(() => {
-//     setShowAlert(true);
-//   }, 6000);
-//   return () => clearTimeout(delay);
-// }, []);
+  // useEffect(() => {
+  //   // Delay alert appearance by 6 seconds
+  //   const delay = setTimeout(() => {
+  //     setShowAlert(true);
+  //   }, 6000);
+  //   return () => clearTimeout(delay);
+  // }, []);
 
-useEffect(() => {
-  let timer;
-  if (activeOffer && new Date() < new Date(activeOffer.startDate)) {
-    const start = new Date(activeOffer.startDate).getTime();
-    timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = start - now;
+  useEffect(() => {
+    let timer;
+    if (activeOffer && new Date() < new Date(activeOffer.startDate)) {
+      const start = new Date(activeOffer.startDate).getTime();
+      timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = start - now;
 
-      if (distance <= 0) {
+        if (distance <= 0) {
+          const el = document.getElementById("alert-offer-timer");
+          if (el) el.innerText = "Now Live!";
+          clearInterval(timer);
+          return;
+        }
+
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+
         const el = document.getElementById("alert-offer-timer");
-        if (el) el.innerText = "Now Live!";
-        clearInterval(timer);
-        return;
-      }
+        if (el) el.innerText = `${d}d ${h}h ${m}m ${s}s`;
+      }, 1000);
+    }
 
-      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((distance % (1000 * 60)) / 1000);
-
-      const el = document.getElementById("alert-offer-timer");
-      if (el) el.innerText = `${d}d ${h}h ${m}m ${s}s`;
-    }, 1000);
-  }
-
-  return () => clearInterval(timer);
-}, [activeOffer]);
+    return () => clearInterval(timer);
+  }, [activeOffer]);
 
 
 
@@ -254,12 +254,21 @@ useEffect(() => {
                 </span>{" "}
                 from{" "}
                 <span className="font-semibold text-amber-200">
-                  {activeOffer.startDate.slice(0, 10)}
+                  {new Date(activeOffer.startDate).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </span>{" "}
                 to{" "}
                 <span className="font-semibold text-amber-200">
-                  {activeOffer.endDate.slice(0, 10)}
+                  {new Date(activeOffer.endDate).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </span>
+
               </p>
 
               {/* Countdown Timer (only before start) */}
@@ -333,40 +342,40 @@ useEffect(() => {
       <FeaturedCollection />
 
       {activeOffer && showAlert && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-    <div className="relative bg-orange-100 border border-orange-300 shadow-lg rounded-lg overflow-hidden animate-popup p-4 max-w-xs md:max-w-sm w-full text-center">
-      <img
-        src={activeOffer.alertImage}
-        alt={activeOffer.title}
-        className="w-auto max-w-full max-h-[70vh] object-contain mx-auto mb-4"
-      />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+          <div className="relative bg-orange-100 border border-orange-300 shadow-lg rounded-lg overflow-hidden animate-popup p-4 max-w-xs md:max-w-sm w-full text-center">
+            <img
+              src={activeOffer.alertImage}
+              alt={activeOffer.title}
+              className="w-auto max-w-full max-h-[70vh] object-contain mx-auto mb-4"
+            />
 
-      {/* Countdown Timer OR Shop Now */}
-      {new Date() < new Date(activeOffer.startDate) ? (
-        <div className="bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm inline-block mb-2">
-          Offer starts in: <span id="alert-offer-timer" className="ml-1" />
+            {/* Countdown Timer OR Shop Now */}
+            {new Date() < new Date(activeOffer.startDate) ? (
+              <div className="bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm inline-block mb-2">
+                Offer starts in: <span id="alert-offer-timer" className="ml-1" />
+              </div>
+            ) : (
+              <Link
+                to="/offers"
+                onClick={() => setShowAlert(false)}
+                className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full font-semibold text-sm transition mb-2"
+              >
+                🛍 Shop Now
+              </Link>
+            )}
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowAlert(false)}
+              className="absolute top-2 right-2 text-orange-800 hover:text-red-500 text-xl font-bold bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
         </div>
-      ) : (
-        <Link
-          to="/offers"
-          onClick={() => setShowAlert(false)}
-          className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full font-semibold text-sm transition mb-2"
-        >
-          🛍 Shop Now
-        </Link>
       )}
-
-      {/* Close Button */}
-      <button
-        onClick={() => setShowAlert(false)}
-        className="absolute top-2 right-2 text-orange-800 hover:text-red-500 text-xl font-bold bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
-        title="Close"
-      >
-        ×
-      </button>
-    </div>
-  </div>
-)}
 
 
 
