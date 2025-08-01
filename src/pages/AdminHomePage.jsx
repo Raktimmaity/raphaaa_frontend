@@ -140,7 +140,7 @@ const AdminHomePage = () => {
         {user.role === "admin"
           ? "Admin"
           : user.role === "merchantise"
-          ? "Merchantise"
+          ? "Merchandise"
           : "Customer"}{" "}
         Dashboard
       </h1>
