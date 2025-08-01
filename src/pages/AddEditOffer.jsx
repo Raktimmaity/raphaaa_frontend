@@ -111,13 +111,29 @@ const AddEditOffer = () => {
         config
       );
       toast.success("Offer created");
+
+      // ✅ Clear form only after successful creation
+      setFormData({
+        title: "",
+        description: "",
+        offerPercentage: 0,
+        startDate: "",
+        endDate: "",
+        bannerImage: "",
+        alertImage: "",
+        productIds: [],
+      });
     }
 
-    // navigate("/admin/offers");
-  } catch {
+    // Optional: Slight delay to let toast display, then navigate
+    // setTimeout(() => navigate("/admin/offers"), 500);
+
+  } catch (error) {
+    console.error("Offer save error:", error);
     toast.error("Failed to save offer");
   }
 };
+
 
 
   return (
