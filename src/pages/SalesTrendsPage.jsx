@@ -198,6 +198,17 @@ const SalesTrendsPage = () => {
                 <td className="py-3 px-6 capitalize">{p.season || "N/A"}</td>
               </tr>
             ))}
+            {/* ✅ Totals row */}
+      <tr className="bg-gray-100 font-semibold text-gray-800">
+        <td className="py-3 px-6" colSpan={2}>Total</td>
+        <td className="py-3 px-6">
+          {filteredProducts.reduce((sum, p) => sum + p.totalSold, 0)}
+        </td>
+        <td className="py-3 px-6">
+          ₹{filteredProducts.reduce((sum, p) => sum + p.totalRevenue, 0).toFixed(2)}
+        </td>
+        <td className="py-3 px-6"></td>
+      </tr>
           </tbody>
         </table>
       </div>
