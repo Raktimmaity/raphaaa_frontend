@@ -13,6 +13,7 @@ import { logout } from "../../redux/slices/authSlice";
 import axios from "axios";
 import { GiTreasureMap } from "react-icons/gi"; // example icon
 import useSmartLoader from "../../hooks/useSmartLoader";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -26,9 +27,9 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const { loading, data: contactInfo } = useSmartLoader(async () => {
-  const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
-  return res.data;
-});
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
+    return res.data;
+  });
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -93,11 +94,10 @@ const Navbar = () => {
             <Link
               key={path}
               to={path}
-              className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${
-                isActive(path)
+              className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${isActive(path)
                   ? "text-sky-600 border-b-2 border-sky-600 pb-1"
                   : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
-              }`}
+                }`}
             >
               {["Collections", "About", "Contact Us", "Privacy & Policy"][index]}
             </Link>
@@ -117,8 +117,8 @@ const Navbar = () => {
                 {user.role === "admin"
                   ? "Admin Panel"
                   : user.role === "merchantise"
-                  ? "Merchandise Panel"
-                  : "Delivery Panel"}
+                    ? "Merchandise Panel"
+                    : "Delivery Panel"}
               </Link>
             )}
 
@@ -129,12 +129,15 @@ const Navbar = () => {
                   onClick={() => setProfileOpen((prev) => !prev)}
                   className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-100 transition-all"
                 >
-                  <HiOutlineUser className="h-6 w-6 text-sky-600" />
+                  <div className="w-8 h-8 bg-sky-600 text-white flex items-center justify-center rounded-full text-sm font-bold uppercase">
+                    {user.name?.charAt(0)}
+                  </div>
                   <span className="text-sm font-medium text-gray-800 hidden md:inline">
                     {user.name}
                   </span>
                   <HiChevronDown className="h-4 w-4 text-gray-500" />
                 </button>
+
 
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-50">
@@ -154,6 +157,7 @@ const Navbar = () => {
                       onClick={() => {
                         localStorage.removeItem("userInfo");
                         dispatch(logout());
+                        toast.success("Logged out successfully!");
                         navigate("/login");
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
@@ -197,9 +201,8 @@ const Navbar = () => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 left-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-xl transform transition-transform duration-300 z-50 ${
-          navDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-xl transform transition-transform duration-300 z-50 ${navDrawerOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex justify-end p-4">
           <button
@@ -234,25 +237,25 @@ const Navbar = () => {
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Follow Us</h3>
             <div className="flex space-x-4 mb-4">
               {contactInfo?.showFacebook && (
-              <a
-                href={contactInfo.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TbBrandMeta className="h-5 w-5 text-blue-600 inline" />
-              </a>
+                <a
+                  href={contactInfo.facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <TbBrandMeta className="h-5 w-5 text-blue-600 inline" />
+                </a>
               )}
               {contactInfo?.showInstagram && (
-              <a
-                href={contactInfo.instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IoLogoInstagram className="h-5 w-5 inline text-[#E1306C]" />
-              </a>
+                <a
+                  href={contactInfo.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <IoLogoInstagram className="h-5 w-5 inline text-[#E1306C]" />
+                </a>
               )}
             </div>
-            
+
             <h3 className="text-sm font-semibold text-gray-700 mb-1">Contact</h3>
             {contactInfo?.showGmail && (
               <a href={`mailto:${contactInfo.gmail}`} className="text-xs text-gray-600">{contactInfo.gmail}</a>
