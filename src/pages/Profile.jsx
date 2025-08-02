@@ -35,6 +35,33 @@ const Profile = () => {
   const [coupon, setCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [countryList, setCountryList] = useState([]);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all?fields=name");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) throw new Error("Invalid data structure");
+
+        const countries = data
+          .map((country) => country?.name?.common)
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b));
+
+        setCountryList(countries);
+      } catch (error) {
+        console.error("Failed to load countries:", error.message);
+        toast.error("Could not load country list.");
+        setCountryList(["India", "United States", "Canada", "Australia"]); // fallback
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   useEffect(() => {
     const fetchCoupon = async () => {
@@ -443,7 +470,7 @@ const Profile = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input
-                        type="text"
+                        type="number"
                         name="postalCode"
                         value={newAddress.postalCode}
                         onChange={(e) =>
@@ -456,8 +483,7 @@ const Profile = () => {
                         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
-                      <input
-                        type="text"
+                      <select
                         name="country"
                         value={newAddress.country}
                         onChange={(e) =>
@@ -466,10 +492,17 @@ const Profile = () => {
                             country: e.target.value,
                           })
                         }
-                        placeholder="Country"
                         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
-                      />
+                      >
+                        <option value="" disabled>Select Country</option>
+                        {countryList.map((country) => (
+                          <option key={country} value={country}>
+                            {country}
+                          </option>
+                        ))}
+                      </select>
+
                     </div>
                     <div className="flex justify-between items-center">
                       <input
@@ -487,7 +520,7 @@ const Profile = () => {
                         onClick={handleUseCurrentLocation}
                         className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
                       >
-                      <FaLocationCrosshairs className="inline" size={25}/>  Use my current Location
+                        <FaLocationCrosshairs className="inline" size={25} />  Use my current Location
                       </button>
                     </div>
 

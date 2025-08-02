@@ -190,9 +190,14 @@ const Checkout = () => {
 
   const handleAddressSelect = (address, index) => {
     setSelectedAddressIndex(index);
+
+    // Split full name into first and last
+    const nameParts = fullUser?.name?.split(" ") || [];
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
     setShippingAddress({
-      firstName: "", // Optional: Leave blank or infer from user.name
-      lastName: "", // Optional
+      firstName: firstName,
+      lastName: lastName,
       address: address.address || "",
       city: address.city || "",
       postalCode: address.postalCode || "",
@@ -256,7 +261,7 @@ const Checkout = () => {
             console.error("[ERROR] COD Order Creation Failed:", result.error);
             alert(
               result.error?.message ||
-                "Failed to create COD order. Please try again."
+              "Failed to create COD order. Please try again."
             );
             setOrderInitiated(false);
           }
@@ -282,7 +287,7 @@ const Checkout = () => {
             );
             alert(
               result.error?.message ||
-                "Failed to create Razorpay order. Please try again."
+              "Failed to create Razorpay order. Please try again."
             );
             setOrderInitiated(false);
           }
@@ -320,7 +325,7 @@ const Checkout = () => {
         console.error("[ERROR] Payment verification failed:", result.error);
         alert(
           result.error?.message ||
-            "Payment verification failed. Please contact support."
+          "Payment verification failed. Please contact support."
         );
         setOrderInitiated(false);
       }
@@ -346,8 +351,7 @@ const Checkout = () => {
         })
       );
       alert(
-        `Payment failed: ${
-          errorData.error.description || "Unknown error"
+        `Payment failed: ${errorData.error.description || "Unknown error"
         }. Please try again.`
       );
       dispatch(clearCheckout());
@@ -362,7 +366,44 @@ const Checkout = () => {
   const loading = cartLoading || checkoutLoading;
   const error = cartError || checkoutError;
 
-  if (loading) return <p>Loading cart...</p>;
+  // if (loading) return <p>Loading cart...</p>;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-white p-6 rounded-xl border border-gray-300 shadow-md">
+              <div className="h-4 bg-gray-300 rounded w-1/2 mb-4"></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-10 bg-gray-200 rounded"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+              </div>
+              <div className="mt-4 h-4 bg-gray-300 rounded w-1/3"></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-md animate-pulse">
+          <div className="h-6 bg-gray-300 rounded w-1/2 mb-4"></div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex gap-4">
+                <div className="w-20 h-24 bg-gray-200 rounded"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                </div>
+              </div>
+            ))}
+            <div className="h-4 bg-gray-300 rounded w-1/3 mt-6"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <p>Error: {error}</p>;
   if (
     !orderProcessing &&
@@ -437,11 +478,10 @@ const Checkout = () => {
                 {fullUser.addresses.map((addr, index) => (
                   <div
                     key={index}
-                    className={`border border-gray-300 rounded-xl p-4 cursor-pointer ${
-                      selectedAddressIndex === index
-                        ? "border border-gray-300-blue-600 bg-blue-50"
-                        : "hover:border border-gray-300-gray-400"
-                    }`}
+                    className={`border border-gray-300 rounded-xl p-4 cursor-pointer ${selectedAddressIndex === index
+                        ? "border-blue-600 bg-blue-50 ring-2 ring-blue-500"
+                        : "border-gray-300 hover:border-gray-400"
+                      }`}
                     onClick={() => handleAddressSelect(addr, index)}
                   >
                     <p className="text-sm font-medium text-gray-900">
@@ -549,9 +589,8 @@ const Checkout = () => {
                 </span>
                 <input
                   type="tel"
-                  className={`w-full p-3 border border-gray-300 rounded-r-lg ${
-                    phoneError ? "border border-gray-300-red-500" : "border border-gray-300-gray-300"
-                  }`}
+                  className={`w-full p-3 border border-gray-300 rounded-r-lg ${phoneError ? "border border-gray-300-red-500" : "border border-gray-300-gray-300"
+                    }`}
                   required
                   value={shippingAddress.phone.replace("+91", "")}
                   onChange={(e) =>

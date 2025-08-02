@@ -29,7 +29,7 @@ const OrderConfirmationPage = () => {
       navigate("/my-orders");
     }
   }, [order, dispatch, navigate]);
-  
+
   const calculateEstimatedDelivery = (createdAt) => {
     const orderDate = new Date(createdAt);
     orderDate.setDate(orderDate.getDate() + 10);
@@ -82,8 +82,13 @@ const OrderConfirmationPage = () => {
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 bg-white shadow-md rounded-lg mt-10">
       <h1 className="text-3xl md:text-4xl font-bold text-center text-emerald-700 mb-10">
-        Thank you for your Order!
+        Hurrey! your Order is placed
       </h1>
+      <img
+        src="https://i.gifer.com/IDDV.gif"
+        alt="Order Placed Successfully"
+        className="mx-auto w-48 h-48 mb-6"
+      />
       <p className="text-center text-gray-500">An email has been sent to your registered email id</p>
 
       {checkout && (
