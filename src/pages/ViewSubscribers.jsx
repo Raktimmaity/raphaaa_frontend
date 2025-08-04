@@ -63,7 +63,7 @@ const ViewSubscribers = () => {
           className="bg-white w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
         />
         <span className="inline-block px-3 py-1 bg-sky-600 text-white rounded-full text-sm font-semibold shadow-sm">
-          Total: {subscribers.length}
+          Total Subscribers: {subscribers.length}
         </span>
       </div>
 
