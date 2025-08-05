@@ -56,11 +56,10 @@ const RevenueReport = () => {
           <button
             key={p}
             onClick={() => setPeriod(p)}
-            className={`px-4 py-2 rounded-lg shadow-md font-medium transition ${
-              period === p
+            className={`px-4 py-2 rounded-lg shadow-md font-medium transition ${period === p
                 ? "bg-blue-600 text-white"
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-            }`}
+              }`}
           >
             {p.charAt(0).toUpperCase() + p.slice(1)}
           </button>
@@ -70,41 +69,72 @@ const RevenueReport = () => {
       {loading ? (
         <p className="text-gray-600 mt-4">Loading revenue data...</p>
       ) : revenueData ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Total Revenue */}
-          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-blue-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md">
-                <FaRupeeSign className="text-xl" />
-              </div>
-              <div>
-                <h2 className="text-md font-semibold text-gray-700">
-                  Total Revenue
-                </h2>
-                <p className="text-3xl font-bold text-blue-700">
-                  ₹{revenueData.totalRevenue}
-                </p>
-              </div>
-            </div>
-          </div>
+        <>
 
-          {/* Total Orders */}
-          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
-                <FaCalendarAlt className="text-xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Total Revenue */}
+            <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-blue-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md">
+                  <FaRupeeSign className="text-xl" />
+                </div>
+                <div>
+                  <h2 className="text-md font-semibold text-gray-700">
+                    Total Revenue
+                  </h2>
+                  <p className="text-3xl font-bold text-blue-700">
+                    ₹{revenueData.totalRevenue}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-md font-semibold text-gray-700">
-                  Total Orders
-                </h2>
-                <p className="text-3xl font-bold text-green-700">
-                  {revenueData.totalOrders}
-                </p>
+            </div>
+
+            {/* Total Orders */}
+            <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
+                  <FaCalendarAlt className="text-xl" />
+                </div>
+                <div>
+                  <h2 className="text-md font-semibold text-gray-700">
+                    Total Orders
+                  </h2>
+                  <p className="text-3xl font-bold text-green-700">
+                    {revenueData.totalOrders}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+          {/* Products Sold List */}
+          {revenueData.productsSold && revenueData.productsSold.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Products Sold</h2>
+              <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+                    <tr>
+                      <th className="px-6 py-3">Product</th>
+                      <th className="px-6 py-3">Category</th>
+                      <th className="px-6 py-3">Quantity</th>
+                      <th className="px-6 py-3">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {revenueData.productsSold.map((product, index) => (
+                      <tr key={index} className="border-t border-gray-200">
+                        <td className="px-6 py-4 font-medium text-gray-800">{product.name}</td>
+                        <td className="px-6 py-4 text-gray-600">{product.category}</td>
+                        <td className="px-6 py-4 text-gray-600">{product.totalSold}</td>
+                        <td className="px-6 py-4 text-gray-600">₹{product.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <p className="text-red-500">No data found for selected period.</p>
       )}

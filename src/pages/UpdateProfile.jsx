@@ -157,9 +157,9 @@ const UpdateProfile = () => {
               <p className="text-sm text-gray-600">
                 <span className="font-medium">Email:</span> {user.email}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              {/* <p className="text-xs text-gray-400 mt-1">
                 <span className="font-medium">User ID:</span> {user._id}
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
