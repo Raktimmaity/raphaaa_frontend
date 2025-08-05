@@ -5,7 +5,7 @@ import demoImg from "../../assets/login.jpg";
 const ProductCard = ({ product, badge }) => {
   return (
     <Link
-      to={`/product/${product.productId}`}
+      to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
       className="block group transition-transform transform hover:-translate-y-1"
     >
       <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">

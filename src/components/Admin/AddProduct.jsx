@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import Select from "react-select";
 
 const AddProduct = () => {
-  // const [loading, setLoading] = useState(false);
+  const [colorSearchHex, setColorSearchHex] = useState("");
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -37,6 +37,7 @@ const AddProduct = () => {
     weight: "",
   });
   const { loading } = useSelector((state) => state.adminProducts);
+  // const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleProductChange = (e) => {
@@ -110,6 +111,65 @@ const AddProduct = () => {
     setProductData({ ...productData, [name]: values });
   };
 
+  const generateWebSafeColors = () => {
+    const steps = ["00", "33", "66", "99", "CC", "FF"];
+    const colors = [];
+    for (let r of steps) {
+      for (let g of steps) {
+        for (let b of steps) {
+          colors.push(`#${r}${g}${b}`);
+        }
+      }
+    }
+    return colors;
+  };
+
+   const colorNameMap = {
+    "#000000": "Black", "#FFFFFF": "White", "#FF0000": "Red",
+    "#00FF00": "Lime", "#0000FF": "Blue", "#FFFF00": "Yellow",
+    "#00FFFF": "Cyan", "#FF00FF": "Magenta", "#C0C0C0": "Silver",
+    "#808080": "Gray", "#800000": "Maroon", "#808000": "Olive",
+    "#008000": "Green", "#800080": "Purple", "#008080": "Teal",
+    "#000080": "Navy",
+  };
+
+  const getColorNameFromHex = (hex) => {
+    return colorNameMap[hex.toUpperCase()] || hex.toUpperCase();
+  };
+
+  const webSafeColorOptions = generateWebSafeColors().map((hex) => ({
+    value: hex,
+    label: (
+      <div
+        className="flex items-center gap-2"
+        title={`${getColorNameFromHex(hex)} (${hex})`}
+      >
+        <span
+          className="inline-block w-4 h-4 rounded-full border border-gray-300"
+          style={{ backgroundColor: hex }}
+        ></span>
+        {getColorNameFromHex(hex)}
+      </div>
+    ),
+  }));
+
+  const selectedColors = productData.colors.map((hex) => ({
+    value: hex,
+    label: (
+      <div
+        className="flex items-center gap-2"
+        title={`${getColorNameFromHex(hex)} (${hex})`}
+      >
+        <span
+          className="inline-block w-4 h-4 rounded-full border border-gray-300"
+          style={{ backgroundColor: hex }}
+        ></span>
+        {getColorNameFromHex(hex)}
+      </div>
+    ),
+  }));
+
+
   const handleProductSubmit = async (e) => {
     e.preventDefault();
 
@@ -149,6 +209,36 @@ const AddProduct = () => {
       dispatch(createProduct(transformedData));
 
       toast.success("Product added successfully!");
+      setProductData({
+        name: "",
+        description: "",
+        price: "",
+        discountPrice: "",
+        offerPercentage: "",
+        countInStock: "",
+        sku: "",
+        category: "",
+        brand: "",
+        sizes: [],
+        colors: [],
+        collections: "",
+        material: "",
+        gender: "",
+        images: [],
+        isFeatured: false,
+        isPublished: false,
+        tags: "",
+        metaTitle: "",
+        metaDescription: "",
+        metaKeywords: "",
+        dimensions: {
+          length: "",
+          width: "",
+          height: "",
+        },
+        weight: "",
+      });
+
     } catch (err) {
       console.error("Error adding product:", err);
       toast.error("Failed to add product");
@@ -170,7 +260,7 @@ const AddProduct = () => {
           <div className="relative inline-block">
             <label
               htmlFor="file-upload"
-              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition duration-200"
+              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 transition-transform duration-200"
             >
               📁 Upload Images
             </label>
@@ -189,8 +279,8 @@ const AddProduct = () => {
         {productData.images.length > 0 && (
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             {productData.images.map((img, index) => (
-              <div key={index} className="relative border p-2 rounded shadow">
-                <img src={img.url} alt={img.altText || "preview"} className="w-full h-32 object-cover rounded" />
+              <div key={index} className="relative rounded-lg p-2 shadow-lg bg-gradient-to-tr from-white via-slate-50 to-gray-100 transition hover:shadow-xl">
+                <img src={img.url} alt={img.altText || "preview"} className="w-full object-cover rounded" />
                 <input
                   type="text"
                   value={img.altText}
@@ -200,12 +290,12 @@ const AddProduct = () => {
                     setProductData({ ...productData, images: updated });
                   }}
                   placeholder="Alt text"
-                  className="mt-1 px-2 py-1 w-full border rounded"
+                  className="mt-1 px-3 py-1 w-full rounded border border-gray-200 bg-white text-sm shadow focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <button
                   type="button"
                   onClick={() => handleImageRemove(index)}
-                  className="absolute top-1 right-1 text-red-600 hover:text-red-800 text-sm"
+                  className="absolute top-1 right-1 bg-red-600 hover:bg-red-800 text-sm text-white rounded-full px-1"
                 >
                   ✕
                 </button>
@@ -213,11 +303,12 @@ const AddProduct = () => {
             ))}
           </div>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
           {/* Product Name */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              Product Name *
+              Product Name {" "}
+              <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
@@ -225,14 +316,16 @@ const AddProduct = () => {
               value={productData.name}
               onChange={handleProductChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product name"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
           {/* SKU */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              SKU *
+              SKU {" "}
+              <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
@@ -241,14 +334,15 @@ const AddProduct = () => {
               onChange={handleProductChange}
               required
               placeholder="Unique product identifier"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
           {/* Price */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              Price *
+              Price {" "}
+              <span className="text-red-600">*</span>
             </label>
             <input
               type="number"
@@ -258,7 +352,8 @@ const AddProduct = () => {
               required
               min="0"
               step="0.01"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product price"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
@@ -274,7 +369,7 @@ const AddProduct = () => {
               min="0"
               step="0.1"
               placeholder="Enter discount %"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
           {/* Discount Price */}
@@ -289,14 +384,17 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.01"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product price"
+              disabled
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
           {/* Count in Stock */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              Count in Stock *
+              Count in Stock {" "}
+              <span className="text-red-600">*</span>
             </label>
             <input
               type="number"
@@ -305,21 +403,23 @@ const AddProduct = () => {
               onChange={handleProductChange}
               required
               min="0"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product stock"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
           {/* Category */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              Category *
+              Category {" "}
+              <span className="text-red-600">*</span>
             </label>
             <select
               name="category"
               value={productData.category}
               onChange={handleProductChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Category</option>
               <option value="T-Shirts">T-Shirts</option>
@@ -334,14 +434,15 @@ const AddProduct = () => {
           {/* Collections */}
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
-              Collections *
+              Collections {" "}
+              <span className="text-red-600">*</span>
             </label>
             <select
               name="collections"
               value={productData.collections}
               onChange={handleProductChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Collection</option>
               <option value="Summer">Summer</option>
@@ -363,7 +464,8 @@ const AddProduct = () => {
               name="brand"
               value={productData.brand}
               onChange={handleProductChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product brand"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
@@ -376,7 +478,7 @@ const AddProduct = () => {
               name="gender"
               value={productData.gender}
               onChange={handleProductChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Gender</option>
               <option value="Men">Men</option>
@@ -388,7 +490,7 @@ const AddProduct = () => {
           {/* Sizes and Colors with react-select */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-gray-700 mb-1 font-medium">Sizes *</label>
+              <label className="block text-gray-700 mb-1 font-medium">Sizes {" "} <span className="text-red-600">*</span></label>
               <Select
                 isMulti
                 name="sizes"
@@ -401,16 +503,17 @@ const AddProduct = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-1 font-medium">Colors *</label>
+              <label className="block text-gray-700 mb-1 font-medium">Colors {" "} <span className="text-red-600">*</span></label>
               <Select
-                isMulti
-                name="colors"
-                options={["Red", "Blue", "Green", "Black", "White", "Yellow", "Pink"].map(color => ({ value: color, label: color }))}
-                value={productData.colors.map(color => ({ value: color, label: color }))}
-                onChange={(selected) => handleMultiSelect(selected, "colors")}
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
+            isMulti
+            name="colors"
+            options={webSafeColorOptions}
+            value={selectedColors}
+            onChange={(selected) => handleMultiSelect(selected, "colors")}
+            className="basic-multi-select"
+            classNamePrefix="select"
+          />
+
             </div>
           </div>
 
@@ -424,7 +527,8 @@ const AddProduct = () => {
               name="material"
               value={productData.material}
               onChange={handleProductChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter material"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
@@ -440,7 +544,8 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.01"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter product weight"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
 
@@ -455,7 +560,7 @@ const AddProduct = () => {
               value={productData.tags}
               onChange={handleProductChange}
               placeholder="e.g., trendy, casual, comfortable"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
         </div>
@@ -463,7 +568,8 @@ const AddProduct = () => {
         {/* Description */}
         <div className="mt-4">
           <label className="block text-gray-700 mb-1 font-medium">
-            Description *
+            Description {" "}
+            <span className="text-red-600">*</span>
           </label>
           <textarea
             name="description"
@@ -471,7 +577,8 @@ const AddProduct = () => {
             onChange={handleProductChange}
             rows="4"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter product description"
+            className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
           ></textarea>
         </div>
 
@@ -527,7 +634,7 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.1"
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
             <input
               type="number"
@@ -537,7 +644,7 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.1"
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
             <input
               type="number"
@@ -547,7 +654,7 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.1"
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
           </div>
         </div>
@@ -613,9 +720,10 @@ const AddProduct = () => {
         <div className="mt-6">
           <button
             type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded shadow disabled:opacity-50"
+            className="bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 hover:brightness-110 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
+
             {loading ? "Adding..." : "Add Product"}
           </button>
         </div>

@@ -17,7 +17,8 @@ import axios from "axios";
 import { FiShoppingCart, FiZap } from "react-icons/fi";
 
 const ProductDetails = ({ productId }) => {
-  const { id } = useParams();
+  // const { id } = useParams();
+  const { slug } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedProduct, loading, error, similarProducts } = useSelector(
@@ -41,7 +42,8 @@ const ProductDetails = ({ productId }) => {
   const [isCheckingDelivery, setIsCheckingDelivery] = useState(false);
   const [showDeliveryCheck, setShowDeliveryCheck] = useState(false);
 
-  const productFetchId = productId || id;
+  // const productFetchId = productId || id;
+  const productFetchId = selectedProduct?._id;
   const [sortOption, setSortOption] = useState("newest");
   const [expandedReviews, setExpandedReviews] = useState({});
   const [showAllReviews, setShowAllReviews] = useState(false);
@@ -151,6 +153,33 @@ const ProductDetails = ({ productId }) => {
       toast.error("Failed to add to wishlist");
     }
   };
+
+  useEffect(() => {
+  const fetchBySlug = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/products`
+      );
+
+      // Convert product name to slug and match
+      const matchedProduct = data.find((p) =>
+        p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
+      );
+
+      if (matchedProduct) {
+        dispatch(fetchProductDetails(matchedProduct._id));
+        dispatch(fetchSimilarProducts(matchedProduct._id));
+      } else {
+        toast.error("Product not found");
+      }
+    } catch (err) {
+      console.error("Error fetching product by slug:", err);
+    }
+  };
+
+  if (slug) fetchBySlug();
+}, [slug, dispatch]);
+
 
   const handleBuyNow = async () => {
     if (!selectedSize || !selectedColor) {

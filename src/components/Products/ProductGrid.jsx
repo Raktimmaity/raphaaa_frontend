@@ -184,7 +184,7 @@ const ProductGrid = ({ products = [], loading, error }) => {
         {currentProducts.map((product, index) => (
           <Link
             key={index}
-            to={`/product/${product._id}`}
+            to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
             className="block group transition-transform transform hover:-translate-y-1"
           >
             <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded md:rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-sky-200">

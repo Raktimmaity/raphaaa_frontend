@@ -277,6 +277,54 @@ const EditProductPage = () => {
 
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(null);
+  const [colorSearchHex, setColorSearchHex] = useState("");
+
+  const colorNameMap = {
+    "#000000": "Black", "#FFFFFF": "White", "#FF0000": "Red",
+    "#00FF00": "Lime", "#0000FF": "Blue", "#FFFF00": "Yellow",
+    "#00FFFF": "Cyan", "#FF00FF": "Magenta", "#C0C0C0": "Silver",
+    "#808080": "Gray", "#800000": "Maroon", "#808000": "Olive",
+    "#008000": "Green", "#800080": "Purple", "#008080": "Teal",
+    "#000080": "Navy",
+  };
+
+  const getColorNameFromHex = (hex) => {
+    return colorNameMap[hex.toUpperCase()] || hex.toUpperCase();
+  };
+
+  const generateWebSafeColors = () => {
+    const steps = ["00", "33", "66", "99", "CC", "FF"];
+    const colors = [];
+    for (let r of steps) {
+      for (let g of steps) {
+        for (let b of steps) {
+          colors.push(`#${r}${g}${b}`);
+        }
+      }
+    }
+    return colors;
+  };
+
+  const filteredColorOptions = generateWebSafeColors()
+    .filter((hex) =>
+      hex.toLowerCase().includes(colorSearchHex.toLowerCase()) ||
+      getColorNameFromHex(hex).toLowerCase().includes(colorSearchHex.toLowerCase())
+    )
+    .map((hex) => ({
+      value: hex,
+      label: (
+        <div
+          className="flex items-center gap-2"
+          title={`${getColorNameFromHex(hex)} (${hex})`}
+        >
+          <span
+            className="inline-block w-4 h-4 rounded-full border border-gray-300"
+            style={{ backgroundColor: hex }}
+          ></span>
+          {getColorNameFromHex(hex)}
+        </div>
+      ),
+    }));
 
   useEffect(() => {
     if (id) dispatch(fetchProductDetails(id));
@@ -614,23 +662,26 @@ const EditProductPage = () => {
               Colors
             </label>
             <Select
-              isMulti
-              name="colors"
-              options={[
-                "Red",
-                "Blue",
-                "Green",
-                "Black",
-                "White",
-                "Yellow",
-                "Pink",
-              ].map((color) => ({ value: color, label: color }))}
-              value={productData.colors.map((color) => ({
-                value: color,
-                label: color,
-              }))}
-              onChange={(selected) => handleMultiSelect(selected, "colors")}
-            />
+            isMulti
+            name="colors"
+            options={filteredColorOptions}
+            value={productData.colors.map((color) => ({
+              value: color,
+              label: (
+                <div
+                  className="flex items-center gap-2"
+                  title={`${getColorNameFromHex(color)} (${color})`}
+                >
+                  <span
+                    className="inline-block w-4 h-4 rounded-full border border-gray-300"
+                    style={{ backgroundColor: color }}
+                  ></span>
+                  {getColorNameFromHex(color)}
+                </div>
+              ),
+            }))}
+            onChange={(selected) => handleMultiSelect(selected, "colors")}
+          />
           </div>
         </div>
 
