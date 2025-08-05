@@ -14,6 +14,7 @@ const ProductManagement = () => {
   const { products, loading, error } = useSelector(
     (state) => state.adminProducts
   );
+  const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -186,6 +187,9 @@ const ProductManagement = () => {
                 <th className="py-3 px-6">Name</th>
                 <th className="py-3 px-6">Price</th>
                 <th className="py-3 px-6">Stock</th>
+                {user.role === "admin" && (
+                  <th className="py-3 px-6">Added by</th>
+                )}
                 <th className="py-3 px-6">Actions</th>
               </tr>
             </thead>
@@ -228,24 +232,43 @@ const ProductManagement = () => {
                     <td className="py-3 px-6">₹{product.discountPrice}</td>
                     <td className="py-3 px-6">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full flex items-center justify-center gap-1 ${
-                          product.countInStock === 0
-                            ? "bg-red-100 text-red-700"
-                            : product.countInStock < 10
+                        className={`px-2 py-1 text-xs rounded-full flex items-center justify-center gap-1 ${product.countInStock === 0
+                          ? "bg-red-100 text-red-700"
+                          : product.countInStock < 10
                             ? "bg-yellow-100 text-yellow-700"
                             : "bg-green-100 text-green-700"
-                        }`}
+                          }`}
                       >
                         {product.countInStock === 0
                           ? "Out of Stock"
                           : product.countInStock < 10
-                          ? "Out of Stock Soon"
-                          : "In Stock"}
+                            ? "Out of Stock Soon"
+                            : "In Stock"}
                         <span className="font-semibold">
                           ({product.countInStock})
                         </span>
                       </span>
                     </td>
+                    {user.role === "admin" && (
+                      <td className="py-3 px-6">
+                        <span className="text-[10px] sm:text-xs font-medium text-gray-600 flex flex-wrap flex-col justify-center items-center">
+                          <strong>
+                            {product.user.name}
+                          </strong>
+                          <span className={`text-xs font-semibold text-white rounded-full px-2 py-0.5
+          ${product.user?.role === "admin"
+                              ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
+                              : product.user?.role === "merchantise"
+                                ? "bg-gradient-to-r from-lime-500 via-green-500 to-teal-500"
+                                : "bg-gray-400"
+                            }`}>
+                            {product.user?.role === "admin" ? "Admin" : product.user?.role === "merchantise" ? "Merchandise" : "Unknown"}
+                          </span>
+                        </span>
+                      </td>
+                    )}
+
+
 
                     <td className="py-3 px-6 space-x-2">
                       <Link
@@ -320,11 +343,10 @@ const ProductManagement = () => {
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`px-4 py-2 rounded-full ${
-                  currentPage === i + 1
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
+                className={`px-4 py-2 rounded-full ${currentPage === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
               >
                 {i + 1}
               </button>
