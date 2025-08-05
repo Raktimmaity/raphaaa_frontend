@@ -56,6 +56,7 @@ const ProductDetails = ({ productId }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [isBuyNowDisabled, setIsBuyNowDisabled] = useState(false);
+  const [displayCount, setDisplayCount] = useState(8); // Initial 4 products shown
 
   const cart = useSelector((state) => state.cart);
 
@@ -155,30 +156,30 @@ const ProductDetails = ({ productId }) => {
   };
 
   useEffect(() => {
-  const fetchBySlug = async () => {
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/products`
-      );
+    const fetchBySlug = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products`
+        );
 
-      // Convert product name to slug and match
-      const matchedProduct = data.find((p) =>
-        p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
-      );
+        // Convert product name to slug and match
+        const matchedProduct = data.find((p) =>
+          p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
+        );
 
-      if (matchedProduct) {
-        dispatch(fetchProductDetails(matchedProduct._id));
-        dispatch(fetchSimilarProducts(matchedProduct._id));
-      } else {
-        toast.error("Product not found");
+        if (matchedProduct) {
+          dispatch(fetchProductDetails(matchedProduct._id));
+          dispatch(fetchSimilarProducts(matchedProduct._id));
+        } else {
+          toast.error("Product not found");
+        }
+      } catch (err) {
+        console.error("Error fetching product by slug:", err);
       }
-    } catch (err) {
-      console.error("Error fetching product by slug:", err);
-    }
-  };
+    };
 
-  if (slug) fetchBySlug();
-}, [slug, dispatch]);
+    if (slug) fetchBySlug();
+  }, [slug, dispatch]);
 
 
   const handleBuyNow = async () => {
@@ -619,7 +620,7 @@ const ProductDetails = ({ productId }) => {
   const maxLimitReached = totalQuantity >= 10;
 
   return (
-    <div className=" min-h-screen py-10 px-4">
+    <div className=" min-h-screen py-10 px-1">
       {selectedProduct && (
         <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md shadow-lg rounded p-8 md:p-12">
           <div className="flex flex-col md:flex-row gap-8">
@@ -631,8 +632,8 @@ const ProductDetails = ({ productId }) => {
                   src={image.url}
                   alt={image.altText || `Thumb ${index}`}
                   className={`w-20 h-20 rounded-full cursor-pointer border transition-all duration-300 ${mainImage === image.url
-                      ? "border-sky-600 shadow-lg scale-105"
-                      : "border-gray-300 hover:border-sky-400"
+                    ? "border-sky-600 shadow-lg scale-105"
+                    : "border-gray-300 hover:border-sky-400"
                     }`}
                   onClick={() => setMainImage(image.url)}
                 />
@@ -663,8 +664,8 @@ const ProductDetails = ({ productId }) => {
                         : "Add to Wishlist"
                     }
                     className={`absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full p-2 shadow-md transition duration-300 ease-in-out transform hover:scale-110 ${isInWishlist(selectedProduct._id)
-                        ? "bg-red-100 text-red-600 hover:bg-red-200"
-                        : "bg-white text-gray-800 hover:bg-pink-100"
+                      ? "bg-red-100 text-red-600 hover:bg-red-200"
+                      : "bg-white text-gray-800 hover:bg-pink-100"
                       }`}
                   >
                     {isInWishlist(selectedProduct._id) ? (
@@ -688,8 +689,8 @@ const ProductDetails = ({ productId }) => {
                     src={image.url}
                     alt={image.altText || `Thumb ${index}`}
                     className={`w-20 h-20 rounded-xl cursor-pointer border transition-all duration-300 ${mainImage === image.url
-                        ? "border-sky-600 shadow-lg scale-105"
-                        : "border-gray-300 hover:border-sky-400"
+                      ? "border-sky-600 shadow-lg scale-105"
+                      : "border-gray-300 hover:border-sky-400"
                       }`}
                     onClick={() => setMainImage(image.url)}
                   />
@@ -818,8 +819,8 @@ const ProductDetails = ({ productId }) => {
                         }
                         key={color}
                         className={`w-9 h-9 rounded border transition-all duration-300 ${selectedColor === color
-                            ? "border-4 border-sky-600 scale-110"
-                            : "border-gray-300 hover:border-gray-500"
+                          ? "border-4 border-sky-600 scale-110"
+                          : "border-gray-300 hover:border-gray-500"
                           }`}
                         style={{ backgroundColor: color.toLowerCase() }}
                       />
@@ -840,8 +841,8 @@ const ProductDetails = ({ productId }) => {
                         }
                         key={size}
                         className={`px-4 py-2 rounded-full border transition-all duration-200 font-medium ${selectedSize === size
-                            ? "bg-sky-600 text-white"
-                            : "border-gray-300 hover:bg-sky-50"
+                          ? "bg-sky-600 text-white"
+                          : "border-gray-300 hover:bg-sky-50"
                           }`}
                       >
                         {size}
@@ -958,8 +959,8 @@ const ProductDetails = ({ productId }) => {
                     onClick={handleAddToCart}
                     disabled={isButtonDisabled || totalQuantity >= 10}
                     className={`w-full flex items-center justify-center gap-2 py-3 font-semibold transition ${isButtonDisabled
-                        ? "bg-sky-400 text-white cursor-not-allowed"
-                        : "bg-sky-600 text-white hover:bg-sky-700"
+                      ? "bg-sky-400 text-white cursor-not-allowed"
+                      : "bg-sky-600 text-white hover:bg-sky-700"
                       }`}
                   >
                     <FiShoppingCart className="text-xl" />
@@ -1146,8 +1147,8 @@ const ProductDetails = ({ productId }) => {
                                   <span
                                     key={i}
                                     className={`text-xl ${i < review.rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-300"
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
                                       }`}
                                   >
                                     ★
@@ -1249,14 +1250,77 @@ const ProductDetails = ({ productId }) => {
 
           {/* Similar Products */}
           <div className="mt-20">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
+            {/* <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
               You May Also Like
-            </h2>
-            <ProductGrid
+            </h2> */}
+            {/* <ProductGrid
               products={similarProducts}
               loading={loading}
               error={error}
-            />
+            /> */}
+            {similarProducts.length > 0 && (
+              <div className="mt-12">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center">
+                  More Products You Might Love
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  {similarProducts.slice(0, displayCount).map((product) => (
+                    <div
+                      key={product._id}
+                      onClick={() =>
+                        navigate(
+                          `/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`
+                        )
+                      }
+                      className="cursor-pointer rounded-lg border border-gray-200 hover:shadow-xl transition-all duration-300 bg-white"
+                    >
+                      <img
+                        src={product.images?.[0]?.url || "/no-image.png"}
+                        alt={product.name}
+                        className="w-full h-70 object-cover rounded mb-2"
+                      />
+                      <div className="pl-2 pb-2">
+                        <h4 className="text-md font-medium text-gray-800 truncate">
+                          {product.name}
+                        </h4>
+                        <div className="inline items-center gap-2 bg-green-600 text-white text-sm mb-1 px-1 rounded">
+                          <span>★ {product.rating?.toFixed(1) || "0.0"}</span>
+                        </div>
+                        <span className="text-gray-500 text-sm">{" "}{product.numReviews || 0} Reviews</span>
+                        <div className="flex items-center gap-2">
+                          <p className="text-md font-bold text-blue-600">
+                            ₹{Math.floor(product.discountPrice || product.price)}
+                          </p>
+                          {product.discountPrice && (
+                            <p className="text-sm line-through text-gray-500">
+                              ₹{product.price}
+                            </p>
+                          )}
+                          <p className="text-md text-green-600">
+                            {product.offerPercentage ? product.offerPercentage + "%" : ""}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {similarProducts.length > displayCount && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => setDisplayCount((prev) => prev + 4)}
+                      className="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700 transition"
+                    >
+                      Load More
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* </div>
+        </div>
+      )} */}
+
           </div>
         </div>
       )}
