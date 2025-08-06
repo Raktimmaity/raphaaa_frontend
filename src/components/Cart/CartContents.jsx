@@ -5,6 +5,7 @@ import {
   removeFromCart,
   updateCartItemQuantity,
 } from "../../redux/slices/cartSlice";
+import { FaTrash } from "react-icons/fa";
 
 const CartContents = ({ cart, userId, guestId }) => {
   const dispatch = useDispatch();
@@ -121,9 +122,9 @@ const CartContents = ({ cart, userId, guestId }) => {
                   product.color
                 )
               }
-              className="text-red-600 hover:text-red-800 transition"
+              className="text-red-500 hover:text-red-800 transition"
             >
-              <RiDeleteBin3Line className="h-6 w-6" />
+              <FaTrash size={18}/>
             </button>
           </div>
         </div>
