@@ -55,6 +55,7 @@ import OffersShowcase from "./pages/OffersShowcase";
 import VerifyMobile from "./pages/VerifyMobile";
 import AutoLogout from "./components/Common/AutoLogout";
 import ViewSubscribers from "./pages/ViewSubscribers";
+import AddMetaOption from "./components/Admin/AddMetaOption";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -314,6 +315,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <ViewSubscribers/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="custom-categories"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AddMetaOption/>
                 </ProtectedRoute>
               }
             />

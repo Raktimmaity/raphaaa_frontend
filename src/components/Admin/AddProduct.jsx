@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { createProduct } from "../../redux/slices/adminProductSlice";
@@ -39,6 +39,18 @@ const AddProduct = () => {
   const { loading } = useSelector((state) => state.adminProducts);
   // const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [metaOptions, setMetaOptions] = useState({ category: [], collection: [], gender: [] });
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
+      const categorized = { category: [], collection: [], gender: [] };
+      res.data.forEach((opt) => categorized[opt.type].push(opt.value));
+      setMetaOptions(categorized);
+    };
+    fetchOptions();
+  }, []);
+
 
   const handleProductChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -124,7 +136,7 @@ const AddProduct = () => {
     return colors;
   };
 
-   const colorNameMap = {
+  const colorNameMap = {
     "#000000": "Black", "#FFFFFF": "White", "#FF0000": "Red",
     "#00FF00": "Lime", "#0000FF": "Blue", "#FFFF00": "Yellow",
     "#00FFFF": "Cyan", "#FF00FF": "Magenta", "#C0C0C0": "Silver",
@@ -422,12 +434,9 @@ const AddProduct = () => {
               className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Category</option>
-              <option value="T-Shirts">T-Shirts</option>
-              <option value="Jeans">Jeans</option>
-              <option value="Shirts">Shirts</option>
-              <option value="Dresses">Dresses</option>
-              <option value="Shoes">Shoes</option>
-              <option value="Accessories">Accessories</option>
+              {metaOptions.category.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
 
@@ -445,12 +454,9 @@ const AddProduct = () => {
               className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Collection</option>
-              <option value="Summer">Summer</option>
-              <option value="Winter">Winter</option>
-              <option value="Spring">Spring</option>
-              <option value="Fall">Fall</option>
-              <option value="New Arrivals">New Arrivals</option>
-              <option value="Best Sellers">Best Sellers</option>
+              {metaOptions.collection.map((col) => (
+                <option key={col} value={col}>{col}</option>
+              ))}
             </select>
           </div>
 
@@ -481,9 +487,9 @@ const AddProduct = () => {
               className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             >
               <option value="">Select Gender</option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              <option value="Unisex">Unisex</option>
+              {metaOptions.gender.map((gen) => (
+                <option key={gen} value={gen}>{gen}</option>
+              ))}
             </select>
           </div>
 
@@ -505,14 +511,14 @@ const AddProduct = () => {
             <div>
               <label className="block text-gray-700 mb-1 font-medium">Colors {" "} <span className="text-red-600">*</span></label>
               <Select
-            isMulti
-            name="colors"
-            options={webSafeColorOptions}
-            value={selectedColors}
-            onChange={(selected) => handleMultiSelect(selected, "colors")}
-            className="basic-multi-select"
-            classNamePrefix="select"
-          />
+                isMulti
+                name="colors"
+                options={webSafeColorOptions}
+                value={selectedColors}
+                onChange={(selected) => handleMultiSelect(selected, "colors")}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
 
             </div>
           </div>

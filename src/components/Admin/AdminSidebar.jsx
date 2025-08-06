@@ -28,6 +28,7 @@ import { GiLetterBomb } from "react-icons/gi";
 import { BiSolidOffer } from "react-icons/bi";
 import { FaUsers } from "react-icons/fa";
 import { FaPeopleCarryBox } from "react-icons/fa6";
+import { BiCategoryAlt } from "react-icons/bi";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -281,6 +282,19 @@ const AdminSidebar = () => {
           >
             <FaUsers />
             <span>Users</span>
+          </NavLink>
+        )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <NavLink
+            to="/admin/custom-categories"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+            }
+          >
+            <BiCategoryAlt />
+            <span>Categories</span>
           </NavLink>
         )}
 
