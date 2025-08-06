@@ -288,17 +288,20 @@ const Profile = () => {
           <div className="w-full md:w-1/3 lg:w-1/4 bg-gradient-to-br from-white via-blue-50 to-blue-100 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center border border-blue-100 relative self-start transition-all duration-300">
             <div
               className="relative cursor-pointer group"
-              onClick={handleIconClick}
+              // onClick={handleIconClick}
             >
-              {profileImage ? (
+              {user?.photo ? (
                 <img
-                  src={profileImage}
+                  src={user.photo}
                   alt="Profile"
                   className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md hover:scale-105 transition-transform"
                 />
               ) : (
-                <FaUserCircle className="text-blue-400 text-5xl hover:scale-105 transition-transform drop-shadow-sm" />
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-100 border-4 border-white text-blue-700 font-bold text-xl uppercase shadow hover:scale-105 transition-transform">
+                  {user?.name?.charAt(0) || "U"}
+                </div>
               )}
+
 
               <span
                 className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${isOnline ? "bg-green-500" : "bg-gray-400"

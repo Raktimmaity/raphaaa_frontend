@@ -95,8 +95,8 @@ const Navbar = () => {
               key={path}
               to={path}
               className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${isActive(path)
-                  ? "text-sky-600 border-b-2 border-sky-600 pb-1"
-                  : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
+                ? "text-sky-600 border-b-2 border-sky-600 pb-1"
+                : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
                 }`}
             >
               {["Collections", "About", "Contact Us", "Privacy & Policy"][index]}
@@ -129,9 +129,18 @@ const Navbar = () => {
                   onClick={() => setProfileOpen((prev) => !prev)}
                   className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-100 transition-all"
                 >
-                  <div className="w-8 h-8 bg-sky-600 text-white flex items-center justify-center rounded-full text-sm font-bold uppercase">
-                    {user.name?.charAt(0)}
-                  </div>
+                  {user.photo ? (
+                    <img
+                      src={user.photo}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover border border-gray-300 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-sky-600 text-white flex items-center justify-center rounded-full text-sm font-bold uppercase">
+                      {user.name?.charAt(0) || "U"}
+                    </div>
+                  )}
+
                   <span className="text-sm font-medium text-gray-800 hidden md:inline">
                     {user.name}
                   </span>
