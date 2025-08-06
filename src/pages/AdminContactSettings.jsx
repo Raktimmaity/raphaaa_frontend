@@ -52,6 +52,26 @@ const AdminContactSettings = () => {
     }
   };
 
+  const ToggleCheckbox = ({ name, checked, onChange, children }) => (
+    <label className="flex items-center justify-between cursor-pointer group">
+      <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
+        {children}
+      </span>
+      <div className="relative">
+        <input
+          type="checkbox"
+          name={name}
+          checked={checked}
+          onChange={onChange}
+          className="sr-only peer"
+        />
+        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-sky-500 transition-all duration-300"></div>
+        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5 shadow-md"></div>
+      </div>
+    </label>
+  );
+
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 bg-white shadow-2xl rounded-2xl mt-12 border border-gray-200">
       <h2 className="text-3xl font-bold mb-8 text-sky-700">Contact Settings</h2>
@@ -64,12 +84,17 @@ const AdminContactSettings = () => {
 
           {/* Facebook */}
           <div className="space-y-2 mb-6">
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" name="showFacebook" checked={form.showFacebook} onChange={handleChange} />
+            <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
                 <FaFacebook className="text-blue-600" /> Show Facebook
               </span>
-            </label>
+              <ToggleCheckbox
+                name="showFacebook"
+                checked={form.showFacebook}
+                onChange={handleChange}
+              />
+            </div>
+
             <input
               type="url"
               name="facebookUrl"
@@ -80,14 +105,20 @@ const AdminContactSettings = () => {
             />
           </div>
 
+
           {/* Instagram */}
           <div className="space-y-2">
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" name="showInstagram" checked={form.showInstagram} onChange={handleChange} />
+            <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
                 <FaInstagram className="text-pink-500" /> Show Instagram
               </span>
-            </label>
+              <ToggleCheckbox
+                name="showInstagram"
+                checked={form.showInstagram}
+                onChange={handleChange}
+              />
+            </div>
+
             <input
               type="url"
               name="instagramUrl"
@@ -97,6 +128,7 @@ const AdminContactSettings = () => {
               className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm"
             />
           </div>
+
         </div>
 
         {/* === CONTACT SECTION === */}
@@ -105,12 +137,17 @@ const AdminContactSettings = () => {
 
           {/* Gmail */}
           <div className="space-y-2 mb-6">
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" name="showGmail" checked={form.showGmail} onChange={handleChange} />
+            <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
                 <FaEnvelope className="text-red-500" /> Show Gmail
               </span>
-            </label>
+              <ToggleCheckbox
+                name="showGmail"
+                checked={form.showGmail}
+                onChange={handleChange}
+              />
+            </div>
+
             <input
               type="email"
               name="gmail"
@@ -123,22 +160,41 @@ const AdminContactSettings = () => {
 
           {/* Phone */}
           <div className="space-y-2">
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" name="showPhone" checked={form.showPhone} onChange={handleChange} />
+            <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
                 <FaPhone className="text-green-600" /> Show Phone
               </span>
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              placeholder="+91 9876543210"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-            />
+              <ToggleCheckbox
+                name="showPhone"
+                checked={form.showPhone}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="flex rounded-lg shadow-sm border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-green-500">
+              <span className="bg-gray-100 text-gray-700 text-sm flex items-center px-3 select-none">
+                +91
+              </span>
+              <input
+                type="tel"
+                name="phone"
+                placeholder="9876543210"
+                value={form.phone.replace("+91", "")}
+                onChange={(e) =>
+                  handleChange({
+                    target: {
+                      name: "phone",
+                      value: "+91" + e.target.value.replace(/[^0-9]/g, "").slice(0, 10),
+                    },
+                  })
+                }
+                className="w-full p-3 text-sm focus:outline-none"
+              />
+            </div>
+
           </div>
         </div>
+
 
         {/* Submit (Full width on bottom) */}
         <div className="md:col-span-2 pt-8 text-right">
