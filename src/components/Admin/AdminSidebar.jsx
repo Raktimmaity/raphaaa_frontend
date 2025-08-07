@@ -29,6 +29,7 @@ import { BiSolidOffer } from "react-icons/bi";
 import { FaUsers } from "react-icons/fa";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { BiCategoryAlt } from "react-icons/bi";
+import { TbHierarchy3 } from "react-icons/tb";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -487,6 +488,19 @@ const AdminSidebar = () => {
           <CgProfile />
           <span>Profile</span>
         </NavLink>
+        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
+          <NavLink
+          to="hierarchy"
+          className={({ isActive }) =>
+            isActive
+              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
+              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
+          }
+        >
+          <TbHierarchy3 />
+          <span>Raphaaa Hierarchy</span>
+        </NavLink>
+        )}
 
         {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="text-gray-300">

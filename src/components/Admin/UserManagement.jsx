@@ -44,6 +44,47 @@ const UserManagement = () => {
     role: "customer",
   });
 
+  const [confirmModal, setConfirmModal] = useState({
+    visible: false,
+    message: '',
+    onConfirm: null,
+  });
+
+  const openConfirm = (message, onConfirm) => {
+    setConfirmModal({ visible: true, message, onConfirm });
+  };
+
+  const closeConfirm = () => {
+    setConfirmModal({ visible: false, message: '', onConfirm: null });
+  };
+
+  const handleRoleChange = (userId, newRole) => {
+    const userToUpdate = users.find((u) => u._id === userId);
+    if (userToUpdate && userToUpdate.role !== newRole) {
+      openConfirm(`Change ${userToUpdate.name}'s role to ${newRole}?`, () => {
+        dispatch(
+          updateUser({
+            id: userId,
+            name: userToUpdate.name,
+            email: userToUpdate.email,
+            role: newRole,
+          })
+        );
+        toast.success(`${userToUpdate.name}'s role updated to ${newRole}`, {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+        });
+      });
+    }
+  };
+
+  const handleDeleteUser = (userId) => {
+    openConfirm("Are you sure you want to delete this user?", () => {
+      dispatch(deleteUser(userId));
+    });
+  };
+
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -57,35 +98,35 @@ const UserManagement = () => {
     setFormData({ name: "", email: "", password: "", role: "customer" });
   };
 
-  const handleRoleChange = (userId, newRole) => {
-    const userToUpdate = users.find((u) => u._id === userId);
-    if (userToUpdate && userToUpdate.role !== newRole) {
-      if (
-        window.confirm(
-          `Are you sure you want to change ${userToUpdate.name}'s role to ${newRole}?`
-        )
-      ) {
-        dispatch(
-          updateUser({
-            id: userId,
-            name: userToUpdate.name,
-            email: userToUpdate.email,
-            role: newRole,
-          })
-        );
-        toast.success(`${userToUpdate.name}'s role updated to ${newRole}`, {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 2000,
-        });
-      }
-    }
-  };
+  // const handleRoleChange = (userId, newRole) => {
+  //   const userToUpdate = users.find((u) => u._id === userId);
+  //   if (userToUpdate && userToUpdate.role !== newRole) {
+  //     if (
+  //       window.confirm(
+  //         `Are you sure you want to change ${userToUpdate.name}'s role to ${newRole}?`
+  //       )
+  //     ) {
+  //       dispatch(
+  //         updateUser({
+  //           id: userId,
+  //           name: userToUpdate.name,
+  //           email: userToUpdate.email,
+  //           role: newRole,
+  //         })
+  //       );
+  //       toast.success(`${userToUpdate.name}'s role updated to ${newRole}`, {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //         autoClose: 2000,
+  //       });
+  //     }
+  //   }
+  // };
 
-  const handleDeleteUser = (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      dispatch(deleteUser(userId));
-    }
-  };
+  // const handleDeleteUser = (userId) => {
+  //   if (window.confirm("Are you sure you want to delete this user?")) {
+  //     dispatch(deleteUser(userId));
+  //   }
+  // };
 
   const exportToExcel = () => {
     const data = filteredUsers.map(({ name, email, role, createdAt }) => ({
@@ -207,6 +248,8 @@ const UserManagement = () => {
                 {user?.role === "merchantise" && (
                   <>
                     <option value="">Select Role</option>
+                    <option value="merchantise">Merchantise</option>
+                    <option value="marketing">Marketing</option>
                     <option value="delivery_boy">Delivery Boy</option>
                   </>
                 )}
@@ -245,8 +288,11 @@ const UserManagement = () => {
             <option value="">All Roles</option>
             <option value="customer">Customer</option>
             <option value="admin">Admin</option>
+            <option value="merchantise">Merchantise</option>
+            <option value="marketing">Marketing</option>
             <option value="delivery_boy">Delivery Boy</option>
           </select>
+
           <button
             onClick={exportToExcel}
             className="w-1/2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
@@ -279,20 +325,19 @@ const UserManagement = () => {
                     <td className="p-4">{u.email}</td>
                     <td className="p-4">
                       <span
-  className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${
-    u.role === "admin"
-      ? "bg-gradient-to-r from-purple-500 to-indigo-500"
-      : u.role === "merchantise"
-      ? "bg-gradient-to-r from-orange-400 to-pink-500"
-      : u.role === "delivery_boy"
-      ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
-      : u.role === "marketing"
-      ? "bg-gradient-to-r from-pink-500 to-red-500"
-      : "bg-gradient-to-r from-green-400 to-blue-400"
-  }`}
->
-  {u.role.charAt(0).toUpperCase() + u.role.slice(1).replace("_", " ")}
-</span>
+                        className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${u.role === "admin"
+                          ? "bg-gradient-to-r from-purple-500 to-indigo-500"
+                          : u.role === "merchantise"
+                            ? "bg-gradient-to-r from-orange-400 to-pink-500"
+                            : u.role === "delivery_boy"
+                              ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
+                              : u.role === "marketing"
+                                ? "bg-gradient-to-r from-pink-500 to-red-500"
+                                : "bg-gradient-to-r from-green-400 to-blue-400"
+                          }`}
+                      >
+                        {u.role.charAt(0).toUpperCase() + u.role.slice(1).replace("_", " ")}
+                      </span>
 
                     </td>
                     {user.role === "admin" && (
@@ -363,9 +408,9 @@ const UserManagement = () => {
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={`px-4 py-2 rounded-md border ${page === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-gray-700"
-                  } hover:bg-blue-100`}
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+                  } hover:bg-blue-800`}
               >
                 {page}
               </button>
@@ -373,6 +418,39 @@ const UserManagement = () => {
           </div>
         )}
       </div>
+
+      {confirmModal.visible && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+          onClick={closeConfirm}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center transition-all duration-300 scale-95 animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Action</h3>
+            <p className="text-sm text-gray-600 mb-6">{confirmModal.message}</p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={() => {
+                  confirmModal.onConfirm?.();
+                  closeConfirm();
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="px-5 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                onClick={closeConfirm}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* View User Modal */}
       {viewedUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 px-4">

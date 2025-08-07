@@ -57,6 +57,7 @@ import AutoLogout from "./components/Common/AutoLogout";
 import ViewSubscribers from "./pages/ViewSubscribers";
 import AddMetaOption from "./components/Admin/AddMetaOption";
 import NotFound from "./pages/NotFound";
+import UserHierarchy from "./pages/UserHierarchy";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -318,6 +319,22 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <ViewSubscribers/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="custom-categories"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <AddMetaOption/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="hierarchy"
+              element={
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
+                  <UserHierarchy/>
                 </ProtectedRoute>
               }
             />

@@ -44,7 +44,7 @@ const FeaturedCollection = () => {
           Limited Edition Drop
         </p>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-transparent bg-clip-text drop-shadow-xl">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight bg-gradient-to-r from-pink-500  to-yellow-500 via-red-500 text-transparent bg-clip-text drop-shadow-xl">
           Raphaaa X {featuredCollab.title}
         </h1>
 

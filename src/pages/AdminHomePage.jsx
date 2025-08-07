@@ -255,10 +255,11 @@ const AdminHomePage = () => {
           </div>
 
           {/* Pie Chart */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4">
+          <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-gray-200">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 tracking-wide from-blue-400 to-purple-500 inline-block pb-1">
               Order Status Distribution
             </h3>
+
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -266,7 +267,10 @@ const AdminHomePage = () => {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name} (${(percent * 100).toFixed(0)}%)`
+                  }
                   dataKey="value"
                 >
                   {pieData.map((entry, index) => (
@@ -276,11 +280,25 @@ const AdminHomePage = () => {
                     />
                   ))}
                 </Pie>
-                <Legend />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                  }}
+                  itemStyle={{ color: "#333", fontWeight: 500 }}
+                />
+                <Legend
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  iconType="circle"
+                  wrapperStyle={{ fontSize: "13px" }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
+
         </div>
       </div>
 
@@ -316,12 +334,12 @@ const AdminHomePage = () => {
                     <td className="py-4 px-6">
                       <span
                         className={`px-3 py-1 text-sm font-semibold rounded-full ${order.status === "Delivered"
-                            ? "bg-green-100 text-green-700"
-                            : order.status === "Processing"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : order.status === "Shipped"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : order.status === "Processing"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : order.status === "Shipped"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-red-100 text-red-700"
                           }`}
                       >
                         {order.status}
