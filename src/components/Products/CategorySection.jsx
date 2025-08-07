@@ -5,6 +5,7 @@ import women from "../../assets/women.webp";
 import casual from "../../assets/casual.webp";
 import classic from "../../assets/classic.webp";
 import useSmartLoader from "../../hooks/useSmartLoader";
+import axios from "axios";
 
 const categories = [
   {
@@ -30,11 +31,22 @@ const categories = [
 ];
 
 const CategorySection = () => {
-  const { loading } = useSmartLoader(async () => {
-  await new Promise((res) => setTimeout(res, 300));
-  return true;
-});
+  const [collabActive, setCollabActive] = useState(false);
 
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then((res) => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
+
+  const { loading } = useSmartLoader(async () => {
+    await new Promise((res) => setTimeout(res, 300));
+    return true;
+  });
+
+  // ⛔️ Hide if collab is active
+  if (collabActive) return null;
 
   return (
     <section className="px-4 md:px-16 py-12">

@@ -140,93 +140,95 @@ const AdminHomePage = () => {
         {user.role === "admin"
           ? "Admin"
           : user.role === "merchantise"
-          ? "Merchandise"
-          : "Customer"}{" "}
+            ? "Merchandise"
+            : user.role === "marketing"
+              ? "Marketing"
+              : "Customer"}{" "}
         Dashboard
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-  {/* Orders (visible to both) */}
-  <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-    <div className="flex items-center gap-4 mb-4">
-      <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
-        <FaShoppingCart className="text-xl" />
-      </div>
-      <div>
-        <h2 className="text-md font-semibold text-gray-700">Total Orders</h2>
-        <p className="text-3xl font-bold text-green-700">{countOrders}</p>
-      </div>
-    </div>
-    <Link
-      to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
-      className="text-sm text-green-600 hover:underline font-medium"
-    >
-      {user?.role === "merchantise" ? "View Sales →" : "Manage Orders →"}
-    </Link>
-  </div>
-
-  {/* Products (visible to both) */}
-  <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-purple-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-    <div className="flex items-center gap-4 mb-4">
-      <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-md">
-        <FaBoxOpen className="text-xl" />
-      </div>
-      <div>
-        <h2 className="text-md font-semibold text-gray-700">Total Products</h2>
-        <p className="text-3xl font-bold text-purple-700">{countProducts}</p>
-      </div>
-    </div>
-    <Link
-      to="/admin/products"
-      className="text-sm text-purple-600 hover:underline font-medium"
-    >
-      Manage Products →
-    </Link>
-  </div>
-
-  {/* Users (only for admin) */}
-  {user?.role === "admin" && (
-    <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
-          <FaUsers className="text-xl" />
+        {/* Orders (visible to both) */}
+        <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-green-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-md">
+              <FaShoppingCart className="text-xl" />
+            </div>
+            <div>
+              <h2 className="text-md font-semibold text-gray-700">Total Orders</h2>
+              <p className="text-3xl font-bold text-green-700">{countOrders}</p>
+            </div>
+          </div>
+          <Link
+            to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
+            className="text-sm text-green-600 hover:underline font-medium"
+          >
+            {user?.role === "merchantise" ? "View Sales →" : "Manage Orders →"}
+          </Link>
         </div>
-        <div>
-          <h2 className="text-md font-semibold text-gray-700">Total Users</h2>
-          <p className="text-3xl font-bold text-yellow-700">{countUsers}</p>
-        </div>
-      </div>
-      <Link
-        to="/admin/users"
-        className="text-sm text-yellow-600 hover:underline font-medium"
-      >
-        Manage Users →
-      </Link>
-    </div>
-  )}
 
-  {/* Revenue (visible to both) */}
-  {(user?.role === "admin" || user?.role === "merchantise") && (
-    <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-blue-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md">
-          <FaRupeeSign className="text-xl" />
+        {/* Products (visible to both) */}
+        <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-purple-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-md">
+              <FaBoxOpen className="text-xl" />
+            </div>
+            <div>
+              <h2 className="text-md font-semibold text-gray-700">Total Products</h2>
+              <p className="text-3xl font-bold text-purple-700">{countProducts}</p>
+            </div>
+          </div>
+          <Link
+            to="/admin/products"
+            className="text-sm text-purple-600 hover:underline font-medium"
+          >
+            Manage Products →
+          </Link>
         </div>
-        <div>
-          <h2 className="text-md font-semibold text-gray-700">Total Revenue</h2>
-          <p className="text-3xl font-bold text-blue-700">₹{totalRevenue}</p>
-        </div>
-      </div>
-      <Link
-        to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
-        className="text-sm text-blue-600 hover:underline font-medium"
-      >
-        {user?.role === "merchantise" ? "View Sales →" : "Revenue Report →"}
-      </Link>
-    </div>
-  )}
 
-</div>
+        {/* Users (only for admin) */}
+        {user?.role === "admin" && (
+          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-yellow-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md">
+                <FaUsers className="text-xl" />
+              </div>
+              <div>
+                <h2 className="text-md font-semibold text-gray-700">Total Users</h2>
+                <p className="text-3xl font-bold text-yellow-700">{countUsers}</p>
+              </div>
+            </div>
+            <Link
+              to="/admin/users"
+              className="text-sm text-yellow-600 hover:underline font-medium"
+            >
+              Manage Users →
+            </Link>
+          </div>
+        )}
+
+        {/* Revenue (visible to both) */}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <div className="p-6 rounded-2xl bg-white/70 shadow-xl backdrop-blur border border-blue-100 hover:scale-[1.02] hover:shadow-2xl transition-all">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md">
+                <FaRupeeSign className="text-xl" />
+              </div>
+              <div>
+                <h2 className="text-md font-semibold text-gray-700">Total Revenue</h2>
+                <p className="text-3xl font-bold text-blue-700">₹{totalRevenue}</p>
+              </div>
+            </div>
+            <Link
+              to={user?.role === "merchantise" ? "/admin/orders" : "/admin/orders"}
+              className="text-sm text-blue-600 hover:underline font-medium"
+            >
+              {user?.role === "merchantise" ? "View Sales →" : "Revenue Report →"}
+            </Link>
+          </div>
+        )}
+
+      </div>
 
 
       {/* Order Trend and Status Charts */}
@@ -313,15 +315,14 @@ const AdminHomePage = () => {
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                          order.status === "Delivered"
+                        className={`px-3 py-1 text-sm font-semibold rounded-full ${order.status === "Delivered"
                             ? "bg-green-100 text-green-700"
                             : order.status === "Processing"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : order.status === "Shipped"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-700"
+                              : order.status === "Shipped"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {order.status}
                       </span>

@@ -9,6 +9,8 @@ const NewArrivals = () => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+
+
   // ✅ Auto-scroll with infinite loop (left to right) + pause on hover
   useEffect(() => {
     let isHovered = false;
@@ -41,9 +43,9 @@ const NewArrivals = () => {
   }, []);
 
   const { loading, data: newArrivals = [] } = useSmartLoader(async () => {
-  const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`);
-  return res.data;
-});
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`);
+    return res.data;
+  });
 
 
   const scroll = (direction) => {
@@ -77,6 +79,17 @@ const NewArrivals = () => {
       window.removeEventListener("resize", updateScrollButtons);
     };
   }, [newArrivals]);
+
+    const [collabActive, setCollabActive] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then((res) => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
+
+  if (collabActive) return null; // ⛔ hide section when active
 
   return (
     <section className="py-16 px-4 lg:px-0">
@@ -126,10 +139,10 @@ const NewArrivals = () => {
                 />
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce uppercase tracking-wider">
-                    New
-                  </div>
-                )}
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md animate-bounce uppercase tracking-wider">
+                      New
+                    </div>
+                  )}
               </div>
               <div className="p-4 text-left">
                 <Link to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`} className="block">

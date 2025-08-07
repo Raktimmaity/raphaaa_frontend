@@ -56,6 +56,7 @@ import VerifyMobile from "./pages/VerifyMobile";
 import AutoLogout from "./components/Common/AutoLogout";
 import ViewSubscribers from "./pages/ViewSubscribers";
 import AddMetaOption from "./components/Admin/AddMetaOption";
+import NotFound from "./pages/NotFound";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -68,6 +69,8 @@ const App = () => {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<UserLayout />}>
+            <Route path="/404" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
@@ -120,7 +123,7 @@ const App = () => {
             <Route
               index
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
                   <AdminHomePage />
                 </ProtectedRoute>
               }
@@ -305,7 +308,7 @@ const App = () => {
             <Route
               path="update-profile"
               element={
-                <ProtectedRoute role={["admin", "merchantise", "delivery_boy"]}>
+                <ProtectedRoute role={["admin", "merchantise", "delivery_boy", "marketing"]}>
                   <UpdateProfile />
                 </ProtectedRoute>
               }

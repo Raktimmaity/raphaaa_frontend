@@ -3,10 +3,11 @@ import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../components/Products/FilterSidebar";
 import SortOptions from "../components/Products/SortOptions";
 import ProductGrid from "../components/Products/ProductGrid";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsByFilters } from "../redux/slices/productsSlice";
 import { ImCross } from "react-icons/im";
+import axios from "axios";
 
 const CollectionPage = () => {
   const { collection } = useParams();
@@ -18,6 +19,14 @@ const CollectionPage = () => {
 
   const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsDidebarOpen] = useState(false);
+  const [collabActive, setCollabActive] = useState(null);
+
+  useEffect(() => {
+    // Check if a collab is active
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then((res) => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
 
   useEffect(() => {
     dispatch(fetchProductsByFilters({ collection, ...queryParams }));
@@ -35,18 +44,20 @@ const CollectionPage = () => {
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleClearFilters = () => {
     navigate(`/collections/${collection}`);
   };
 
+  // 🚫 Block `/collections/all` when a collab is active
+  if (collabActive && collection === "all") {
+    return <Navigate to="/404" />;
+  }
+
   return (
     <div className="flex p-2 md:p-6 flex-col lg:flex-row">
-      {/* Mobile Filter Button */}
       <button
         onClick={toggleSidebar}
         className="lg:hidden border p-2 flex justify-center items-center"
@@ -54,7 +65,6 @@ const CollectionPage = () => {
         <FaFilter className="mr-2" /> Filters
       </button>
 
-      {/* Sidebar */}
       <div
         ref={sidebarRef}
         className={`${
@@ -64,29 +74,25 @@ const CollectionPage = () => {
         <FilterSidebar />
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow px-1 md:px-6 lg:pl-10">
-        <h2 className="text-2xl uppercase mb-4">All collections</h2>
+        <h2 className="text-2xl uppercase mb-4">{collection} Collection</h2>
 
-        {/* Sort + Clear Filters Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-  <div className="flex items-center gap-2">
-    <span className="text-sm font-medium">Sort By:</span>
-    <SortOptions />
-  </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Sort By:</span>
+            <SortOptions />
+          </div>
 
-  {searchParams.toString() && (
-    <button
-      onClick={handleClearFilters}
-      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
-    >
-      <ImCross className="inline mr-1" /> Clear All Filters
-    </button>
-  )}
-</div>
+          {searchParams.toString() && (
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
+            >
+              <ImCross className="inline mr-1" /> Clear All Filters
+            </button>
+          )}
+        </div>
 
-
-        {/* Product Grid */}
         <ProductGrid products={products} loading={loading} error={error} />
       </div>
     </div>

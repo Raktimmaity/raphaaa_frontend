@@ -25,6 +25,14 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [collabActive, setCollabActive] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then(res => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
+
 
   const { loading, data: contactInfo } = useSmartLoader(async () => {
     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
@@ -90,18 +98,38 @@ const Navbar = () => {
 
         {/* Center Navigation */}
         <div className="hidden md:flex space-x-6 items-center">
-          {["/collections/all", "/about", "/contact-us", "/privacy-policy"].map((path, index) => (
+          {/* ✅ Show Exclusive Drop only when collab is active */}
+          {collabActive && (
             <Link
-              key={path}
-              to={path}
-              className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${isActive(path)
-                ? "text-sky-600 border-b-2 border-sky-600 pb-1"
-                : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
+              to="/exclusive-drop"
+              className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${isActive("/exclusive-drop")
+                  ? "text-sky-600 border-b-2 border-sky-600 pb-1"
+                  : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
                 }`}
             >
-              {["Collections", "About", "Contact Us", "Privacy & Policy"][index]}
+              Exclusive Drop
             </Link>
-          ))}
+          )}
+          {["/collections/all", "/about", "/contact-us", "/privacy-policy"].map((path, index) => {
+            const labels = ["Collections", "About", "Contact Us", "Privacy & Policy"];
+            const routesToShow = path === "/collections/all" ? !collabActive : true;
+
+            return routesToShow ? (
+              <Link
+                key={path}
+                to={path}
+                className={`text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out uppercase ${isActive(path)
+                    ? "text-sky-600 border-b-2 border-sky-600 pb-1"
+                    : "text-gray-600 hover:text-black hover:border-b-2 hover:border-gray-300 pb-1"
+                  }`}
+              >
+                {labels[index]}
+              </Link>
+            ) : null;
+          })}
+
+
+
         </div>
 
         {/* Right Side */}
@@ -109,6 +137,7 @@ const Navbar = () => {
           {user &&
             (user.role === "admin" ||
               user.role === "merchantise" ||
+              user.role === "marketing" ||
               user.role === "delivery_boy") && (
               <Link
                 to={user.role === "delivery_boy" ? "/admin/orders" : "/admin"}
@@ -118,7 +147,9 @@ const Navbar = () => {
                   ? "Admin Panel"
                   : user.role === "merchantise"
                     ? "Merchandise Panel"
-                    : "Delivery Panel"}
+                    : user.role === "marketing"
+                      ? "Marketing Panel"
+                      : "Delivery Panel"}
               </Link>
             )}
 

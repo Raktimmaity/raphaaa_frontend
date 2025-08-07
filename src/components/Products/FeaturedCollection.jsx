@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa";
 import axios from "axios";
+import { FaArrowRight } from "react-icons/fa";
 
 const FeaturedCollection = () => {
   const [featuredCollab, setFeaturedCollab] = useState(null);
@@ -12,8 +12,6 @@ const FeaturedCollection = () => {
         const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/collabs`
         );
-
-        // Pick the first published collab
         if (data && data.length > 0) {
           setFeaturedCollab(data[0]);
         }
@@ -28,55 +26,59 @@ const FeaturedCollection = () => {
   if (!featuredCollab || !featuredCollab.isPublished) return null;
 
   return (
-  <section className="py-20 px-4 lg:px-0">
-    <div className="container mx-auto flex flex-col-reverse lg:flex-row items-center bg-white/60 backdrop-blur-md border border-white/40 shadow-2xl rounded-3xl overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-shadow duration-500 group relative">
-      
-      {/* Background glow */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute -top-16 -left-16 w-60 h-60 bg-pink-400 opacity-20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-72 h-72 bg-sky-500 opacity-30 rounded-full blur-3xl animate-pulse" />
+    <section className="relative px-6 md:px-20 py-16 md:h-[90vh] overflow-hidden bg-gradient-to-r from-[#fdfbfb] to-[#ebedee] flex flex-col-reverse sm:flex-row items-center justify-between gap-10">
+      {/* Glow Background Effects */}
+      <div className="absolute -top-20 -left-20 w-96 h-96 bg-pink-400 opacity-20 rounded-full blur-[100px] z-0" />
+      <div className="absolute bottom-0 -right-10 w-[500px] h-[500px] bg-sky-400 opacity-20 rounded-full blur-[120px] z-0" />
+
+      {/* Floating Badge */}
+      <div className="absolute top-6 left-6 md:top-10 md:left-10 z-10">
+        <div className="bg-gradient-to-r from-indigo-600 to-sky-500 text-white px-5 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse tracking-wide">
+          🚀 Exclusive Collab
+        </div>
       </div>
 
-      {/* left content */}
-      <div className="relative z-10 lg:w-1/2 p-10 md:p-14 text-center lg:text-left animate-fade-in space-y-4">
-        <span className="inline-block bg-gradient-to-r from-sky-600 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-          LIMITED EDITION
-        </span>
-        <h2 className="text-lg font-semibold text-pink-600 tracking-wide uppercase">
-          Exclusive Drop
-        </h2>
-        <h2 className="text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-pink-600 via-red-500 to-yellow-400 text-transparent bg-clip-text drop-shadow-sm">
-          Raphaaa X {featuredCollab.title}
-        </h2>
-        <p className="text-md text-gray-700 leading-relaxed max-w-xl">
-          Step into the spotlight with our electrifying collab featuring world
-          football stars. A powerful blend of street fashion and sports
-          heritage — bold, iconic, and limited.
+      {/* Left Side Text */}
+      <div className="relative z-10 w-full sm:w-1/2 text-center sm:text-left space-y-6">
+        <p className="text-xs uppercase font-bold tracking-wider text-blue-600">
+          Limited Edition Drop
         </p>
 
-        <Link
-          to={`/exclusive-drop`}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:scale-105 transition-all duration-300"
-        >
-          Explore Drop <FaArrowRight className="ml-1" />
-        </Link>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-transparent bg-clip-text drop-shadow-xl">
+          Raphaaa X {featuredCollab.title}
+        </h1>
+
+        <p className="text-gray-700 text-sm md:text-lg leading-relaxed max-w-md">
+          Where fashion meets football stardom. Drop curated with iconic energy,
+          bold vibes, and top-tier quality. Unleash the power of streetwear.
+        </p>
+
+        <div className="flex items-center gap-4 mt-4 justify-center sm:justify-start">
+          <Link
+            to="/exclusive-drop"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm md:text-base font-semibold bg-gradient-to-r from-blue-600 to-sky-500 shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300"
+          >
+            Explore Drop <FaArrowRight className="ml-1" />
+          </Link>
+          <span className="text-xs text-gray-500 hidden md:inline">
+            Hurry, before it’s gone!
+          </span>
+        </div>
       </div>
 
-      {/* right content */}
-      <div className="lg:w-1/2 relative z-10">
-        <img
-          src={featuredCollab.image.replace(/\.(jpeg|jpg|png)$/i, ".webp")}
-          alt="Featured Collection"
-          loading="lazy"
-          width={800}
-          height={700}
-          className="w-full h-[700px] object-cover lg:rounded-tr-3xl lg:rounded-br-3xl transition-transform duration-500 group-hover:scale-105"
-        />
+      {/* Right Side Image */}
+      <div className="relative z-10 w-full sm:w-1/2 flex justify-center">
+        <div className="w-[90%] sm:w-[95%] aspect-square overflow-hidden rounded-full shadow-2xl border-4 border-white bg-white">
+          <img
+            src={featuredCollab.image.replace(/\.(jpeg|jpg|png)$/i, ".webp")}
+            alt={featuredCollab.title}
+            className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
       </div>
-    </div>
-  </section>
-);
-
+    </section>
+  );
 };
 
 export default FeaturedCollection;

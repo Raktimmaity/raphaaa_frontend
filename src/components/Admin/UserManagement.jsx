@@ -199,6 +199,7 @@ const UserManagement = () => {
                     <option value="customer">Customer</option>
                     <option value="admin">Admin</option>
                     <option value="merchantise">Merchantise</option>
+                    <option value="marketing">Marketing</option>
                     <option value="delivery_boy">Delivery Boy</option>
                   </>
                 )}
@@ -278,18 +279,21 @@ const UserManagement = () => {
                     <td className="p-4">{u.email}</td>
                     <td className="p-4">
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${u.role === "admin"
-                            ? "bg-gradient-to-r from-purple-500 to-indigo-500"
-                            : u.role === "merchantise"
-                              ? "bg-gradient-to-r from-orange-400 to-pink-500"
-                              : u.role === "delivery_boy"
-                                ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
-                                : "bg-gradient-to-r from-green-400 to-blue-400"
-                          }`}
-                      >
-                        {u.role.charAt(0).toUpperCase() +
-                          u.role.slice(1).replace("_", " ")}
-                      </span>
+  className={`text-xs font-semibold px-3 py-1 rounded-full text-white w-fit ${
+    u.role === "admin"
+      ? "bg-gradient-to-r from-purple-500 to-indigo-500"
+      : u.role === "merchantise"
+      ? "bg-gradient-to-r from-orange-400 to-pink-500"
+      : u.role === "delivery_boy"
+      ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
+      : u.role === "marketing"
+      ? "bg-gradient-to-r from-pink-500 to-red-500"
+      : "bg-gradient-to-r from-green-400 to-blue-400"
+  }`}
+>
+  {u.role.charAt(0).toUpperCase() + u.role.slice(1).replace("_", " ")}
+</span>
+
                     </td>
                     {user.role === "admin" && (
                       <td className="p-4">
@@ -306,6 +310,7 @@ const UserManagement = () => {
                             <>
                               <option value="admin">Admin</option>
                               <option value="merchantise">Merchantise</option>
+                              <option value="marketing">Marketing</option>
                               <option value="delivery_boy">Delivery Boy</option>
                             </>
                           )}

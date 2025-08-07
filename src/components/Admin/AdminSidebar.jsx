@@ -157,7 +157,7 @@ const AdminSidebar = () => {
 
       <nav className="flex flex-col space-y-2">
         {/* Dashboard - Visible to all */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
           <NavLink
             to="/admin"
             end

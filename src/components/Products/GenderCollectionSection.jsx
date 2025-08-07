@@ -6,12 +6,24 @@ import womenImg from "../../assets/womens-collection.jpg";
 import product1 from "../../assets/product1.webp";
 import product2 from "../../assets/product2.webp";
 import useSmartLoader from "../../hooks/useSmartLoader";
+import axios from "axios";
 
 const GenderCollectionSection = () => {
   const { loading } = useSmartLoader(async () => {
     await new Promise((res) => setTimeout(res, 300));
     return true;
   });
+  const [collabActive, setCollabActive] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then((res) => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
+
+  if (collabActive) return null; // ⛔ hide section when active
+
 
   if (loading) {
     return (

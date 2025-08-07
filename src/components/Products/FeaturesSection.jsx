@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { HiOutlineCreditCard, HiShoppingBag } from "react-icons/hi";
 import { HiArrowPathRoundedSquare } from "react-icons/hi2";
+import axios from "axios";
 
 const FeaturesSection = () => {
+  const [collabActive, setCollabActive] = useState(false);
+  
+    useEffect(() => {
+      axios
+        .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+        .then((res) => setCollabActive(res.data.isActive))
+        .catch(() => setCollabActive(false));
+    }, []);
+  
+    if (collabActive) return null; // ⛔ hide section when active
   return (
     <section className="py-20 px-4 bg-gradient-to-br from-sky-50 to-blue-100">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">

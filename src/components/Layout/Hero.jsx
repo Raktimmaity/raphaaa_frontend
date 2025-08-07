@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import useSmartLoader from "../../hooks/useSmartLoader";
+import axios from "axios";
 
 const Hero = () => {
   const heroImages = [heroImg, heroImg2, heroImg3];
@@ -38,6 +39,17 @@ const Hero = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const [collabActive, setCollabActive] = useState(false);
+    
+      useEffect(() => {
+        axios
+          .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+          .then((res) => setCollabActive(res.data.isActive))
+          .catch(() => setCollabActive(false));
+      }, []);
+    
+      if (collabActive) return null; // ⛔ hide section when active
 
   if (loading) {
     return (

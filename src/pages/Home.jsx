@@ -195,6 +195,14 @@ const Home = () => {
 
     return () => clearInterval(timer);
   }, [activeOffer]);
+const [collabActive, setCollabActive] = useState(false);
+
+useEffect(() => {
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+    .then((res) => setCollabActive(res.data.isActive))
+    .catch(() => setCollabActive(false));
+}, []);
 
 
 
@@ -309,12 +317,12 @@ const Home = () => {
       <FeaturesSection />
 
       {/* Best Sellers */}
-      <div className="text-center mb-8 pt-8">
+      {/* <div className="text-center mb-8 pt-8">
         <h2 className="text-3xl font-bold inline-block relative">
           Best Seller
           <div className="mt-2 h-1 w-24 mx-auto bg-gradient-to-r from-blue-500 to-blue-200 rounded-full" />
         </h2>
-      </div>
+      </div> */}
 
       {/* {bestSellerLoading ? (
         <p className="text-center">Loading Best seller product...</p>
