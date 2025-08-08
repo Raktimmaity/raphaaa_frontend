@@ -38,7 +38,7 @@ const UserHierarchy = () => {
 
       {/* Printable Section */}
       <div ref={printRef} className="flex flex-col items-center mt-4 p-6 bg-white shadow-xl rounded-xl max-w-5xl mx-auto print:shadow-none print:p-0 print:mt-0">
-        <h2 className="text-3xl font-bold text-indigo-700 mb-10">Raphaaa Hierarchy</h2>
+        <h2 className="text-3xl font-bold text-indigo-700 mb-10">Team Raphaaa</h2>
 
         {/* Admin */}
         <div className="text-center">

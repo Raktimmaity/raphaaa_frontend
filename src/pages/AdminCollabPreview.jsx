@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const AdminCollabPreview = () => {
   const [collabs, setCollabs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const user = localStorage.getItem("userInfo");
 
   const fetchCollabs = async () => {
     setLoading(true);
@@ -78,29 +79,35 @@ const AdminCollabPreview = () => {
                   )}
 
                   <span
-                    className={`inline-block mt-3 px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
-                      collab.isPublished
+                    className={`inline-block mt-3 px-3 py-1 rounded-full text-xs font-bold tracking-wide ${collab.isPublished
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-600"
-                    }`}
+                      }`}
                   >
                     {collab.isPublished ? "Published" : "Draft"}
                   </span>
-
-                  <div className="pt-4 flex flex-col gap-3">
-                    <Link
-                      to={`/admin/edit-collab/${collab._id}`}
-                      className="bg-sky-600 text-white text-sm px-4 py-2 rounded-md hover:bg-sky-700 transition-all text-center font-semibold"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(collab._id)}
-                      className="bg-red-500 text-white text-sm px-4 py-2 rounded-md hover:bg-red-600 transition-all font-semibold"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {JSON.parse(user || "{}")?.role === "merchantise" ? (
+                    <div className="pt-4">
+                      <span className="inline-block bg-gray-200 text-gray-700 text-sm px-4 py-2 rounded-md font-semibold">
+                        View Only
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="pt-4 flex flex-col gap-3">
+                      <Link
+                        to={`/admin/edit-collab/${collab._id}`}
+                        className="bg-sky-600 text-white text-sm px-4 py-2 rounded-md hover:bg-sky-700 transition-all text-center font-semibold"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(collab._id)}
+                        className="bg-red-500 text-white text-sm px-4 py-2 rounded-md hover:bg-red-600 transition-all font-semibold"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Column */}

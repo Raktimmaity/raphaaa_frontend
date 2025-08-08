@@ -196,7 +196,7 @@ const App = () => {
             <Route
               path="collab-settings"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
                   <AdminCollabSettings />
                 </ProtectedRoute>
               }
@@ -204,7 +204,7 @@ const App = () => {
             <Route
               path="collabs"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
                   <AdminCollabPreview />
                 </ProtectedRoute>
               }
