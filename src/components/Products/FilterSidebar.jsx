@@ -19,7 +19,13 @@ const FilterSidebar = () => {
 
   const [priceRange, setPriceRange] = useState([0, 100]);
   const [expandedSections, setExpandedSections] = useState({
-     category: true, 
+    category: true,
+    gender: true,
+    color: true,
+    size: true,
+    material: true,
+    brand: true,
+    price: true,
   });
 
   const toggleSection = (section) => {
@@ -30,20 +36,11 @@ const FilterSidebar = () => {
   };
 
   const categories = ["Top Wear", "Bottom Wear"];
-  const colors = [
-    "Red", "Blue", "Black", "Green", "Yellow",
-    "Gray", "White", "Pink", "Beige", "Navy"
-  ];
+  const colors = ["Red", "Blue", "Black", "Green", "Yellow", "Gray", "White", "Pink", "Beige", "Navy"];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const materials = [
-    "Cotton", "Wool", "Denim", "Polyester", "Silk",
-    "Linen", "Viscose", "Fleece"
-  ];
-  const brands = [
-    "Urban Threads", "Modern Fit", "Street Style",
-    "Beach Breeze", "fashionista", "ChicStyle"
-  ];
-  const genders = ["Men", "Women"];
+  const materials = ["Cotton", "Wool", "Denim", "Polyester", "Silk", "Linen", "Viscose", "Fleece"];
+  const brands = ["Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "fashionista", "ChicStyle"];
+  const genders = ["Men", "Women", "Kids"];
 
   useEffect(() => {
     const params = Object.fromEntries([...searchParams]);
@@ -81,10 +78,17 @@ const FilterSidebar = () => {
   const updateURLParams = (newFilters) => {
     const params = new URLSearchParams();
     Object.keys(newFilters).forEach((key) => {
-      if (Array.isArray(newFilters[key]) && newFilters[key].length > 0) {
-        params.append(key, newFilters[key].join(","));
-      } else if (newFilters[key]) {
-        params.append(key, newFilters[key]);
+      const value = newFilters[key];
+      if (Array.isArray(value) && value.length > 0) {
+        params.append(key, value.join(","));
+      } else if (
+        value !== "" &&
+        value !== null &&
+        value !== undefined &&
+        !(key === "maxPrice" && Number(value) === 100) &&
+        !(key === "minPrice" && Number(value) === 0)
+      ) {
+        params.append(key, value);
       }
     });
     setSearchParams(params);
@@ -99,109 +103,103 @@ const FilterSidebar = () => {
     updateURLParams(newFilters);
   };
 
+  const pillClass = (isActive) =>
+    `px-3 py-1 rounded-full border text-sm transition-all duration-200 ${isActive
+      ? "bg-sky-600 text-white border-sky-600 shadow"
+      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    }`;
+
   const Section = ({ label, sectionKey, children }) => (
-    <div className="border-t border-gray-200 pt-4">
+    <div className="border-b border-gray-100 pb-4">
       <div
         onClick={() => toggleSection(sectionKey)}
-        className="flex justify-between items-center cursor-pointer mb-2"
+        className="flex justify-between items-center cursor-pointer mb-3"
       >
-        <p className="text-sm font-semibold text-gray-700">{label}</p>
+        <p className="text-base font-semibold text-gray-800">{label}</p>
         {expandedSections[sectionKey] ? (
-          <FaChevronUp className="text-gray-500 text-xs" />
+          <FaChevronUp className="text-gray-500 text-sm transition-transform duration-200" />
         ) : (
-          <FaChevronDown className="text-gray-500 text-xs" />
+          <FaChevronDown className="text-gray-500 text-sm transition-transform duration-200" />
         )}
       </div>
-      {expandedSections[sectionKey] && children}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedSections[sectionKey] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
+      >
+        {children}
+      </div>
     </div>
   );
 
   return (
-    <div className="h-[100vh] md:h-auto lg:h-auto p-6 bg-white rounded-xl shadow border border-gray-200 space-y-6">
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+    <div className="h-[100vh] md:h-auto lg:h-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-100 space-y-6">
+      <div className="pb-4 border-b border-gray-100">
+        <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wide">
           Filters
         </h3>
-        <p className="text-xs text-gray-400">1000+ Products</p>
+        <p className="text-xs text-gray-500">Find products that suit you</p>
       </div>
 
       <Section label="Category" sectionKey="category">
-        <div className="space-y-2">
+        <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <label
+            <button
               key={category}
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
+              type="button"
+              onClick={() => handleFilterChange({ target: { name: "category", value: category, type: "radio" } })}
+              className={pillClass(filters.category === category)}
             >
-              <input
-                type="radio"
-                name="category"
-                checked={filters.category === category}
-                value={category}
-                onChange={handleFilterChange}
-                className="accent-sky-600 w-4 h-4"
-              />
               {category}
-            </label>
+            </button>
           ))}
         </div>
       </Section>
 
       <Section label="Gender" sectionKey="gender">
-        <div className="space-y-2">
+        <div className="flex flex-wrap gap-2">
           {genders.map((gender) => (
-            <label
+            <button
               key={gender}
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
+              type="button"
+              onClick={() => handleFilterChange({ target: { name: "gender", value: gender, type: "radio" } })}
+              className={pillClass(filters.gender === gender)}
             >
-              <input
-                type="radio"
-                name="gender"
-                checked={filters.gender === gender}
-                value={gender}
-                onChange={handleFilterChange}
-                className="accent-sky-600 w-4 h-4"
-              />
               {gender}
-            </label>
+            </button>
           ))}
         </div>
       </Section>
 
       <Section label="Color" sectionKey="color">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           {colors.map((color) => (
             <button
               key={color}
-              name="color"
-              value={color}
-              onClick={handleFilterChange}
-              className={`w-8 h-8 rounded-full border-2 shadow-md transition transform duration-200 hover:scale-110 ${
-                filters.color === color
-                  ? "ring-2 ring-sky-500 border-white"
-                  : "border-blue-100"
-              }`}
-              style={{ backgroundColor: color.toLowerCase() }}
-            />
+              type="button"
+              onClick={() => handleFilterChange({ target: { name: "color", value: color, type: "radio" } })}
+              className={pillClass(filters.color === color)}
+            >
+              {color}
+            </button>
           ))}
         </div>
       </Section>
 
       <Section label="Size" sectionKey="size">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="flex flex-wrap gap-2">
           {sizes.map((size) => (
-            <label
-              key={size}
-              className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600"
-            >
+            <label key={size} className="flex items-center">
               <input
                 type="checkbox"
                 name="size"
                 checked={filters.size.includes(size)}
                 value={size}
                 onChange={handleFilterChange}
-                className="accent-sky-500 w-4 h-4"
+                className="hidden"
               />
-              {size}
+              <span className={pillClass(filters.size.includes(size))}>
+                {size}
+              </span>
             </label>
           ))}
         </div>
@@ -210,10 +208,7 @@ const FilterSidebar = () => {
       <Section label="Fabric" sectionKey="material">
         <div className="space-y-2">
           {materials.map((material) => (
-            <label
-              key={material}
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
-            >
+            <label key={material} className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600">
               <input
                 type="checkbox"
                 name="material"
@@ -231,10 +226,7 @@ const FilterSidebar = () => {
       <Section label="Brand" sectionKey="brand">
         <div className="space-y-2">
           {brands.map((brand) => (
-            <label
-              key={brand}
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600"
-            >
+            <label key={brand} className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600">
               <input
                 type="checkbox"
                 name="brand"
@@ -257,9 +249,9 @@ const FilterSidebar = () => {
           onChange={handlePriceChange}
           min={0}
           max={100}
-          className="w-full h-2 bg-gradient-to-r from-sky-400 to-blue-500 rounded-lg appearance-none cursor-pointer"
+          className="w-full accent-sky-600 cursor-pointer"
         />
-        <div className="flex justify-between text-sm text-blue-700 mt-1">
+        <div className="flex justify-between text-sm text-gray-600 mt-1">
           <span>₹0</span>
           <span>₹{priceRange[1]}</span>
         </div>
