@@ -445,11 +445,11 @@ const EditProductPage = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">Edit Product</h2>
+    <div className="max-w-5xl mx-auto bg-gradient-to-br from-white via-gray-50 to-gray-100 p-10 rounded-2xl shadow-xl border border-gray-200">
+      <h2 className="text-4xl font-extrabold mb-10 text-gray-800 text-center tracking-tight">Edit Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block font-semibold text-gray-700 mb-2">
+          <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">
             Product Name
           </label>
           <input
@@ -457,7 +457,7 @@ const EditProductPage = () => {
             name="name"
             value={productData.name}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md p-3"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             required
           />
         </div>
@@ -471,7 +471,7 @@ const EditProductPage = () => {
             value={productData.description}
             onChange={handleChange}
             rows={4}
-            className="w-full border border-gray-300 rounded-md p-3"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             required
           />
         </div>
@@ -486,7 +486,7 @@ const EditProductPage = () => {
               name="countInStock"
               value={productData.countInStock}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             />
           </div>
           <div>
@@ -498,7 +498,7 @@ const EditProductPage = () => {
               name="price"
               value={productData.price}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             />
           </div>
           <div>
@@ -510,7 +510,7 @@ const EditProductPage = () => {
               name="offerPercentage"
               value={productData.offerPercentage || 0}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
               placeholder="e.g. 20"
             />
           </div>
@@ -523,7 +523,7 @@ const EditProductPage = () => {
               name="discountPrice"
               value={productData.discountPrice || 0}
               readOnly
-              className="w-full border border-gray-300 rounded-md p-3 bg-gray-100"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             />
           </div>
         </div>
@@ -538,7 +538,7 @@ const EditProductPage = () => {
               placeholder="Length"
               value={productData.dimensions?.length || ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
               min="0"
               step="0.1"
             />
@@ -553,7 +553,7 @@ const EditProductPage = () => {
               placeholder="Width"
               value={productData.dimensions?.width || ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
               min="0"
               step="0.1"
             />
@@ -568,7 +568,7 @@ const EditProductPage = () => {
               placeholder="Height"
               value={productData.dimensions?.height || ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
               min="0"
               step="0.1"
             />
@@ -583,7 +583,7 @@ const EditProductPage = () => {
               placeholder="Weight"
               value={productData.weight || ""}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-3"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
               min="0"
               step="0.01"
             />
@@ -686,7 +686,7 @@ const EditProductPage = () => {
         </div>
 
         <div>
-          <label className="block font-semibold text-gray-700 mb-2">
+          <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">
             Upload Image
           </label>
           <input
@@ -694,10 +694,13 @@ const EditProductPage = () => {
             accept="image/*"
             onChange={handleImageUpload}
             disabled={uploading}
-            className="block w-full text-sm text-gray-500"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
+                   file:rounded-md file:border-0 file:font-semibold 
+                   file:bg-green-100 file:text-green-700 hover:file:bg-green-200 
+                   transition-all duration-200"
           />
           {uploading && (
-            <p className="text-blue-600 text-sm mt-2">Uploading Image...</p>
+            <p className="text-blue-600 text-sm mt-2 animate-pulse">Uploading Image...</p>
           )}
           <div className="flex gap-4 mt-4 flex-wrap">
             {productData.images.map((image, index) => (
@@ -711,7 +714,9 @@ const EditProductPage = () => {
                   type="button"
                   onClick={() => handleImageRemove(index, image.url)}
                   disabled={deleting === index}
-                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold"
+                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 
+                         text-white rounded-full w-6 h-6 flex items-center justify-center 
+                         text-xs font-bold shadow-md transition-all duration-200"
                 >
                   {deleting === index ? (
                     <span className="animate-spin">⟳</span>
@@ -727,7 +732,11 @@ const EditProductPage = () => {
         <button
           type="submit"
           disabled={uploading || deleting !== null}
-          className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white py-3 rounded-md font-medium"
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 
+                 hover:from-green-600 hover:to-green-700 
+                 disabled:from-gray-400 disabled:to-gray-500
+                 text-white py-3 rounded-lg font-semibold text-lg
+                 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200"
         >
           {uploading || deleting !== null ? "Processing..." : "Update Product"}
         </button>
