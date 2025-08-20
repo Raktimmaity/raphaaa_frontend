@@ -105,7 +105,7 @@ const Footer = () => {
           ></path>
         </svg>
       </div>
-      <footer className="bg-white border-t border-gray-200 pt-12 mt-12">
+      <footer className="bg-white border-t border-gray-200 pt-12">
         <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Logo & Newsletter */}
           <div>

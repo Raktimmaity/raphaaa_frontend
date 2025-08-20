@@ -3,22 +3,49 @@ import axios from "axios";
 import { toast } from "sonner";
 import { FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import ProductGrid from "../components/Products/ProductGrid";
 
 const ExclusiveDrop = () => {
   const [exclusiveDrops, setExclusiveDrops] = useState([]);
+  const [flippedCard, setFlippedCard] = useState(null);
+  const [dropDetails, setDropDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Fetch all drops
   useEffect(() => {
     const fetchDrops = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs`);
-        setExclusiveDrops(data); // Only published ones will be returned
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/collabs`
+        );
+        setExclusiveDrops(data);
       } catch (err) {
         toast.error("Failed to load exclusive drops");
       }
     };
     fetchDrops();
   }, []);
+
+  // Fetch drop detail when footballer selected
+  useEffect(() => {
+    if (!flippedCard) return;
+    const fetchDropData = async () => {
+      setLoading(true);
+      try {
+        const slug = flippedCard.toLowerCase().replace(/\s+/g, "-");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/collabs/footballer/${slug}`
+        );
+        setDropDetails(data);
+      } catch (err) {
+        toast.error("Drop not found or unpublished");
+        setDropDetails(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDropData();
+  }, [flippedCard]);
 
   return (
     <section className="container mx-auto px-4 py-14">
@@ -35,56 +62,65 @@ const ExclusiveDrop = () => {
         </p>
       </div>
 
-      {/* Grid Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      {/* Grid of flip cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-10 perspective">
         {exclusiveDrops.flatMap((collab, index) =>
-          collab.collaborators.map((person, i) => (
-            <motion.div
-              key={`${collab._id}-${i}`}
-              className="group bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Link
-                to={`/exclusive-drop/${person.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
+          collab.collaborators.map((person, i) => {
+            const isFlipped = flippedCard === person.name;
+            return (
+              <motion.div
+                key={`${collab._id}-${i}`}
+                className={`relative w-full h-[450px] cursor-pointer`}
+                onClick={() =>
+                  setFlippedCard(isFlipped ? null : person.name)
+                }
               >
-                <img
-                  src={person.image}
-                  alt={person.name}
-                  className="md:h-[550px] w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </Link>
+                <motion.div
+                  className={`absolute inset-0 transition-transform duration-700 preserve-3d ${
+                    isFlipped ? "rotate-y-180" : ""
+                  }`}
+                >
+                  {/* Front Side */}
+                  <div className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-lg">
+                    <img
+                      src={person.image}
+                      alt={person.name}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/80 p-4 text-white">
+                      <h3 className="text-xl font-bold">{person.name}</h3>
+                      <p className="text-sm">
+                        {person.products?.[0]?.name || "Exclusive Drop"}
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-gray-800">{person.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {person.products?.[0]?.name || "Featured Product"}
-                </p>
-
-                <div className="mt-6 flex items-center justify-between">
-                  <img
-                    src={
-                      person.image || "/no-image.png"
-                    }
-                    alt="Product"
-                    className="h-12 w-12 object-cover rounded-full border-2 border-sky-400 shadow-md"
-                  />
-                  <Link
-                    to={`/exclusive-drop/${person.name
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")}`}
-                    className="flex items-center text-sm font-semibold text-sky-600 hover:text-blue-700 transition"
-                  >
-                    View More <FaArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          ))
+                  {/* Back Side */}
+                  <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-3xl bg-white shadow-xl p-6 overflow-y-auto custom-scrollbar">
+                    {loading && <p>Loading...</p>}
+                    {dropDetails && dropDetails.footballer === person.name && (
+                      <>
+                        <h3 className="text-2xl font-bold mb-4">
+                          {dropDetails.footballer}
+                        </h3>
+                        <ProductGrid products={dropDetails.products} />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFlippedCard(null);
+                            setDropDetails(null);
+                          }}
+                          className="mt-4 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full text-sm font-semibold shadow hover:scale-105 transition"
+                        >
+                          ← Back
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })
         )}
       </div>
     </section>
@@ -92,3 +128,6 @@ const ExclusiveDrop = () => {
 };
 
 export default ExclusiveDrop;
+
+
+// Drop 2 design

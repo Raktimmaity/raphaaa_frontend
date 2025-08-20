@@ -58,6 +58,7 @@ import ViewSubscribers from "./pages/ViewSubscribers";
 import AddMetaOption from "./components/Admin/AddMetaOption";
 import NotFound from "./pages/NotFound";
 import UserHierarchy from "./pages/UserHierarchy";
+import CampaignTracker from "./pages/CampaignTracker";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -343,6 +344,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <AddMetaOption/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="campaigns"
+              element={
+                <ProtectedRoute role={["admin", "marketing"]}>
+                  <CampaignTracker/>
                 </ProtectedRoute>
               }
             />

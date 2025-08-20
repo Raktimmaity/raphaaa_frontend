@@ -11,6 +11,7 @@ const EditCollab = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     const fetchCollab = async () => {
@@ -68,6 +69,7 @@ const EditCollab = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,   // 🔑 important
           },
         }
       );
@@ -94,6 +96,7 @@ const EditCollab = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,   // 🔑 important
           },
         }
       );

@@ -78,7 +78,7 @@ const ViewSubscribers = () => {
             <thead className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
               <tr>
                 <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">IP Address</th>
+                {/* <th className="px-4 py-3">IP Address</th> */}
                 <th className="px-4 py-3">Subscribed On</th>
                 <th className="px-4 py-3 text-center">Actions</th>
               </tr>
@@ -87,7 +87,7 @@ const ViewSubscribers = () => {
               {displayed.map((sub) => (
                 <tr key={sub._id} className="hover:bg-gray-50">
                   <td className="px-4 py-2">{sub.email}</td>
-                  <td className="px-4 py-2">{sub.ipAddress || "N/A"}</td>
+                  {/* <td className="px-4 py-2">{sub.ipAddress || "N/A"}</td> */}
                   <td className="px-4 py-2">
                     {new Date(sub.subscribedAt).toLocaleString("en-IN", {
                       day: "2-digit",

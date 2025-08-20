@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import { Outlet } from "react-router-dom";
+import AdminHeader from "./AdminHeader"; // ⬅️ new header import
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row relative">
       {/* mobile toggle button */}
@@ -17,19 +19,34 @@ const AdminLayout = () => {
         </button>
         <h1 className="ml-4 text-xl font-md">Admin Dashboard</h1>
       </div>
+
       {/* overlayer for mobile sidebar */}
       {isSidebarOpen && (
-        <div className="fixed inset-0 z-10 bg-black/40 bg-opacity-50 md:hidden" onClick={toggleSidebar}>
-        </div>
+        <div
+          className="fixed inset-0 z-10 bg-black/40 bg-opacity-50 md:hidden"
+          onClick={toggleSidebar}
+        ></div>
       )}
+
       {/* sidebar */}
-      <div className={`bg-gray-900 w-64 min-h-screen text-white absolute md:relative transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 md:translate-x-0 md:static md:block z-20`}>
+      <div
+        className={`bg-gray-900 w-64 min-h-screen text-white absolute md:relative transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 md:translate-x-0 md:static md:block z-20`}
+      >
         {/* sidebar component */}
-        <AdminSidebar/>
+        <AdminSidebar />
       </div>
+
       {/* main content */}
-      <div className="flex-grow p-6 overflow-auto">
-        <Outlet/>
+      <div className="flex-grow flex flex-col">
+        {/* header */}
+        <AdminHeader />
+
+        {/* page content */}
+        <div className="flex-grow p-6 overflow-auto">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

@@ -10,26 +10,23 @@ import {
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { clearCart } from "../../redux/slices/cartSlice";
-import { useSelector } from "react-redux";
 import icon from "../../assets/man.png";
 import { HiPlusCircle } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineAddTask } from "react-icons/md";
-import { FaTasks } from "react-icons/fa";
+import { FaTasks, FaRupeeSign, FaUsers } from "react-icons/fa";
 import { BsGraphUpArrow } from "react-icons/bs";
-import { FaRupeeSign } from "react-icons/fa";
 import { LuMessageSquareText } from "react-icons/lu";
 import axios from "axios";
 import { toast } from "sonner";
 import { GiLetterBomb } from "react-icons/gi";
-import { BiSolidOffer } from "react-icons/bi";
-import { FaUsers } from "react-icons/fa";
+import { BiSolidOffer, BiCategoryAlt } from "react-icons/bi";
 import { FaPeopleCarryBox } from "react-icons/fa6";
-import { BiCategoryAlt } from "react-icons/bi";
 import { TbHierarchy3 } from "react-icons/tb";
+import { MdCampaign } from "react-icons/md";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -48,12 +45,13 @@ const AdminSidebar = () => {
           },
         }
       );
-      setProfile(data); // Save full user object from DB
+      setProfile(data);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
       toast.error("Could not fetch profile");
     }
   };
+
   useEffect(() => {
     fetchUserProfile();
   }, []);
@@ -77,78 +75,98 @@ const AdminSidebar = () => {
     navigate("/");
   };
 
+  // Active/hover link styling utility
+  const navLinkClass = ({ isActive }) =>
+    `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
+      isActive
+        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+        : "text-gray-300 hover:bg-white/10 hover:text-white"
+    }`;
+
+  // Sub-link styling
+  const subLinkClass = ({ isActive }) =>
+    `flex items-center gap-2 px-3 py-2 rounded-md text-sm transition ${
+      isActive
+        ? "bg-white/10 text-white"
+        : "text-gray-300 hover:bg-white/10 hover:text-white"
+    }`;
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Link to="/" className="text-2xl font-medium">
-          Raphaaa
-        </Link>
+    <aside className="md:w-auto w-full sm:w-72 bg-gradient-to-b from-gray-900 via-gray-850 to-gray-900 text-gray-100 shadow-2xl flex flex-col">
+      {/* Brand */}
+      <div className="px-6 py-4 font-extrabold text-xl tracking-wide rounded-b-xl shadow-md">
+        <Link to="/" title={undefined}>Raphaaa</Link>
       </div>
 
-      <div className="text-center mb-6">
-        {/* <h2 className="text-xl font-medium mb-4">{user.role === "admin"
-                  ? "Admin"
-                  : user.role === "merchantise"
-                  ? "Merchantise"
-                  : "Customer"} Dashboard</h2> */}
-
+      {/* Profile */}
+      <div className="px-6 py-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
         {user && (
-          <div className="flex items-center gap-4 bg-gray-800 p-3 rounded-lg overflow-hidden">
+          <div className="flex items-center gap-4 rounded-xl p-3 border border-white/10 bg-white/5">
             {profile?.photo ? (
               <img
                 src={profile.photo}
                 alt={user.name || user.email}
                 onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/default-avatar.png";
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = icon; // local fallback
                 }}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white shrink-0"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center text-lg font-bold border-2 border-white shrink-0">
-                {user.name
-                  ? user.name.charAt(0).toUpperCase()
-                  : user.email?.charAt(0).toUpperCase()}
-              </div>
+              <img
+                src={icon}
+                alt="avatar"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white"
+              />
             )}
 
-            <div className="flex-1 min-w-0 text-left text-sm text-gray-200">
-              <p className="font-semibold flex items-center gap-1 truncate max-w-full">
-                <span className="inline-block max-w-[120px] sm:max-w-[200px] md:max-w-[250px]">
-                  {user.name} {" "}
-                </span>
-                <span className="inline-flex items-center justify-center w-8 h-8 me-2 text-4xl font-semibold text-blue-800 rounded-full dark:text-blue-500 hover:text-blue-600 cursor-pointer" title="Verified by Raphaaa">
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill="currentColor" d="m18.774 8.245-.892-.893a1.5 1.5 0 0 1-.437-1.052V5.036a2.484 2.484 0 0 0-2.48-2.48H13.7a1.5 1.5 0 0 1-1.052-.438l-.893-.892a2.484 2.484 0 0 0-3.51 0l-.893.892a1.5 1.5 0 0 1-1.052.437H5.036a2.484 2.484 0 0 0-2.48 2.481V6.3a1.5 1.5 0 0 1-.438 1.052l-.892.893a2.484 2.484 0 0 0 0 3.51l.892.893a1.5 1.5 0 0 1 .437 1.052v1.264a2.484 2.484 0 0 0 2.481 2.481H6.3a1.5 1.5 0 0 1 1.052.437l.893.892a2.484 2.484 0 0 0 3.51 0l.893-.892a1.5 1.5 0 0 1 1.052-.437h1.264a2.484 2.484 0 0 0 2.481-2.48V13.7a1.5 1.5 0 0 1 .437-1.052l.892-.893a2.484 2.484 0 0 0 0-3.51Z" />
-                    <path fill="#fff" d="M8 13a1 1 0 0 1-.707-.293l-2-2a1 1 0 1 1 1.414-1.414l1.42 1.42 5.318-3.545a1 1 0 0 1 1.11 1.664l-6 4A1 1 0 0 1 8 13Z" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold flex items-center gap-1 truncate">
+                <span className="truncate">{user?.name}</span>
+                <span
+                  className="inline-flex items-center justify-center w-6 h-6 text-blue-500"
+                  title="Verified by Raphaaa"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="m18.774 8.245-.892-.893a1.5 1.5 0 0 1-.437-1.052V5.036a2.484 2.484 0 0 0-2.48-2.48H13.7a1.5 1.5 0 0 1-1.052-.438l-.893-.892a2.484 2.484 0 0 0-3.51 0l-.893.892a1.5 1.5 0 0 1-1.052.437H5.036a2.484 2.484 0 0 0-2.48 2.481V6.3a1.5 1.5 0 0 1-.438 1.052l-.892.893a2.484 2.484 0 0 0 0 3.51l.892.893a1.5 1.5 0 0 1 .437 1.052v1.264a2.484 2.484 0 0 0 2.481 2.481H6.3a1.5 1.5 0 0 1 1.052.437l.893.892a2.484 2.484 0 0 0 3.51 0l.893-.892a1.5 1.5 0 0 1 1.052-.437h1.264a2.484 2.484 0 0 0 2.481-2.48V13.7a1.5 1.5 0 0 1 .437-1.052l.892-.893a2.484 2.484 0 0 0 0-3.51Z" />
+                    <path
+                      fill="#fff"
+                      d="M8 13a1 1 0 0 1-.707-.293l-2-2a1 1 0 1 1 1.414-1.414l1.42 1.42 5.318-3.545a1 1 0 0 1 1.11 1.664l-6 4A1 1 0 0 1 8 13Z"
+                    />
                   </svg>
                 </span>
               </p>
-              <p className="text-xs mt-[-5px]">
+
+              <p className="mt-1">
                 <span
-                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${user.role === "admin"
-                      ? "bg-red-100 text-red-700"
-                      : user.role === "merchantise"
-                        ? "bg-purple-100 text-purple-700"
-                        : user.role === "delivery_boy"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-200 text-gray-700"
-                    }`}
+                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                    user?.role === "admin"
+                      ? "bg-red-100/20 text-red-300"
+                      : user?.role === "merchantise"
+                      ? "bg-purple-100/20 text-purple-300"
+                      : user?.role === "delivery_boy"
+                      ? "bg-yellow-100/20 text-yellow-300"
+                      : "bg-gray-200/20 text-gray-300"
+                  }`}
                 >
-                  {user.role === "admin"
+                  {user?.role === "admin"
                     ? "Admin"
-                    : user.role === "merchantise"
-                      ? "Merchandise"
-                      : user.role === "delivery_boy"
-                        ? "Delivery Boy"
-                        : user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}
+                    : user?.role === "merchantise"
+                    ? "Merchandise"
+                    : user?.role === "delivery_boy"
+                    ? "Delivery Boy"
+                    : user?.role?.charAt(0).toUpperCase() +
+                      user?.role?.slice(1)}
                 </span>
               </p>
 
-              <p
-                className={`text-xs ${isOnline ? "text-green-400" : "text-red-400"
-                  }`}
-              >
+              <p className={`text-xs mt-1 ${isOnline ? "text-green-400" : "text-red-400"}`}>
                 ● {isOnline ? "Online" : "Offline"}
               </p>
             </div>
@@ -156,27 +174,23 @@ const AdminSidebar = () => {
         )}
       </div>
 
-      <nav className="flex flex-col space-y-2">
-        {/* Dashboard - Visible to all */}
-        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
-          <NavLink
-            to="/admin"
-            end
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-4 custom-scrollbar">
+        {/* Dashboard */}
+        {(user?.role === "admin" ||
+          user?.role === "merchantise" ||
+          user?.role === "marketing") && (
+          <NavLink to="/admin" end className={navLinkClass}>
             <RiDashboardHorizontalFill />
             <span>Dashboard</span>
           </NavLink>
         )}
 
+        {/* Task (merchantise) */}
         {user?.role === "merchantise" && (
           <div className="text-gray-300">
             <details className="group">
-              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
                 <span className="flex items-center gap-2">
                   <FaTasks className="text-lg" />
                   <span>Task</span>
@@ -191,119 +205,71 @@ const AdminSidebar = () => {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </summary>
-              <div className="ml-6 mt-1 space-y-1">
-                <NavLink
-                  to="/admin/add-task"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Add Task
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/add-task" className={subLinkClass}>
+                  <MdOutlineAddTask /> <span>Add Task</span>
                 </NavLink>
-                <NavLink
-                  to="/admin/view-tasks"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  View My Tasks
+                <NavLink to="/admin/view-tasks" className={subLinkClass}>
+                  <FaClipboardList /> <span>View My Tasks</span>
                 </NavLink>
               </div>
             </details>
           </div>
         )}
 
-        {/* Only for admin */}
+        {/* All Tasks (admin) */}
         {user?.role === "admin" && (
-          <NavLink
-            to="/admin/all-tasks"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/all-tasks" className={navLinkClass}>
             <FaTasks />
             <span>All Tasks</span>
           </NavLink>
         )}
 
+        {/* Inventory */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/inventory"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/inventory" className={navLinkClass}>
             <FaBoxOpen />
             <span>Inventory</span>
           </NavLink>
         )}
+
+        {/* Sales Analysis */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/trend-analysis"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/trend-analysis" className={navLinkClass}>
             <BsGraphUpArrow />
             <span>Sales Analysis</span>
           </NavLink>
         )}
+
+        {/* Total Revenue */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/revenue"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/revenue" className={navLinkClass}>
             <FaRupeeSign />
             <span>Total Revenue</span>
           </NavLink>
         )}
 
+        {/* Users */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/users"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/users" className={navLinkClass}>
             <FaUsers />
             <span>Users</span>
           </NavLink>
         )}
+
+        {/* Categories */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/custom-categories"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/custom-categories" className={navLinkClass}>
             <BiCategoryAlt />
             <span>Categories</span>
           </NavLink>
         )}
 
-        {/* Visible to both admin and merchantise */}
+        {/* Products */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="text-gray-300">
             <details className="group">
-              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
                 <span className="flex items-center gap-2">
                   <FaBoxOpen className="text-lg" />
                   <span>Products</span>
@@ -318,36 +284,53 @@ const AdminSidebar = () => {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </summary>
-
-              <div className="ml-6 mt-1 space-y-1">
-                <NavLink
-                  to="/admin/add-product"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Add Product
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/add-product" className={subLinkClass}>
+                  <HiPlusCircle /> <span>Add Product</span>
                 </NavLink>
-                <NavLink
-                  to="/admin/products"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  All Products
+                <NavLink to="/admin/products" className={subLinkClass}>
+                  <FaShoppingBag /> <span>All Products</span>
                 </NavLink>
               </div>
             </details>
           </div>
         )}
-        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
+
+        {/* Campaigns (admin/marketing) */}
+        {(user?.role === "admin" || user?.role === "marketing") && (
           <div className="text-gray-300">
             <details className="group">
-              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <MdCampaign className="text-lg" />
+                  <span>Campaigns</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/campaigns" className={subLinkClass}>
+                  <FaStore /> <span>Manage</span>
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
+
+        {/* Collab (admin/merchantise/marketing) */}
+        {(user?.role === "admin" ||
+          user?.role === "merchantise" ||
+          user?.role === "marketing") && (
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
                 <span className="flex items-center gap-2">
                   <FaPeopleCarryBox className="text-lg" />
                   <span>Collab</span>
@@ -362,41 +345,29 @@ const AdminSidebar = () => {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </summary>
-
-              
-              <div className="ml-6 mt-1 space-y-1">
+              <div className="ml-6 mt-2 space-y-1">
                 {(user?.role === "admin" || user?.role === "marketing") && (
-                <NavLink
-                  to="/admin/collab-settings"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Add Collab
-                </NavLink>
+                  <NavLink to="/admin/collab-settings" className={subLinkClass}>
+                    <HiPlusCircle /> <span>Add Collab</span>
+                  </NavLink>
                 )}
-                {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
-                <NavLink
-                  to="/admin/collabs"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  View Collabs
-                </NavLink>
+                {(user?.role === "admin" ||
+                  user?.role === "merchantise" ||
+                  user?.role === "marketing") && (
+                  <NavLink to="/admin/collabs" className={subLinkClass}>
+                    <FaPeopleCarryBox /> <span>View Collabs</span>
+                  </NavLink>
                 )}
               </div>
             </details>
           </div>
         )}
+
+        {/* Offers */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="text-gray-300">
             <details className="group">
-              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg白/10 hover:bg-white/10 cursor-pointer">
                 <span className="flex items-center gap-2">
                   <BiSolidOffer className="text-lg" />
                   <span>Offers</span>
@@ -411,106 +382,65 @@ const AdminSidebar = () => {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </summary>
-
-              <div className="ml-6 mt-1 space-y-1">
-                <NavLink
-                  to="/admin/create-offers"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Create Offer
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/create-offers" className={subLinkClass}>
+                  <HiPlusCircle /> <span>Create Offer</span>
                 </NavLink>
-                <NavLink
-                  to="/admin/offers"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  View Offers
+                <NavLink to="/admin/offers" className={subLinkClass}>
+                  <BiSolidOffer /> <span>View Offers</span>
                 </NavLink>
               </div>
             </details>
           </div>
         )}
 
-        {/* Only for admin */}
+        {/* Orders */}
         {(user?.role === "admin" ||
           user?.role === "merchantise" ||
           user?.role === "delivery_boy") && (
-            <NavLink
-              to="/admin/orders"
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-              }
-            >
-              <FaClipboardList />
-              <span>Orders</span>
-            </NavLink>
-          )}
+          <NavLink to="/admin/orders" className={navLinkClass}>
+            <FaClipboardList />
+            <span>Orders</span>
+          </NavLink>
+        )}
+
+        {/* Contact */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/contact-messages"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/contact-messages" className={navLinkClass}>
             <LuMessageSquareText />
             <span>Contact</span>
           </NavLink>
         )}
+
+        {/* Subscribers */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
-          <NavLink
-            to="/admin/subscribed-users"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-            }
-          >
+          <NavLink to="/admin/subscribed-users" className={navLinkClass}>
             <GiLetterBomb />
             <span>Subscribers</span>
           </NavLink>
         )}
 
-        {/* Shop Link - Visible to all */}
-        <NavLink
-          to="update-profile"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
+        {/* Profile */}
+        <NavLink to="update-profile" className={navLinkClass}>
           <CgProfile />
           <span>Profile</span>
         </NavLink>
-        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
-          <NavLink
-          to="hierarchy"
-          className={({ isActive }) =>
-            isActive
-              ? "bg-gray-700 text-white py-3 px-4 rounded flex items-center space-x-2"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
-          }
-        >
-          <TbHierarchy3 />
-          <span>Raphaaa Hierarchy</span>
-        </NavLink>
+
+        {/* Raphaaa Hierarchy */}
+        {(user?.role === "admin" ||
+          user?.role === "merchantise" ||
+          user?.role === "marketing") && (
+          <NavLink to="hierarchy" className={navLinkClass}>
+            <TbHierarchy3 />
+            <span>Raphaaa Hierarchy</span>
+          </NavLink>
         )}
 
+        {/* Website Settings */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="text-gray-300">
             <details className="group">
-              <summary className="flex items-center justify-between py-3 px-4 rounded hover:bg-gray-700 hover:text-white cursor-pointer">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
                 <span className="flex items-center gap-2">
                   <FaCog className="text-lg" />
                   <span>Website Settings</span>
@@ -525,87 +455,42 @@ const AdminSidebar = () => {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </summary>
-
-              <div className="ml-6 mt-1 space-y-1">
-                {/* <NavLink
-                  to="/admin/website-settings/top-bar"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Top-Bar
-                </NavLink> */}
-                {/* <NavLink
-                  to="/admin/website-settings/hero"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Hero Section
-                </NavLink> */}
-
+              <div className="ml-6 mt-2 space-y-1">
                 <NavLink
                   to="/admin/website-settings/about"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
+                  className={subLinkClass}
                 >
-                  About Section
+                  <FaUser /> <span>About Section</span>
                 </NavLink>
                 <NavLink
                   to="/admin/website-settings/privacy&policy"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
+                  className={subLinkClass}
                 >
-                  Privacy & Policy
+                  <FaClipboardList /> <span>Privacy &amp; Policy</span>
                 </NavLink>
-
                 <NavLink
                   to="/admin/website-settings/contact"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
+                  className={subLinkClass}
                 >
-                  Contact Details
+                  <FaStore /> <span>Contact Details</span>
                 </NavLink>
-
-                {/* <NavLink
-                  to="/admin/website-settings/privacy-policy"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "block bg-gray-700 text-white px-3 py-2 rounded-md"
-                      : "block hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
-                  }
-                >
-                  Privacy & Policy
-                </NavLink> */}
               </div>
             </details>
           </div>
         )}
       </nav>
 
-      <div className="mt-6">
+      {/* Logout */}
+      <div className="p-4 border-t border-white/10">
         <button
           onClick={handleLogout}
-          className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded flex items-center justify-center space-x-2"
+          className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:opacity-90 transition-all text-white font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md"
         >
           <FaSignOutAlt />
           <span>Logout</span>
         </button>
       </div>
-    </div>
+    </aside>
   );
 };
 

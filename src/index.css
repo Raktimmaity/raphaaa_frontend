@@ -74,3 +74,66 @@ html::-webkit-scrollbar {
     animation: fade-in 0.3s ease-out forwards;
   }
 }
+
+@keyframes gradient-wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-image: linear-gradient(
+    -45deg,
+    #ec4899,
+    #ef4444,
+    #f59e0b,
+    #3b82f6,
+    #8b5cf6
+  );
+  background-size: 400% 400%;
+  animation: gradient-wave 3s ease-in-out infinite;
+}
+
+.perspective {
+  perspective: 1500px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;              /* scrollbar width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #06b6d4); /* blue → cyan */
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #2563eb, #0891b2); /* darker on hover */
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+
+}

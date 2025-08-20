@@ -45,7 +45,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="h-[90vh] flex justify-center items-center p-6">
+    <div className="h-[75vh] flex justify-center items-center p-6">
       <form onSubmit={handleSubmit} className="p-8 rounded-lg max-w-md w-full">
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center w-fit">
