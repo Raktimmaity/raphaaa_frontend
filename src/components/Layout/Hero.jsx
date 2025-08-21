@@ -9,6 +9,7 @@ import "swiper/css";
 import useSmartLoader from "../../hooks/useSmartLoader";
 import axios from "axios";
 
+
 const Hero = () => {
   const heroImages = [heroImg, heroImg2, heroImg3];
   const [timeLeft, setTimeLeft] = useState({

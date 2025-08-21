@@ -18,6 +18,7 @@ const CampaignTracker = () => {
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem("userToken");
+    console.log(token);
 
     useEffect(() => {
         fetchCampaigns();
@@ -27,7 +28,7 @@ const CampaignTracker = () => {
         try {
             const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/campaigns`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${localStorage.getItem("userToken")}`
                 }
             });
             setCampaigns(Array.isArray(data.data) ? data.data : []);

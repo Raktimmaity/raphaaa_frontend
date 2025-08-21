@@ -70,11 +70,57 @@ const FeaturedCollection = () => {
           Limited Edition Drop
         </p>
 
-        <h1
-          className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-transparent bg-clip-text drop-shadow-xl animate-gradient"
-        >
-          Raphaaa X {featuredCollab.title}
-        </h1>
+        {/* Heading + hover chips */}
+        {/* Heading + ALWAYS-VISIBLE chips (responsive) */}
+<div className="relative inline-block">
+  <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-transparent bg-clip-text drop-shadow-xl animate-gradient">
+    Raphaaa X {featuredCollab.title}
+  </h1>
+
+  {/* Chips are visible by default and sized/positioned responsively */}
+  <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    {/* Left stack */}
+    {/* <div className="absolute -left-10 -top-8 sm:-left-20 sm:-top-6 md:-left-28 md:-top-4 -rotate-6">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 rounded-xl text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-[length:200%_200%]">
+        🔥 Limited Drop
+      </span>
+    </div> */}
+    {/* <div className="absolute -left-14 top-6 sm:-left-24 sm:top-8 md:-left-36 md:top-10 -rotate-3">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 rounded-xl text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-[length:200%_200%]">
+        ⭐ Premium Quality
+      </span>
+    </div>
+    <div className="absolute -left-8 bottom-0 sm:-left-16 sm:bottom-0 md:-left-24 md:bottom-0 -rotate-1">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 rounded-xl text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-rose-500 via-red-500 to-pink-500 bg-[length:200%_200%]">
+        ⚡ Fast Selling
+      </span>
+    </div> */}
+
+    {/* Right stack */}
+    <div className="absolute -right-10 -top-7 sm:-right-20 sm:-top-6 md:right-30 md:-top-3 rotate-6">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 bg-[length:200%_200%]">
+        🛍️ New Arrival
+      </span>
+    </div>
+    <div className="absolute -right-14 top-8 sm:-right-24 sm:top-10 md:-right-1 md:top-12 -rotate-3">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 bg-[length:200%_200%]">
+        ✅ Verified Collab
+      </span>
+    </div>
+    <div className="absolute -right-14 top-8 sm:-right-24 sm:top-10 md:-right-1 md:top-42 -rotate-6">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-[length:200%_200%]">
+        🔥 Limited Drop
+      </span>
+    </div>
+    <div className="absolute -right-8 bottom-0 sm:-right-16 sm:bottom-0 md:right-24 md:-bottom-36 rotate-12">
+      <span className="inline-flex items-center px-3 sm:px-4 py-1.5 text-white text-[10px] sm:text-xs font-semibold shadow-md bg-gradient-to-r from-violet-500 via-purple-600 to-fuchsia-600 bg-[length:200%_200%]">
+        🧵 Limited Edition
+      </span>
+    </div>
+  </div>
+</div>
+
+
 
 
         <p className="text-gray-600 text-sm md:text-lg leading-relaxed max-w-md mx-auto sm:mx-0">

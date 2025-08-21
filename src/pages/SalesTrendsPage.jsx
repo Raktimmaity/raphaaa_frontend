@@ -119,7 +119,7 @@ const SalesTrendsPage = () => {
       {/* Filters */}
 
       <div className="flex flex-wrap gap-4 mb-6">
-        {["category", "gender", "size", "season"].map((f) => {
+        {["category", "gender", "size"].map((f) => {
           const opts = [...new Set(salesData.map((p) => p[f]))].filter(Boolean);
           return (
             <CustomSelect
@@ -137,7 +137,7 @@ const SalesTrendsPage = () => {
         <button
           type="button"
           onClick={() =>
-            ["category", "gender", "size", "season"].forEach((f) =>
+            ["category", "gender", "size"].forEach((f) =>
               handleFilterChange({ target: { name: f, value: "" } })
             )
           }

@@ -19,11 +19,13 @@ const Footer = () => {
   const [subscribe, setSubscribe] = useState("");
   const [loading, setLoading] = useState(false);
   const [contactInfo, setContactInfo] = useState(null);
+  const startYear = 2025;
+  const year = new Date().getFullYear();
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!subscribe.trim()) {
-      return toast.error("Please enter a valid email.");
+      return toast.error("Please enter a valid email address");
     }
 
     setLoading(true);
@@ -43,7 +45,7 @@ const Footer = () => {
       setSubscribe("");
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Subscription failed. Try again later."
+        error.response?.data?.message || "Subscription failed. Try again later"
       );
     } finally {
       setLoading(false);
@@ -109,7 +111,9 @@ const Footer = () => {
         <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Logo & Newsletter */}
           <div>
-            <img src={Logo} alt="Raphaaa Logo" className="w-28 md:w-40 mb-4" />
+            <Link to="/" className="flex items-center mb-4">
+              <img src={Logo} alt="Raphaaa Logo" className="w-28 md:w-40 mb-4" />
+            </Link>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Subscribe</h3>
             <p className="text-sm text-gray-600 mb-1">
               Get 10% off your first order
@@ -202,12 +206,11 @@ const Footer = () => {
         </div>
 
         <div className="container mx-auto text-center text-gray-500 text-sm mt-8 pb-6 px-4">
-          © 2025 <span className="font-semibold text-gray-800">Raphaaa</span>. All rights reserved.
+          &copy; {startYear === year ? startYear : `${startYear}–${year}`} <span className="font-semibold text-gray-800">Raphaaa</span>. All rights reserved.
         </div>
       </footer>
     </div>
   );
-
 };
 
 export default Footer;

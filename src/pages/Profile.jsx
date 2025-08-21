@@ -36,6 +36,7 @@ const Profile = () => {
   const [couponError, setCouponError] = useState("");
   const [copied, setCopied] = useState(false);
   const [countryList, setCountryList] = useState([]);
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -216,14 +217,11 @@ const Profile = () => {
       return alert("Geolocation is not supported by your browser.");
     }
 
+    setLocating(true); // ⬅️ start spinner
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-
-        // console.log("📍 Latitude:", latitude);
-        // console.log("📍 Longitude:", longitude);
-        // toast.success(`Lat: ${latitude.toFixed(4)} | Lon: ${longitude.toFixed(4)}`);
-
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
@@ -253,6 +251,8 @@ const Profile = () => {
         } catch (err) {
           console.error("Geolocation fetch error:", err);
           toast.error("Failed to fetch address from coordinates.");
+        } finally {
+          setLocating(false); // ⬅️ stop spinner
         }
       },
       (err) => {
@@ -270,6 +270,7 @@ const Profile = () => {
           default:
             toast.error("Unknown geolocation error.");
         }
+        setLocating(false); // ⬅️ stop spinner on error too
       },
       {
         enableHighAccuracy: true,
@@ -281,6 +282,7 @@ const Profile = () => {
 
 
 
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex-grow container mx-auto p-4 md:p-6">
@@ -288,7 +290,7 @@ const Profile = () => {
           <div className="w-full md:w-1/3 lg:w-1/4 bg-gradient-to-br from-white via-blue-50 to-blue-100 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center border border-blue-100 relative self-start transition-all duration-300">
             <div
               className="relative cursor-pointer group"
-              // onClick={handleIconClick}
+            // onClick={handleIconClick}
             >
               {user?.photo ? (
                 <img
@@ -335,16 +337,16 @@ const Profile = () => {
                 "wishlist",
                 "address",
                 "profile",
-                "coupon",
-                "settings",
+                // "coupon",
+                // "settings",
               ].map((key) => {
                 const icons = {
                   orders: <FaBoxOpen className="mr-2" />,
                   wishlist: <FaHeart className="mr-2" />,
                   address: <FaMapMarkerAlt className="mr-2" />,
-                  settings: <FaCog className="mr-2" />,
+                  // settings: <FaCog className="mr-2" />,
                   profile: <FaUserCircle className="mr-2" />,
-                  coupon: <RiCoupon2Fill className="mr-2" />,
+                  // coupon: <RiCoupon2Fill className="mr-2" />,
                 };
 
                 return (
@@ -516,14 +518,26 @@ const Profile = () => {
                           setNewAddress({ ...newAddress, phone: e.target.value })
                         }
                         placeholder="Phone"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none [-moz-appearance:textfield] [appearance:textfield]"
                       />
                       <button
                         type="button"
                         onClick={handleUseCurrentLocation}
-                        className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
+                        disabled={locating}
+                        className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400 disabled:cursor-not-allowed text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
                       >
-                        <FaLocationCrosshairs className="inline" size={25} />  Use my current Location
+                        {/* Spinner while locating */}
+                        {locating ? (
+                          <>
+                            <span className="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                            <span>Loading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FaLocationCrosshairs className="inline" size={25} />
+                            Use my current Location
+                          </>
+                        )}
                       </button>
                     </div>
 
