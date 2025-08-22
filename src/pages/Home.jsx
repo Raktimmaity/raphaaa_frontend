@@ -91,9 +91,8 @@ const Home = () => {
           `${import.meta.env.VITE_BACKEND_URL}/api/offers/public`
         );
         if (data.length > 0) {
-  setActiveOffer(data[0]); // always show the first offer
-}
-
+          setActiveOffer(data[0]); // always show the first offer
+        }
       } catch (err) {
         console.error("Failed to load active offer", err);
       }
@@ -195,16 +194,24 @@ const Home = () => {
 
     return () => clearInterval(timer);
   }, [activeOffer]);
-const [collabActive, setCollabActive] = useState(false);
 
-useEffect(() => {
-  axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
-    .then((res) => setCollabActive(res.data.isActive))
-    .catch(() => setCollabActive(false));
-}, []);
+  const [collabActive, setCollabActive] = useState(false);
 
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
+      .then((res) => setCollabActive(res.data.isActive))
+      .catch(() => setCollabActive(false));
+  }, []);
 
+  // *** If collab is active, show only FeaturedCollection ***
+  if (collabActive) {
+    return (
+      <div>
+        <FeaturedCollection />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -278,7 +285,6 @@ useEffect(() => {
                     year: "numeric",
                   })}
                 </span>
-
               </p>
 
               {/* Countdown Timer (only before start) */}
@@ -301,8 +307,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-
-
 
       <Hero />
       <CategorySection />
@@ -386,9 +390,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-
-
-
     </div>
   );
 };
