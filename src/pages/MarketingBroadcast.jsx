@@ -174,7 +174,7 @@ const MarketingBroadcast = () => {
 
             <form onSubmit={handleSend} className="space-y-8">
                 {/* Audience */}
-                <SectionCard title="Audience" subtitle="Choose who should receive this email.">
+                <SectionCard title="Target Audiences" subtitle="Choose who should receive this email.">
                     <div className="grid sm:grid-cols-3 gap-4">
                         <label className={`flex items-center justify-between p-3 rounded-xl border ${audience === "buyers" ? "border-indigo-500 bg-indigo-50" : "bg-white border-gray-200"}`}>
                             <span className="flex items-center gap-2 font-medium">
