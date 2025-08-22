@@ -3,10 +3,29 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
+// Custom animation styles
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeOutScale {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}`;
+document.head.appendChild(style);
+
+
+
 const AdminCollabPreview = () => {
   const [collabs, setCollabs] = useState([]);
   const [loading, setLoading] = useState(false);
   const user = localStorage.getItem("userInfo");
+
+  // modal state
+  const [showModal, setShowModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const fetchCollabs = async () => {
     setLoading(true);
@@ -22,13 +41,19 @@ const AdminCollabPreview = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this collab?")) return;
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowModal(true);
+  };
+
+  const handleDelete = async () => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/collabs/${id}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/collabs/${deleteId}`
       );
       toast.success("Collab deleted successfully!");
+      setShowModal(false);
+      setDeleteId(null);
       fetchCollabs();
     } catch (err) {
       toast.error("Failed to delete collab");
@@ -66,7 +91,7 @@ const AdminCollabPreview = () => {
                   <p className="text-sm text-gray-500">
                     Description:{" "}
                     <span className="text-gray-700 font-medium">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit...
+                      {collab.description}
                     </span>
                   </p>
 
@@ -101,7 +126,7 @@ const AdminCollabPreview = () => {
                         Edit
                       </Link>
                       <button
-                        onClick={() => handleDelete(collab._id)}
+                        onClick={() => confirmDelete(collab._id)}
                         className="bg-red-500 text-white text-sm px-4 py-2 rounded-md hover:bg-red-600 transition-all font-semibold"
                       >
                         Delete
@@ -140,7 +165,9 @@ const AdminCollabPreview = () => {
                               className="w-8 h-8 rounded object-cover border border-gray-300"
                             />
                             <Link
-                              to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
+                              to={`/product/${product.name
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")}`}
                               className="text-blue-600 hover:underline truncate"
                             >
                               {product.name}
@@ -154,6 +181,44 @@ const AdminCollabPreview = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)} // close when clicking outside
+        >
+          <div
+            className={`bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full relative transform ${showModal ? "animate-[fadeInScale_0.25s_ease-out]" : "animate-[fadeOutScale_0.2s_ease-in]"
+              }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+
+
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Deletion
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete this collaboration? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 font-medium hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-md bg-red-500 text-white font-medium hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

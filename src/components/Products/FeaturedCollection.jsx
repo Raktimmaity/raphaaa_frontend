@@ -132,8 +132,7 @@ const FeaturedCollection = () => {
 
 
         <p className="text-gray-600 text-sm md:text-lg leading-relaxed max-w-md mx-auto sm:mx-0">
-          Where fashion meets football stardom. Drop curated with iconic energy,
-          bold vibes, and top-tier quality. Unleash the power of streetwear.
+          {featuredCollab.description}
         </p>
 
         {/* CTA Buttons */}

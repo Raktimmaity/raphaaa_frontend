@@ -115,7 +115,7 @@ export const fetchAllOrders = createAsyncThunk("adminOrders/fetchAllOrders", asy
                 },
             }
         );
-        console.log('Fetched orders:', response.data);
+        // console.log('Fetched orders:', response.data);
         return response.data;
     } catch (error) {
         console.error('Fetch orders error:', error.response?.data || error.message);

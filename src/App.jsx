@@ -59,6 +59,7 @@ import AddMetaOption from "./components/Admin/AddMetaOption";
 import NotFound from "./pages/NotFound";
 import UserHierarchy from "./pages/UserHierarchy";
 import CampaignTracker from "./pages/CampaignTracker";
+import MarketingBroadcast from "./pages/MarketingBroadcast";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -270,7 +271,7 @@ const App = () => {
             <Route
               path="contact-messages"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
                   <ViewContacts />
                 </ProtectedRoute>
               }
@@ -318,8 +319,16 @@ const App = () => {
             <Route
               path="subscribed-users"
               element={
-                <ProtectedRoute role={["admin", "merchantise"]}>
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
                   <ViewSubscribers/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="email-scheduler"
+              element={
+                <ProtectedRoute role={["admin", "merchantise", "marketing"]}>
+                  <MarketingBroadcast />
                 </ProtectedRoute>
               }
             />

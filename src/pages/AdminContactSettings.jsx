@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import axios from "axios";
 import { FaFacebook, FaInstagram, FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaMessage } from "react-icons/fa6";
 
 const AdminContactSettings = () => {
   const [form, setForm] = useState({
@@ -15,6 +16,8 @@ const AdminContactSettings = () => {
     gmail: "",
     showPhone: false,
     phone: "",
+    showTopText: false,
+    topText: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -22,8 +25,10 @@ const AdminContactSettings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`);
-        setForm(data);
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`
+        );
+        setForm((prev) => ({ ...prev, ...data }));
       } catch (error) {
         toast.error("Failed to load contact settings");
       }
@@ -43,7 +48,10 @@ const AdminContactSettings = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`, form);
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/settings/contact`,
+        form
+      );
       toast.success("Contact settings updated successfully!");
     } catch (error) {
       toast.error("Failed to update settings");
@@ -65,22 +73,22 @@ const AdminContactSettings = () => {
           onChange={onChange}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-sky-500 transition-all duration-300"></div>
-        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5 shadow-md"></div>
+        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-sky-500 transition-all duration-300" />
+        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5 shadow-md" />
       </div>
     </label>
   );
-
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 bg-white shadow-2xl rounded-2xl mt-12 border border-gray-200">
       <h2 className="text-3xl font-bold mb-8 text-sky-700">Contact Settings</h2>
 
       <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-10">
-
         {/* === SOCIAL SECTION === */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">Social Links</h3>
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Social Links
+          </h3>
 
           {/* Facebook */}
           <div className="space-y-2 mb-6">
@@ -105,7 +113,6 @@ const AdminContactSettings = () => {
             />
           </div>
 
-
           {/* Instagram */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -128,12 +135,13 @@ const AdminContactSettings = () => {
               className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm"
             />
           </div>
-
         </div>
 
         {/* === CONTACT SECTION === */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">Contact Info</h3>
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Contact Info
+          </h3>
 
           {/* Gmail */}
           <div className="space-y-2 mb-6">
@@ -184,19 +192,41 @@ const AdminContactSettings = () => {
                   handleChange({
                     target: {
                       name: "phone",
-                      value: "+91" + e.target.value.replace(/[^0-9]/g, "").slice(0, 10),
+                      value:
+                        "+91" +
+                        e.target.value.replace(/[^0-9]/g, "").slice(0, 10),
                     },
                   })
                 }
                 className="w-full p-3 text-sm focus:outline-none"
               />
             </div>
-
           </div>
         </div>
 
+        {/* === TOP BAR TEXT === */}
+        <div className="md:col-span-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
+              <FaMessage className="text-sky-600" /> Show Top-Bar Text
+            </span>
+            <ToggleCheckbox
+              name="showTopText"
+              checked={form.showTopText}
+              onChange={handleChange}
+            />
+          </div>
+          <input
+            name="topText"
+            type="text"
+            placeholder="e.g. Free shipping on orders over ₹999"
+            value={form.topText}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+          />
+        </div>
 
-        {/* Submit (Full width on bottom) */}
+        {/* Submit */}
         <div className="md:col-span-2 pt-8 text-right">
           <button
             type="submit"

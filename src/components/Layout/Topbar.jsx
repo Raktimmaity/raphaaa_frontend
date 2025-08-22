@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TbBrandMeta } from "react-icons/tb";
 import { IoLogoInstagram } from "react-icons/io5";
-import { RiTwitterXLine } from "react-icons/ri";
+import { RiCustomerServiceFill, RiTwitterXLine } from "react-icons/ri";
 import { FaFacebook } from "react-icons/fa";
 import axios from "axios";
 import useSmartLoader from "../../hooks/useSmartLoader";
@@ -93,15 +93,19 @@ const Topbar = () => {
             </marquee>
           </div>
           <div className="hidden md:block">
-            <span>
-              We ship worldwide — <span className="text-blue-700">Fast & Reliable Shipping!</span>
-            </span>
+            {contactInfo?.showTopText && (
+              <span>
+                {/* We ship worldwide — <span className="text-blue-700">Fast & Reliable Shipping!</span> */}
+                {contactInfo.topText}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Right: Phone Number */}
         {contactInfo?.showPhone && (
-          <div className="text-sm hidden md:block">
+          <div className="text-sm hidden md:flex md:flex-wrap md:justify-center md:items-center md:gap-1">
+            <RiCustomerServiceFill size={16} className='font-bold' /> Helpline:
             <a
               href={`tel:${contactInfo.phone}`}
               className="text-blue-700 font-semibold hover:text-sky-600 transition-colors duration-200"

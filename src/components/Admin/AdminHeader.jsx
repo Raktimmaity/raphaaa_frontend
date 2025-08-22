@@ -6,6 +6,7 @@ import { clearCart } from "../../redux/slices/cartSlice";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FiChevronDown } from "react-icons/fi"; // ⬅️ for dropdown arrow
+import icon from "../../assets/man.png";
 
 const AdminHeader = () => {
     const { user } = useSelector((state) => state.auth);
@@ -172,7 +173,12 @@ const AdminHeader = () => {
                                 className="w-9 h-9 rounded-full object-cover shadow-md"
                             />
                         ) : (
-                            <FaUserCircle size={30} className="text-yellow-400" />
+                            // <FaUserCircle size={30} className="text-yellow-400" />
+                            <img
+                                src={icon}
+                                alt="profile"
+                                className="w-9 h-9 rounded-full object-cover shadow-md"
+                            />
                         )}
                         <span className="hidden sm:inline font-medium">{user?.name || "Admin"}</span>
                         <FiChevronDown
@@ -191,7 +197,12 @@ const AdminHeader = () => {
                                         className="w-12 h-12 rounded-full border-2 border-gray-200 object-cover"
                                     />
                                 ) : (
-                                    <FaUserCircle size={40} className="text-gray-400" />
+                                    // <FaUserCircle size={40} className="text-gray-400" />
+                                    <img
+                                        src={icon}
+                                        alt="profile"
+                                        className="w-12 h-12 rounded-full border-2 border-gray-200 object-cover"
+                                    />
                                 )}
                                 <div className="min-w-0">
                                     <p className="text-sm font-semibold text-gray-800 truncate">

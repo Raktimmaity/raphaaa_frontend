@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 const AdminCollabSettings = () => {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [collaborators, setCollaborators] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
@@ -107,12 +108,14 @@ const AdminCollabSettings = () => {
     try {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/collabs`, {
         title,
+        description,
         image,
         isPublished,
         collaborators,
       });
       toast.success("Collab saved!");
       setTitle("");
+      setDescription("");
       setIsPublished(false);
       setCollaborators([]);
       setImage("");
@@ -132,11 +135,10 @@ const AdminCollabSettings = () => {
             Create Collaboration
           </h2>
           <span
-            className={`text-xs px-3 py-1 rounded-full border ${
-              isPublished
+            className={`text-xs px-3 py-1 rounded-full border ${isPublished
                 ? "border-green-300 bg-green-50 text-green-600"
                 : "border-yellow-300 bg-yellow-50 text-yellow-600"
-            }`}
+              }`}
           >
             {isPublished ? "Published" : "Draft"}
           </span>
@@ -205,7 +207,10 @@ const AdminCollabSettings = () => {
               </label>
             </div>
           </div>
-
+            <div className="space-y-2 grid grid-cols-1">
+            <label className="text-sm font-medium">Description</label>
+            <textarea name="description" id="description" placeholder="Enter description..." className="w-full rounded-xl bg-gray-50 border border-gray-300 px-4 py-2.5 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 outline-none" onChange={(e) => setDescription(e.target.value)} value={description}></textarea>
+          </div>
           {/* Collaborators */}
           <div className="space-y-6">
             {collaborators.map((collab, index) => (
@@ -214,13 +219,13 @@ const AdminCollabSettings = () => {
                 className="rounded-xl border border-gray-200 bg-gray-50 p-4 md:p-5"
               >
                 <h4 className="font-semibold text-lg text-gray-800 mb-4">
-                  Footballer {index + 1}
+                  Person {index + 1}
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <input
                     type="text"
-                    placeholder="Footballer Name"
+                    placeholder="Person Name"
                     value={collab.name}
                     onChange={(e) =>
                       handleCollaboratorChange(index, "name", e.target.value)
@@ -299,7 +304,7 @@ const AdminCollabSettings = () => {
               onClick={handleAddCollaborator}
               className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-white font-medium shadow hover:bg-sky-600 active:scale-[0.99] transition"
             >
-              <span className="text-lg leading-none">＋</span> Add Footballer
+              <span className="text-lg leading-none">＋</span> Add Persons
             </button>
           </div>
 

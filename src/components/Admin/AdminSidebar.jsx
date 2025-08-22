@@ -27,6 +27,7 @@ import { BiSolidOffer, BiCategoryAlt } from "react-icons/bi";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { TbHierarchy3 } from "react-icons/tb";
 import { MdCampaign } from "react-icons/md";
+import { SiMinutemailer } from "react-icons/si";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -224,30 +225,62 @@ const AdminSidebar = () => {
             <span>All Tasks</span>
           </NavLink>
         )}
+        {(user?.role === "admin" || user?.role === "merchantise") && (
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <BsGraphUpArrow className="text-lg" />
+                  <span>Analysis</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/inventory" className={subLinkClass}>
+                  <FaBoxOpen /> <span>Inventory</span>
+                </NavLink>
+                <NavLink to="/admin/trend-analysis" className={subLinkClass}>
+                  <BsGraphUpArrow /> <span>Sales Analysis</span>
+                </NavLink>
+                <NavLink to="/admin/revenue" className={subLinkClass}>
+                  <FaRupeeSign /> <span>Total Revenue</span>
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
 
         {/* Inventory */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {/* {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink to="/admin/inventory" className={navLinkClass}>
             <FaBoxOpen />
             <span>Inventory</span>
           </NavLink>
-        )}
+        )} */}
 
         {/* Sales Analysis */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {/* {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink to="/admin/trend-analysis" className={navLinkClass}>
             <BsGraphUpArrow />
             <span>Sales Analysis</span>
           </NavLink>
-        )}
+        )} */}
 
         {/* Total Revenue */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {/* {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink to="/admin/revenue" className={navLinkClass}>
             <FaRupeeSign />
             <span>Total Revenue</span>
           </NavLink>
-        )}
+        )} */}
 
         {/* Users */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
@@ -297,32 +330,7 @@ const AdminSidebar = () => {
         )}
 
         {/* Campaigns (admin/marketing) */}
-        {(user?.role === "admin" || user?.role === "marketing") && (
-          <div className="text-gray-300">
-            <details className="group">
-              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
-                <span className="flex items-center gap-2">
-                  <MdCampaign className="text-lg" />
-                  <span>Campaigns</span>
-                </span>
-                <svg
-                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
-              </summary>
-              <div className="ml-6 mt-2 space-y-1">
-                <NavLink to="/admin/campaigns" className={subLinkClass}>
-                  <FaStore /> <span>Manage</span>
-                </NavLink>
-              </div>
-            </details>
-          </div>
-        )}
+        {/* {(a */}
 
         {/* Collab (admin/merchantise/marketing) */}
         {(user?.role === "admin" ||
@@ -405,7 +413,7 @@ const AdminSidebar = () => {
         )}
 
         {/* Contact */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
           <NavLink to="/admin/contact-messages" className={navLinkClass}>
             <LuMessageSquareText />
             <span>Contact</span>
@@ -413,10 +421,16 @@ const AdminSidebar = () => {
         )}
 
         {/* Subscribers */}
-        {(user?.role === "admin" || user?.role === "merchantise") && (
+        {(user?.role === "admin" || user?.role === "merchantise" || user?.role === "marketing") && (
           <NavLink to="/admin/subscribed-users" className={navLinkClass}>
             <GiLetterBomb />
             <span>Subscribers</span>
+          </NavLink>
+        )}
+        {(user?.role === "admin" || user?.role === "marketing") && (
+          <NavLink to="/admin/email-scheduler" className={navLinkClass}>
+            <SiMinutemailer />
+            <span>Email Scheduler</span>
           </NavLink>
         )}
 
