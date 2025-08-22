@@ -293,45 +293,45 @@ const AdminHomePage = () => {
 
         {/* Subscribers (Dynamic) */}
         {(user?.role === "admin" || user?.role === "marketing") && (
-        <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-pink-200 overflow-hidden">
-          <div className="absolute -top-6 -right-6 w-24 h-24 bg-pink-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
-          <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="p-4 w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow-lg">
-              <GiLetterBomb className="text-2xl" />
+          <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-pink-200 overflow-hidden">
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-pink-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
+            <div className="flex items-center gap-4 mb-4 relative z-10">
+              <div className="p-4 w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow-lg">
+                <GiLetterBomb className="text-2xl" />
+              </div>
+              <div>
+                <h2 className="text-md font-semibold text-gray-700">Total Subscribers</h2>
+                <p className="text-3xl font-bold text-pink-700">{countSubscribers}</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-md font-semibold text-gray-700">Total Subscribers</h2>
-              <p className="text-3xl font-bold text-pink-700">{countSubscribers}</p>
-            </div>
+            <Link to="/admin/subscribed-users" className="text-sm text-pink-700 hover:underline font-medium relative z-10">
+              View Subscribers →
+            </Link>
           </div>
-          <Link to="/admin/subscribed-users" className="text-sm text-pink-700 hover:underline font-medium relative z-10">
-            View Subscribers →
-          </Link>
-        </div>
         )}
 
         {/* Messages (Dynamic) */}
         {(user?.role === "admin" || user?.role === "marketing") && (
-        <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-indigo-200 overflow-hidden">
-          <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
-          <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="p-4 w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-lg">
-              <LuMessageSquareText className="text-2xl" />
+          <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-indigo-200 overflow-hidden">
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
+            <div className="flex items-center gap-4 mb-4 relative z-10">
+              <div className="p-4 w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-lg">
+                <LuMessageSquareText className="text-2xl" />
+              </div>
+              <div>
+                <h2 className="text-md font-semibold text-gray-700">Total Messages</h2>
+                <p className="text-3xl font-bold text-indigo-700">{countMessages}</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-md font-semibold text-gray-700">Total Messages</h2>
-              <p className="text-3xl font-bold text-indigo-700">{countMessages}</p>
-            </div>
+            <Link to="/admin/contact-messages" className="text-sm text-indigo-700 hover:underline font-medium relative z-10">
+              View Messages →
+            </Link>
           </div>
-          <Link to="/admin/contact-messages" className="text-sm text-indigo-700 hover:underline font-medium relative z-10">
-            View Messages →
-          </Link>
-        </div>
         )}
       </div>
 
       {/* Order Trend and Status Charts */}
-      {user?.role === "admin" || user?.role === "merchantise" && (
+      {(user?.role === "admin" || user?.role === "merchantise") && (
         <div className="mt-12">
           <h2 className="text-3xl font-extrabold text-gray-800 mb-8 tracking-tight">
             Order Overview
@@ -440,7 +440,7 @@ const AdminHomePage = () => {
       )}
 
       {/* Recent Orders */}
-      {user?.role === "admin" || user?.role === "merchantise" && (
+      {(user?.role === "admin" || user?.role === "merchantise") && (
         <div className="mt-12">
           <h2 className="text-3xl font-extrabold text-gray-800 mb-6 tracking-tight">
             Recent Orders
@@ -512,7 +512,7 @@ const AdminHomePage = () => {
       )}
 
       {/* Recent User Signups */}
-      {user?.role === "admin" || user?.role === "merchantise" && (
+      {(user?.role === "admin" || user?.role === "merchantise") && (
         <div className="mt-12">
           <h2 className="text-3xl font-extrabold text-gray-800 mb-6 tracking-tight">
             Recent User Signups
