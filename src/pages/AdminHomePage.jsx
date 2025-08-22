@@ -204,7 +204,7 @@ const AdminHomePage = () => {
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Orders */}
-        {user?.role === "admin" || user?.role === "merchantise" && (
+        {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-green-50 to-green-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-green-200 overflow-hidden">
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
             <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -226,7 +226,7 @@ const AdminHomePage = () => {
         )}
 
         {/* Products */}
-        {user?.role === "admin" || user?.role === "merchantise" && (
+        {(user?.role === "admin" || user?.role === "merchantise") && (
           <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-purple-200 overflow-hidden">
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-purple-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
             <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -292,6 +292,7 @@ const AdminHomePage = () => {
         )}
 
         {/* Subscribers (Dynamic) */}
+        {(user?.role === "admin" || user?.role === "marketing") && (
         <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-pink-200 overflow-hidden">
           <div className="absolute -top-6 -right-6 w-24 h-24 bg-pink-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -307,8 +308,10 @@ const AdminHomePage = () => {
             View Subscribers →
           </Link>
         </div>
+        )}
 
         {/* Messages (Dynamic) */}
+        {(user?.role === "admin" || user?.role === "marketing") && (
         <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md hover:shadow-xl hover:scale-[1.03] transition-all border border-indigo-200 overflow-hidden">
           <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-200 rounded-full opacity-30 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -324,6 +327,7 @@ const AdminHomePage = () => {
             View Messages →
           </Link>
         </div>
+        )}
       </div>
 
       {/* Order Trend and Status Charts */}
