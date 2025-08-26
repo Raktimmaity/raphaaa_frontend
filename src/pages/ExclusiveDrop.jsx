@@ -12,6 +12,22 @@ const ExclusiveDrop = () => {
   const [flippedCard, setFlippedCard] = useState(null);
   const [dropDetails, setDropDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [featuredCollab, setFeaturedCollab] = useState(null);
+
+
+  useEffect(() => {
+    const fetchCollab = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs`);
+        if(data && data.length > 0) {
+          setFeaturedCollab(data[0]);
+        }
+      } catch (err) {
+        console.error("Failed to load featured collab", err);
+      }
+    };
+    fetchCollab();
+  }, []);
 
   // Fetch all drops
   useEffect(() => {
@@ -66,7 +82,7 @@ const ExclusiveDrop = () => {
           Exclusive Drops
         </h2>
         <p className="text-gray-600 mt-2 text-sm font-medium">
-          Football Legends x Raphaa Limited Edition
+          {featuredCollab?.title || "Featured Collab"} x Raphaa Limited Edition
         </p>
       </div>
 

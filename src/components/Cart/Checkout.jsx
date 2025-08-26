@@ -84,6 +84,21 @@ const Checkout = () => {
   // const [similarProducts, setSimilarProducts] = useState([]);
   const [displayCount, setDisplayCount] = useState(4);
   const [addressesOpen, setAddressesOpen] = useState(false); // collapsible toggle
+  const [featuredCollab, setFeaturedCollab] = useState(null);
+
+  useEffect(() => {
+    const fetchCollab = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}`);
+        if(data && data.length > 0) {
+          setFeaturedCollab(data[0]);
+        }
+      } catch (err) {
+        console.error("Failed to load feature collab", err);
+      }
+    };
+    fetchCollab();
+  }, []);
 
 
   // useEffect(() => {
@@ -965,7 +980,7 @@ const Checkout = () => {
           {/* </div> */}
 
           {/* Similar Products */}
-          {similarProducts.length > 0 && (
+          {similarProducts.length > 0 && !featuredCollab?.isPublished && (
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-md">
               <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center">
                 More Products You Might Love

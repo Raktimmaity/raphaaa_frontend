@@ -3,6 +3,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Sparkles, ShoppingBag, Percent, Tag, Filter, Clock, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BsChatLeftTextFill } from "react-icons/bs";
 
 /** ─────────────── Pre-typed commands (you can add more) ─────────────── **/
 const PRESET_COMMANDS = [
@@ -206,7 +207,8 @@ export default function Chatbot({ onNavigateProduct }) {
                 className="fixed bottom-20 right-5 z-40 rounded-full p-4 shadow-xl bg-gradient-to-r from-sky-600 to-blue-600 text-white hover:opacity-90"
                 aria-label="Open Raphaaa Chatbot"
             >
-                <MessageSquare />
+                {/* <MessageSquare /> */}
+                <BsChatLeftTextFill />
             </button>
 
             <AnimatePresence>

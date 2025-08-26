@@ -58,6 +58,7 @@ const ProductDetails = ({ productId }) => {
   const [isBuyNowDisabled, setIsBuyNowDisabled] = useState(false);
   const [displayCount, setDisplayCount] = useState(8); // Initial 4 products shown
 
+  const [featuredCollab, setFeaturedCollab] = useState(null);
   // zoom state + position (in % of the image box)
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
 
@@ -611,6 +612,23 @@ const ProductDetails = ({ productId }) => {
       });
   };
 
+  useEffect(() => {
+    const fetchCollab = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/collabs`
+        );
+        if (data && data.length > 0) {
+          setFeaturedCollab(data[0]);
+        }
+      } catch (err) {
+        console.error("Failed to load featured collab", err);
+      }
+    };
+
+    fetchCollab();
+  }, []);
+
   if (loading) return <ProductDetailsSkeleton />;
 
   if (error) return <p>Error: {error}</p>;
@@ -1059,8 +1077,8 @@ const ProductDetails = ({ productId }) => {
                   {deliveryInfo && (
                     <div
                       className={`p-3 rounded-lg ${deliveryInfo.isDeliverable
-                          ? "bg-green-50 border border-green-200"
-                          : "bg-red-50 border border-red-200"
+                        ? "bg-green-50 border border-green-200"
+                        : "bg-red-50 border border-red-200"
                         }`}
                     >
                       <div className="flex items-center gap-2 mb-2">
@@ -1069,8 +1087,8 @@ const ProductDetails = ({ productId }) => {
                         </span>
                         <span
                           className={`font-medium ${deliveryInfo.isDeliverable
-                              ? "text-green-700"
-                              : "text-red-700"
+                            ? "text-green-700"
+                            : "text-red-700"
                             }`}
                         >
                           {deliveryInfo.message}
@@ -1300,7 +1318,7 @@ const ProductDetails = ({ productId }) => {
               loading={loading}
               error={error}
             /> */}
-            {similarProducts.length > 0 && (
+            {/* {similarProducts.length > 0 && (
               <div className="mt-12">
                 <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center">
                   More Products You Might Love
@@ -1329,6 +1347,67 @@ const ProductDetails = ({ productId }) => {
                           <span>★ {product.rating?.toFixed(1) || "0.0"}</span>
                         </div>
                         <span className="text-gray-500 text-sm">{" "}{product.numReviews || 0} Reviews</span>
+                        <div className="flex items-center gap-2">
+                          <p className="text-md font-bold text-blue-600">
+                            ₹{Math.floor(product.discountPrice || product.price)}
+                          </p>
+                          {product.discountPrice && (
+                            <p className="text-sm line-through text-gray-500">
+                              ₹{product.price}
+                            </p>
+                          )}
+                          <p className="text-md text-green-600">
+                            {product.offerPercentage ? product.offerPercentage + "%" : ""}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {similarProducts.length > displayCount && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => setDisplayCount((prev) => prev + 4)}
+                      className="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700 transition"
+                    >
+                      Load More
+                    </button>
+                  </div>
+                )}
+              </div>
+            )} */}
+            {similarProducts.length > 0 && !featuredCollab?.isPublished && (   // ✅ hide when collab active
+              <div className="mt-12">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center">
+                  More Products You Might Love
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  {similarProducts.slice(0, displayCount).map((product) => (
+                    <div
+                      key={product._id}
+                      onClick={() =>
+                        navigate(
+                          `/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`
+                        )
+                      }
+                      className="cursor-pointer rounded-lg border border-gray-200 hover:shadow-xl transition-all duration-300 bg-white"
+                    >
+                      <img
+                        src={product.images?.[0]?.url || "/no-image.png"}
+                        alt={product.name}
+                        className="w-full h-70 object-cover rounded mb-2"
+                      />
+                      <div className="pl-2 pb-2">
+                        <h4 className="text-md font-medium text-gray-800 truncate">
+                          {product.name}
+                        </h4>
+                        <div className="inline items-center gap-2 bg-green-600 text-white text-sm mb-1 px-1 rounded">
+                          <span>★ {product.rating?.toFixed(1) || "0.0"}</span>
+                        </div>
+                        <span className="text-gray-500 text-sm">
+                          {" "}
+                          {product.numReviews || 0} Reviews
+                        </span>
                         <div className="flex items-center gap-2">
                           <p className="text-md font-bold text-blue-600">
                             ₹{Math.floor(product.discountPrice || product.price)}
