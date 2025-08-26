@@ -61,6 +61,7 @@ import NotFound from "./pages/NotFound";
 import UserHierarchy from "./pages/UserHierarchy";
 import CampaignTracker from "./pages/CampaignTracker";
 import MarketingBroadcast from "./pages/MarketingBroadcast";
+import Chatbot from "./components/Chatbot/Chatbot";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -82,6 +83,13 @@ const App = () => {
     };
   }, []);
 
+  const handleNavigateProduct = (p) => {
+    // e.g., use your router to go to product details
+    // navigate(`/product/${p.slug || p._id}`);
+    // Or open your existing modal:
+    console.log("Open product:", p);
+  };
+
   return (
     <Provider store={store}>
       <ToastContainer position="top-right" autoClose={2000} />
@@ -89,6 +97,7 @@ const App = () => {
       <BrowserRouter>
         <AutoLogout />
         <ScrollToTop />
+        <Chatbot onNavigateProduct={handleNavigateProduct} />
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route path="/404" element={<NotFound />} />
