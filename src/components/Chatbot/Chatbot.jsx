@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Sparkles, ShoppingBag, Percent, Tag, Filter, Clock, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BsChatLeftTextFill } from "react-icons/bs";
+import { HiSparkles } from "react-icons/hi2";
 
 /** ─────────────── Pre-typed commands (you can add more) ─────────────── **/
 const PRESET_COMMANDS = [
@@ -222,7 +223,8 @@ export default function Chatbot({ onNavigateProduct }) {
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-sky-600 to-blue-600 text-white">
                             <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4" />
+                                {/* <Sparkles className="w-4 h-4" /> */}
+                                <HiSparkles className="w-4 h-4" />
                                 <p className="font-semibold">Raphaaa Assistant</p>
                             </div>
                             <button onClick={() => setOpen(false)} className="hover:opacity-80">
