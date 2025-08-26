@@ -299,7 +299,7 @@ const Navbar = () => {
             <h3 className="text-sm font-semibold text-gray-700 mb-1">Contact</h3>
             {contactInfo?.showGmail && (
               <a href={`mailto:${contactInfo.gmail}`} className="text-xs text-gray-600">{contactInfo.gmail}</a>
-            )}
+            )} |{" "}
             {contactInfo?.showPhone && (
               <a href={`tel:${contactInfo.phone}`} className="text-xs text-gray-600">{contactInfo.phone}</a>
             )}
