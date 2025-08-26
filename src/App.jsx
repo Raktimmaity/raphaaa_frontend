@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import UserLayout from "./components/Layout/UserLayout";
 import Home from "./pages/Home";
 import { Toaster } from "sonner";
@@ -63,6 +64,24 @@ import MarketingBroadcast from "./pages/MarketingBroadcast";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
+  useEffect(() => {
+    const originalTitle = document.title;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        document.title = "Come back, we are waiting ❤️";
+      } else {
+        document.title = originalTitle;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   return (
     <Provider store={store}>
       <ToastContainer position="top-right" autoClose={2000} />
