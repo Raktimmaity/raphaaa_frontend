@@ -13,6 +13,7 @@ import BestSellersSection from "../components/Products/BestSeller";
 import CategorySection from "../components/Products/CategorySection";
 import Collab from "../components/Products/Collab";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -226,6 +227,14 @@ const Home = () => {
   }
 
   return (
+    <>
+    <Helmet>
+        <title>Raphaaa | Premium Streetwear & Lifestyle</title>
+        <meta
+          name="description"
+          content="Shop premium streetwear, sneakers, and exclusive collections from Raphaaa."
+        />
+      </Helmet>
     <div>
       {/* Hero section */}
       {/* <Collab/> */}
@@ -403,6 +412,7 @@ const Home = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
