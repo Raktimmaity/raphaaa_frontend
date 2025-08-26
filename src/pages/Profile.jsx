@@ -12,6 +12,8 @@ import { FaHeart, FaMapMarkerAlt, FaCog, FaBoxOpen } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { RiCoupon2Fill } from "react-icons/ri";
 import { FaLocationCrosshairs } from "react-icons/fa6";
+import AddressForm from "../components/Cart/AddressForm";
+import ViewAddress from "../components/Cart/ViewAddress";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -438,172 +440,176 @@ const Profile = () => {
               )}
 
               {activeTab === "address" && (
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">
-                    Add New Address
-                  </h3>
-                  <form
-                    onSubmit={handleAddressSubmit}
-                    className="space-y-6 "
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        name="address"
-                        value={newAddress.address}
-                        onChange={(e) =>
-                          setNewAddress({
-                            ...newAddress,
-                            address: e.target.value,
-                          })
-                        }
-                        placeholder="Street Address"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        required
-                      />
-                      <input
-                        type="text"
-                        name="city"
-                        value={newAddress.city}
-                        onChange={(e) =>
-                          setNewAddress({ ...newAddress, city: e.target.value })
-                        }
-                        placeholder="City"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input
-                        type="number"
-                        name="postalCode"
-                        value={newAddress.postalCode}
-                        onChange={(e) =>
-                          setNewAddress({
-                            ...newAddress,
-                            postalCode: e.target.value,
-                          })
-                        }
-                        placeholder="Postal Code"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        required
-                      />
-                      <select
-                        name="country"
-                        value={newAddress.country}
-                        onChange={(e) =>
-                          setNewAddress({
-                            ...newAddress,
-                            country: e.target.value,
-                          })
-                        }
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        required
-                      >
-                        <option value="" disabled>Select Country</option>
-                        {countryList.map((country) => (
-                          <option key={country} value={country}>
-                            {country}
-                          </option>
-                        ))}
-                      </select>
+                // <div>
+                //   <h3 className="text-xl font-semibold mb-4">
+                //     Add New Address
+                //   </h3>
+                //   <form
+                //     onSubmit={handleAddressSubmit}
+                //     className="space-y-6 "
+                //   >
+                //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                //       <input
+                //         type="text"
+                //         name="address"
+                //         value={newAddress.address}
+                //         onChange={(e) =>
+                //           setNewAddress({
+                //             ...newAddress,
+                //             address: e.target.value,
+                //           })
+                //         }
+                //         placeholder="Street Address"
+                //         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                //         required
+                //       />
+                //       <input
+                //         type="text"
+                //         name="city"
+                //         value={newAddress.city}
+                //         onChange={(e) =>
+                //           setNewAddress({ ...newAddress, city: e.target.value })
+                //         }
+                //         placeholder="City"
+                //         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                //         required
+                //       />
+                //     </div>
+                //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                //       <input
+                //         type="number"
+                //         name="postalCode"
+                //         value={newAddress.postalCode}
+                //         onChange={(e) =>
+                //           setNewAddress({
+                //             ...newAddress,
+                //             postalCode: e.target.value,
+                //           })
+                //         }
+                //         placeholder="Postal Code"
+                //         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                //         required
+                //       />
+                //       <select
+                //         name="country"
+                //         value={newAddress.country}
+                //         onChange={(e) =>
+                //           setNewAddress({
+                //             ...newAddress,
+                //             country: e.target.value,
+                //           })
+                //         }
+                //         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                //         required
+                //       >
+                //         <option value="" disabled>Select Country</option>
+                //         {countryList.map((country) => (
+                //           <option key={country} value={country}>
+                //             {country}
+                //           </option>
+                //         ))}
+                //       </select>
 
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <input
-                        type="number"
-                        name="phone"
-                        value={newAddress.phone}
-                        onChange={(e) =>
-                          setNewAddress({ ...newAddress, phone: e.target.value })
-                        }
-                        placeholder="Phone"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none [-moz-appearance:textfield] [appearance:textfield]"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleUseCurrentLocation}
-                        disabled={locating}
-                        className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400 disabled:cursor-not-allowed text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
-                      >
-                        {/* Spinner while locating */}
-                        {locating ? (
-                          <>
-                            <span className="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                            <span>Loading...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaLocationCrosshairs className="inline" size={25} />
-                            Use my current Location
-                          </>
-                        )}
-                      </button>
-                    </div>
+                //     </div>
+                //     <div className="flex justify-between items-center">
+                //       <input
+                //         type="number"
+                //         name="phone"
+                //         value={newAddress.phone}
+                //         onChange={(e) =>
+                //           setNewAddress({ ...newAddress, phone: e.target.value })
+                //         }
+                //         placeholder="Phone"
+                //         className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none [-moz-appearance:textfield] [appearance:textfield]"
+                //       />
+                //       <button
+                //         type="button"
+                //         onClick={handleUseCurrentLocation}
+                //         disabled={locating}
+                //         className="ml-2 whitespace-nowrap text-sm bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400 disabled:cursor-not-allowed text-white font-medium px-4 py-3 transition flex justify-around items-center gap-2"
+                //       >
+                //         {/* Spinner while locating */}
+                //         {locating ? (
+                //           <>
+                //             <span className="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                //             <span>Loading...</span>
+                //           </>
+                //         ) : (
+                //           <>
+                //             <FaLocationCrosshairs className="inline" size={25} />
+                //             Use my current Location
+                //           </>
+                //         )}
+                //       </button>
+                //     </div>
 
-                    <button
-                      type="submit"
-                      className="w-full py-3 text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
-                    >
-                      Save Address
-                    </button>
-                  </form>
+                //     <button
+                //       type="submit"
+                //       className="w-full py-3 text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
+                //     >
+                //       Save Address
+                //     </button>
+                //   </form>
 
-                  <h3 className="text-xl font-semibold mt-6 mb-4">
-                    Saved Addresses
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {addresses.map((addr, idx) => (
-                      <div
-                        key={idx}
-                        className="relative bg-gradient-to-br from-white to-blue-50 border border-blue-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300"
-                      >
-                        <button
-                          onClick={() => handleDeleteAddress(idx)}
-                          className="absolute top-3 right-3 text-red-500 hover:text-red-600 hover:scale-110 transition-transform"
-                          title="Delete address"
-                        >
-                          <FaTrash size={16} />
-                        </button>
+                //   <h3 className="text-xl font-semibold mt-6 mb-4">
+                //     Saved Addresses
+                //   </h3>
+                //   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                //     {addresses.map((addr, idx) => (
+                //       <div
+                //         key={idx}
+                //         className="relative bg-gradient-to-br from-white to-blue-50 border border-blue-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300"
+                //       >
+                //         <button
+                //           onClick={() => handleDeleteAddress(idx)}
+                //           className="absolute top-3 right-3 text-red-500 hover:text-red-600 hover:scale-110 transition-transform"
+                //           title="Delete address"
+                //         >
+                //           <FaTrash size={16} />
+                //         </button>
 
-                        <div className="space-y-2 text-sm text-gray-800">
-                          <p>
-                            <span className="font-semibold text-gray-900">
-                              Address:
-                            </span>{" "}
-                            {addr.address}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-gray-900">
-                              City:
-                            </span>{" "}
-                            {addr.city}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-gray-900">
-                              Postal Code:
-                            </span>{" "}
-                            {addr.postalCode}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-gray-900">
-                              Country:
-                            </span>{" "}
-                            {addr.country}
-                          </p>
-                          {addr.phone && (
-                            <p>
-                              <span className="font-semibold text-gray-900">
-                                Phone:
-                              </span>{" "}
-                              +91 {addr.phone}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                //         <div className="space-y-2 text-sm text-gray-800">
+                //           <p>
+                //             <span className="font-semibold text-gray-900">
+                //               Address:
+                //             </span>{" "}
+                //             {addr.address}
+                //           </p>
+                //           <p>
+                //             <span className="font-semibold text-gray-900">
+                //               City:
+                //             </span>{" "}
+                //             {addr.city}
+                //           </p>
+                //           <p>
+                //             <span className="font-semibold text-gray-900">
+                //               Postal Code:
+                //             </span>{" "}
+                //             {addr.postalCode}
+                //           </p>
+                //           <p>
+                //             <span className="font-semibold text-gray-900">
+                //               Country:
+                //             </span>{" "}
+                //             {addr.country}
+                //           </p>
+                //           {addr.phone && (
+                //             <p>
+                //               <span className="font-semibold text-gray-900">
+                //                 Phone:
+                //               </span>{" "}
+                //               +91 {addr.phone}
+                //             </p>
+                //           )}
+                //         </div>
+                //       </div>
+                //     ))}
+                //   </div>
+                // </div>
+                <>
+                <AddressForm/>
+                <ViewAddress />
+                </>
               )}
               {activeTab === "profile" && (
                 <div className="space-y-6">

@@ -121,7 +121,7 @@ const AdminHomePage = () => {
     setProductCount(products.length);
   }, [products]);
 
-  const useCountUp = (end, duration = 1000) => {
+  const useCountUp = (end, duration = 5) => {
     const [count, setCount] = useState(0);
     useEffect(() => {
       let start = 0;

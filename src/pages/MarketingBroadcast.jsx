@@ -202,7 +202,7 @@ const MarketingBroadcast = () => {
                             />
                         </label>
 
-                        {/* <label className={`flex items-center justify-between p-3 rounded-xl border ${audience === "custom" ? "border-indigo-500 bg-indigo-50" : "bg-white border-gray-200"}`}>
+                        <label  className={`flex items-center justify-between p-3 rounded-xl border ${audience === "custom" ? "border-indigo-500 bg-indigo-50" : "bg-white border-gray-200"}`}>
                             <span className="flex items-center gap-2 font-medium">
                                 <MdOutlineContentPaste /> Custom list
                             </span>
@@ -213,7 +213,7 @@ const MarketingBroadcast = () => {
                                 checked={audience === "custom"}
                                 onChange={() => setAudience("custom")}
                             />
-                        </label> */}
+                        </label>
                     </div>
 
                     {/* Audience stats */}
@@ -252,7 +252,7 @@ const MarketingBroadcast = () => {
                             value={customList}
                             onChange={(e) => setCustomList(e.target.value)}
                             placeholder="Paste emails separated by commas, spaces, or new lines"
-                            className="mt-4 w-full min-h-28 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+                            className="bg-white outline-none mt-4 w-full min-h-28 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
                         />
                     )}
 

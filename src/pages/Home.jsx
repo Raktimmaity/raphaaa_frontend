@@ -195,7 +195,7 @@ const Home = () => {
     return () => clearInterval(timer);
   }, [activeOffer]);
 
-  const [collabActive, setCollabActive] = useState(false);
+  const [collabActive, setCollabActive] = useState(null);
 
   useEffect(() => {
     axios
@@ -205,6 +205,18 @@ const Home = () => {
   }, []);
 
   // *** If collab is active, show only FeaturedCollection ***
+  // if (collabActive) {
+  //   return (
+  //     <div>
+  //       <FeaturedCollection />
+  //     </div>
+  //   );
+  // }
+
+  // Wait until we know the collab status (prevents initial full-page flash)
+  if (collabActive === null) return null; // or a tiny loader if you prefer
+
+  // If collab is active, show only the FeaturedCollection drop
   if (collabActive) {
     return (
       <div>

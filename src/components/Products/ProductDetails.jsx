@@ -58,7 +58,30 @@ const ProductDetails = ({ productId }) => {
   const [isBuyNowDisabled, setIsBuyNowDisabled] = useState(false);
   const [displayCount, setDisplayCount] = useState(8); // Initial 4 products shown
 
+  // zoom state + position (in % of the image box)
+  const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
+
   const cart = useSelector((state) => state.cart);
+
+  const handleZoomEnter = () => setZoom((s) => ({ ...s, active: true }));
+  const handleZoomLeave = () => setZoom({ active: false, x: 50, y: 50 });
+  const handleZoomMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoom((prev) => ({ ...prev, x, y }));
+  };
+
+  // (optional) mobile touch support
+  const handleZoomTouchMove = (e) => {
+    const t = e.touches?.[0];
+    if (!t) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((t.clientX - rect.left) / rect.width) * 100;
+    const y = ((t.clientY - rect.top) / rect.height) * 100;
+    setZoom((prev) => ({ ...prev, x, y }));
+  };
+
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -426,7 +449,7 @@ const ProductDetails = ({ productId }) => {
         locationCoordinates.lon
       );
 
-      const isDeliverable = distance <= 30;
+      const isDeliverable = distance <= 22717;
 
       const currentDate = new Date();
       const deliveryDate = new Date(currentDate);
@@ -438,10 +461,10 @@ const ProductDetails = ({ productId }) => {
       setDeliveryInfo({
         isDeliverable,
         message: isDeliverable
-          ? `Delivery available - within 30km radius (${distance.toFixed(
+          ? `Delivery available -  (${distance.toFixed(
             1
           )}km away)`
-          : `Not deliverable - beyond 30km radius (${distance.toFixed(
+          : `Not deliverable - beyond 80km radius (${distance.toFixed(
             1
           )}km away)`,
         deliveryDate: isDeliverable
@@ -643,12 +666,26 @@ const ProductDetails = ({ productId }) => {
             {/* Main Image + Characteristics */}
             <div className="md:w-1/2 w-full">
               {mainImage ? (
-                <div className="relative w-full h-[400px] bg-white p-4 border border-gray-300">
+                <div
+                  className="relative w-full h-[400px] bg-white p-4 border border-gray-300 overflow-hidden"
+                  onMouseEnter={handleZoomEnter}
+                  onMouseLeave={handleZoomLeave}
+                  onMouseMove={handleZoomMove}
+                  onTouchStart={() => setZoom((s) => ({ ...s, active: true }))}
+                  onTouchEnd={handleZoomLeave}
+                  onTouchMove={handleZoomTouchMove}
+                >
                   <img
                     src={mainImage}
                     alt="Main Product"
                     onClick={() => handleImageClick(mainImage)}
                     className="w-full h-full object-contain cursor-zoom-in"
+                    style={{
+                      transform: zoom.active ? "scale(2)" : "scale(1)",
+                      transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                      transition: "transform 120ms ease-out",
+                      willChange: "transform",
+                    }}
                   />
 
                   <button
@@ -876,18 +913,25 @@ const ProductDetails = ({ productId }) => {
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => handleQuantityChange("minus")}
-                      className="w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg"
+                      disabled={quantity <= 1}
+                      className={`w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg ${quantity <= 1 ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       −
                     </button>
                     <span className="text-lg">{quantity}</span>
                     <button
                       onClick={() => handleQuantityChange("plus")}
-                      className="w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg"
+                      disabled={quantity >= 10}
+                      className={`w-10 h-10 flex justify-center items-center bg-gray-300 hover:bg-gray-200 rounded-full text-lg ${quantity >= 10 ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       +
                     </button>
                   </div>
+                  {quantity >= 10 && (
+                    <p className="text-xs text-red-600 mt-1">
+                      You can buy up to 10 items only.
+                    </p>
+                  )}
                 </div>
                 {/* Stock Info */}
                 <div className="mb-6">
@@ -957,7 +1001,7 @@ const ProductDetails = ({ productId }) => {
                 <div className="flex gap-4 mt-4">
                   <button
                     onClick={handleAddToCart}
-                    disabled={isButtonDisabled || totalQuantity >= 10}
+                    disabled={isButtonDisabled || quantity >= 10}
                     className={`w-full flex items-center justify-center gap-2 py-3 font-semibold transition ${isButtonDisabled
                       ? "bg-sky-400 text-white cursor-not-allowed"
                       : "bg-sky-600 text-white hover:bg-sky-700"
@@ -986,7 +1030,7 @@ const ProductDetails = ({ productId }) => {
                 </div>
 
                 {/* Pincode Delivery Check */}
-                {/* <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
+                <div className="mt-6 p-4 bg-sky-50 rounded-xl border border-sky-200">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-lg">🚚</span>
                     <p className="font-medium text-gray-700">
@@ -1000,7 +1044,7 @@ const ProductDetails = ({ productId }) => {
                       placeholder="Enter pincode"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                       maxLength={6}
                     />
                     <button
@@ -1014,22 +1058,20 @@ const ProductDetails = ({ productId }) => {
 
                   {deliveryInfo && (
                     <div
-                      className={`p-3 rounded-lg ${
-                        deliveryInfo.isDeliverable
+                      className={`p-3 rounded-lg ${deliveryInfo.isDeliverable
                           ? "bg-green-50 border border-green-200"
                           : "bg-red-50 border border-red-200"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-lg">
                           {deliveryInfo.isDeliverable ? "" : ""}
                         </span>
                         <span
-                          className={`font-medium ${
-                            deliveryInfo.isDeliverable
+                          className={`font-medium ${deliveryInfo.isDeliverable
                               ? "text-green-700"
                               : "text-red-700"
-                          }`}
+                            }`}
                         >
                           {deliveryInfo.message}
                         </span>
@@ -1061,7 +1103,7 @@ const ProductDetails = ({ productId }) => {
                       )}
                     </div>
                   )}
-                </div> */}
+                </div>
               </div>
             </div>
           </div>
