@@ -7,6 +7,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FiChevronDown } from "react-icons/fi"; // ⬅️ for dropdown arrow
 import icon from "../../assets/man.png";
+import { RiDashboardHorizontalFill } from "react-icons/ri";
 
 const AdminHeader = () => {
     const { user } = useSelector((state) => state.auth);
@@ -214,6 +215,14 @@ const AdminHeader = () => {
 
                             {/* Links */}
                             <div className="py-2">
+                                <Link
+                                    to="/admin/"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                                >
+                                    {/* <FaUserCircle className="text-gray-500" /> */}
+                                    <RiDashboardHorizontalFill className="text-gray-500" />
+                                    Dashboard
+                                </Link>
                                 <Link
                                     to="/admin/update-profile"
                                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
