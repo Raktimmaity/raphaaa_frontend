@@ -93,6 +93,7 @@ const ExclusiveDrop = () => {
                       src={person.image}
                       alt={person.name}
                       className="h-full w-full object-cover hover:scale-105 transition-all"
+                      loading="lazy"
                     />
                     <div className="absolute bottom-0 left-0 right-0 bg-black/80 p-4 text-white flex flex-wrap justify-between items-center">
                       <div>
