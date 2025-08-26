@@ -5,6 +5,7 @@ import { MessageSquare, X, Send, Sparkles, ShoppingBag, Percent, Tag, Filter, Cl
 import { Link } from "react-router-dom";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import { HiSparkles } from "react-icons/hi2";
+import { GiCancel } from "react-icons/gi";
 
 /** ─────────────── Pre-typed commands (you can add more) ─────────────── **/
 const PRESET_COMMANDS = [
@@ -209,7 +210,7 @@ export default function Chatbot({ onNavigateProduct }) {
                 aria-label="Open Raphaaa Chatbot"
             >
                 {/* <MessageSquare /> */}
-                <BsChatLeftTextFill />
+              {open ? <X size={16} /> : <BsChatLeftTextFill />}
             </button>
 
             <AnimatePresence>
@@ -218,7 +219,7 @@ export default function Chatbot({ onNavigateProduct }) {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 16 }}
-                        className="fixed bottom-2 right-5 z-40 w-[90vw] max-w-[350px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
+                        className="fixed bottom-2 right-18 z-40 w-[90vw] max-w-[350px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-sky-600 to-blue-600 text-white">
