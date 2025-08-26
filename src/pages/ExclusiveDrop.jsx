@@ -50,7 +50,13 @@ const ExclusiveDrop = () => {
   }, [flippedCard]);
 
   return (
-    <section className="container mx-auto px-4 py-14">
+    // <section className="container mx-auto px-4 py-14">
+    <motion.section
+      initial={{ x: "100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: "tween", duration: 0.45, ease: "easeOut" }}
+      className="container mx-auto px-4 py-14"
+    >
       {/* Header */}
       <div className="text-center mb-12">
         <span className="inline-block text-xs font-semibold bg-gradient-to-r from-sky-600 to-blue-600 text-white px-4 py-1 rounded-full uppercase tracking-widest mb-3">
@@ -164,7 +170,8 @@ const ExclusiveDrop = () => {
           })
         )}
       </div>
-    </section>
+    {/* </section> */}
+    </motion.section>
   );
 };
 
