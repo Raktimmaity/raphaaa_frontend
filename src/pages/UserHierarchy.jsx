@@ -66,7 +66,7 @@ const UserHierarchy = () => {
 
         {/* Merchantisers */}
         <div className="text-center">
-          <h3 className="text-lg font-bold text-purple-600">Merchantizers</h3>
+          <h3 className="text-lg font-bold text-purple-600">Merchandise Team</h3>
           <div className="flex flex-wrap justify-center gap-4 mt-2">
             {hierarchy.merchantise.map((u) => (
               <div key={u._id} className="px-4 py-2 bg-purple-100 rounded shadow text-sm text-purple-800 flex flex-col items-center w-[150px]">

@@ -92,7 +92,7 @@ const AdminHeader = () => {
 
     return (
         <header className="flex justify-between items-center bg-gray-800 px-6 py-3 shadow-md">
-            <h1 className="text-xl font-bold text-white">Raphaaa Admin</h1>
+            <h1 className="text-xl font-bold text-white">Raphaaa {user.role === "admin" ? "Admin" : user.role === "merchantise" ? "Merchandise" : user.role === "marketing" ? "Marketing" : user.role === "delivery_boy" ? "Delivery Boy" : "Customer"} </h1>
 
             <div className="flex items-center gap-6 relative" ref={dropdownRef}>
                 {/* Notifications */}
