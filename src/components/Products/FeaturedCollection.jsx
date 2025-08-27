@@ -59,7 +59,7 @@ const FeaturedCollection = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 backdrop-blur-md border border-white/20 text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg tracking-wide animate-bounce"
         >
-          <RiVipCrown2Fill className='inline' size={14} /> Exclusive Collab
+          <RiVipCrown2Fill className='inline mb-1' size={14} /> Exclusive Collab
         </motion.div>
       </div>
 
