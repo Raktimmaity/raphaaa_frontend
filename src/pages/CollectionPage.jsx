@@ -57,41 +57,80 @@ const CollectionPage = () => {
   }
 
   return (
-    <div className="flex p-2 md:p-6 flex-col lg:flex-row">
-      <button
-        onClick={toggleSidebar}
-        className="lg:hidden border p-2 flex justify-center items-center"
-      >
-        <FaFilter className="mr-2" /> Filters
-      </button>
+    <div className="flex p-2 md:p-6 flex-col lg:flex-row gap-4">
+      {/* Mobile bar */}
+      <div className="lg:hidden flex items-center justify-between mb-2">
+        <button
+          onClick={toggleSidebar}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                     bg-white border border-gray-200 text-gray-800
+                     shadow-sm hover:bg-gray-50"
+        >
+          <FaFilter className="text-sky-600" /> Filters
+        </button>
 
+        {searchParams.toString() && (
+          <button
+            onClick={handleClearFilters}
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
+          >
+            <ImCross className="inline mr-1" /> Clear
+          </button>
+        )}
+      </div>
+
+      {/* Backdrop for mobile drawer */}
+      {isSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+          onClick={() => setIsDidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed inset-y-0 z-50 left-0 w-64 md:w-[380px] overflow-y-auto transition-transform duration-300 lg:static lg:translate-x-0 rounded-2xl`}
+        className={`${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+                    fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
+                    w-72 md:w-[380px] overflow-y-auto
+                    transition-transform duration-300
+                    lg:translate-x-0 rounded-none lg:rounded-2xl`}
       >
         <FilterSidebar />
       </div>
 
-      <div className="flex-grow px-1 md:px-6 lg:pl-10">
-        <h2 className="text-2xl uppercase mb-4">{collection} Collection</h2>
+      {/* Main */}
+      <div className="flex-grow px-1 md:px-2 lg:pl-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl md:text-2xl font-extrabold uppercase tracking-wide
+                         bg-clip-text text-transparent bg-gradient-to-r from-sky-700 to-blue-700">
+            {collection} Collection
+          </h2>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Sort By:</span>
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-600">Sort By:</span>
+            <div className="rounded-full">
+              <SortOptions />
+            </div>
+          </div>
+        </div>
+
+        {/* Sort for mobile inline */}
+        <div className="sm:hidden mb-3">
+          <div className="rounded-full inline-block">
             <SortOptions />
           </div>
-
-          {searchParams.toString() && (
-            <button
-              onClick={handleClearFilters}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-all"
-            >
-              <ImCross className="inline mr-1" /> Clear All Filters
-            </button>
-          )}
         </div>
+
+        {searchParams.toString() && (
+          <button
+            onClick={handleClearFilters}
+            className="hidden lg:inline-flex items-center gap-2 px-4 py-2
+                       bg-red-500 hover:bg-red-600 text-white rounded-full text-sm mb-3"
+          >
+            <ImCross className="inline" /> Clear All Filters
+          </button>
+        )}
 
         <ProductGrid products={products} loading={loading} error={error} />
       </div>

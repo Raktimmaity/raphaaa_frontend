@@ -99,32 +99,37 @@ const FilterSidebar = () => {
     const newPrice = e.target.value;
     setPriceRange([0, newPrice]);
     const newFilters = { ...filters, minPrice: 0, maxPrice: newPrice };
+    // (logic unchanged)
     setFilters(filters);
     updateURLParams(newFilters);
   };
 
   const pillClass = (isActive) =>
-    `px-3 py-1 rounded-full border text-sm transition-all duration-200 ${isActive
-      ? "bg-sky-600 text-white border-sky-600 shadow"
-      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    `px-3 py-1.5 rounded-full border text-sm transition-all duration-200
+     ${isActive
+      ? "bg-gradient-to-r from-sky-600 to-blue-600 text-white border-transparent shadow-md shadow-sky-200"
+      : "bg-white/80 backdrop-blur border-gray-200 text-gray-700 hover:bg-gray-50"
     }`;
 
   const Section = ({ label, sectionKey, children }) => (
-    <div className="border-b border-gray-100 pb-4">
+    <div className="border-b border-gray-100/60 pb-4">
       <div
         onClick={() => toggleSection(sectionKey)}
-        className="flex justify-between items-center cursor-pointer mb-3"
+        className="flex justify-between items-center cursor-pointer mb-3 group"
       >
-        <p className="text-base font-semibold text-gray-800">{label}</p>
+        <p className="text-sm font-semibold tracking-wide text-gray-800 uppercase">
+          {label}
+        </p>
         {expandedSections[sectionKey] ? (
-          <FaChevronUp className="text-gray-500 text-sm transition-transform duration-200" />
+          <FaChevronUp className="text-gray-400 text-xs transition-transform duration-200 group-hover:text-gray-600" />
         ) : (
-          <FaChevronDown className="text-gray-500 text-sm transition-transform duration-200" />
+          <FaChevronDown className="text-gray-400 text-xs transition-transform duration-200 group-hover:text-gray-600" />
         )}
       </div>
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedSections[sectionKey] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out
+          ${expandedSections[sectionKey] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}
+        `}
       >
         {children}
       </div>
@@ -132,12 +137,17 @@ const FilterSidebar = () => {
   );
 
   return (
-    <div className="h-[100vh] md:h-auto lg:h-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-100 space-y-6">
-      <div className="pb-4 border-b border-gray-100">
-        <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wide">
+    <div
+      className="sticky top-2
+                 p-5 md:p-6 bg-white/90 backdrop-blur
+                 rounded-2xl shadow-[8px_8px_20px_rgba(9,132,227,0.08),_-6px_-6px_16px_rgba(255,255,255,0.6)]
+                 border border-white/60 space-y-6"
+    >
+      <div className="pb-4 border-b border-gray-100/60">
+        <h3 className="text-xl font-extrabold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-sky-700 to-blue-700">
           Filters
         </h3>
-        <p className="text-xs text-gray-500">Find products that suit you</p>
+        <p className="text-xs text-gray-500 mt-0.5">Find products that suit you</p>
       </div>
 
       <Section label="Category" sectionKey="category">
@@ -197,16 +207,14 @@ const FilterSidebar = () => {
                 onChange={handleFilterChange}
                 className="hidden"
               />
-              <span className={pillClass(filters.size.includes(size))}>
-                {size}
-              </span>
+              <span className={pillClass(filters.size.includes(size))}>{size}</span>
             </label>
           ))}
         </div>
       </Section>
 
       <Section label="Fabric" sectionKey="material">
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {materials.map((material) => (
             <label key={material} className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600">
               <input
@@ -224,7 +232,7 @@ const FilterSidebar = () => {
       </Section>
 
       <Section label="Brand" sectionKey="brand">
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-2">
           {brands.map((brand) => (
             <label key={brand} className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600">
               <input
@@ -242,18 +250,20 @@ const FilterSidebar = () => {
       </Section>
 
       <Section label="Price Range" sectionKey="price">
-        <input
-          type="range"
-          name="priceRange"
-          value={priceRange[1]}
-          onChange={handlePriceChange}
-          min={0}
-          max={100}
-          className="w-full accent-sky-600 cursor-pointer"
-        />
-        <div className="flex justify-between text-sm text-gray-600 mt-1">
-          <span>₹0</span>
-          <span>₹{priceRange[1]}</span>
+        <div className="rounded-xl p-3 bg-gradient-to-b from-white to-sky-50 border border-sky-100">
+          <input
+            type="range"
+            name="priceRange"
+            value={priceRange[1]}
+            onChange={handlePriceChange}
+            min={0}
+            max={100}
+            className="w-full accent-sky-600 cursor-pointer"
+          />
+          <div className="flex justify-between text-sm text-gray-600 mt-1">
+            <span>₹0</span>
+            <span className="font-semibold text-sky-700">₹{priceRange[1]}</span>
+          </div>
         </div>
       </Section>
     </div>

@@ -52,7 +52,7 @@ const SearchBar = () => {
 
   // Click on product suggestion
   const handleSuggestionClick = (product) => {
-    navigate(`/product/${product._id}`);
+    navigate(`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`);
     setSearchTerm("");
     setIsOpen(false);
     setSuggestions([]);

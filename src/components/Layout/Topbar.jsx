@@ -57,7 +57,7 @@ const Topbar = () => {
     <div className="bg-gradient-to-r from-sky-100 via-sky-300 to-sky-50 text-zinc-800">
       <div className="container mx-auto flex justify-between items-center py-3 px-4 md:px-0">
         {/* Left: Social Icons */}
-        <span className="font-semibold text-xs mr-3">Follow Us:</span>
+        <span className="font-semibold text-xs mr-3 hidden md:flex md:flex-wrap md:justify-center md:items-center md:gap-1">Follow Us:</span>
         <div className="hidden md:flex items-center space-x-4">
           {contactInfo?.showFacebook && (
             <a
@@ -88,9 +88,12 @@ const Topbar = () => {
         <div className="text-sm text-center flex-grow font-medium text-gray-800">
           <div className="block md:hidden">
             <marquee behavior="scroll" direction="left" scrollamount="5">
-              <span className="font-semibold">
-                We ship worldwide - Fast and reliable shipping!!
-              </span>
+                {/* We ship worldwide - Fast and reliable shipping!! */}
+                {contactInfo?.showTopText && (
+                  <span className="font-semibold">
+                    {contactInfo.topText}
+                  </span>
+                )}
             </marquee>
           </div>
           <div className="hidden md:block">

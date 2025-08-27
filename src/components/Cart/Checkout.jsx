@@ -48,6 +48,79 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+// — Place this above `const Checkout = () => { ... }` in Checkout.jsx —
+
+const  CheckoutProgress = ({ currentStep = 2 }) => {
+  // 1 = Cart (previous page), 2 = Review (this page), 3 = Payment
+  const steps = [
+    { id: 1, label: "Cart" },
+    { id: 2, label: "Review" },
+    { id: 3, label: "Payment" },
+  ];
+
+  return (
+    <div className="w-full mb-8">
+      {/* Mobile: compact breadcrumb */}
+      <div className="md:hidden text-xs font-medium text-gray-600 mb-3">
+        {steps.map((s, i) => (
+          <span key={s.id} className={s.id === currentStep ? "text-gray-900" : ""}>
+            {s.id}. {s.label}
+            {i < steps.length - 1 ? "  ›  " : ""}
+          </span>
+        ))}
+      </div>
+
+      {/* Desktop: numbered stepper */}
+      {/* Desktop: centered numbered stepper with lines + labels below */}
+      <div className="hidden md:flex items-center justify-center">
+        {steps.map((s, i) => {
+          const active = s.id === currentStep;
+          const done = s.id < currentStep;
+
+    return (
+      <React.Fragment key={s.id}>
+        <div className="flex flex-col items-center text-center">
+          <div
+            className={[
+              "w-10 h-10 rounded-full grid place-items-center text-sm font-bold",
+              done
+                ? "bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow"
+                : active
+                ? "bg-gradient-to-br from-sky-600 to-indigo-600 text-white shadow"
+                : "bg-gray-200 text-gray-600",
+            ].join(" ")}
+            aria-current={active ? "step" : undefined}
+          >
+            {s.id}
+          </div>
+          <span
+            className={[
+              "mt-2 text-sm font-semibold tracking-wide",
+              done || active ? "text-gray-900" : "text-gray-500",
+            ].join(" ")}
+          >
+            {s.label}
+          </span>
+        </div>
+
+        {i < steps.length - 1 && (
+          <div
+            className={[
+              "h-[3px] w-full md:w-32 lg:w-40 mx-4 rounded-full pb-1 mb-6",
+              done ? "bg-gradient-to-r from-sky-500 to-indigo-500" : "bg-gray-200",
+            ].join(" ")}
+          />
+        )}
+      </React.Fragment>
+    );
+  })}
+</div>
+
+    </div>
+  );
+};
+
+
 const Checkout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -85,6 +158,9 @@ const Checkout = () => {
   const [displayCount, setDisplayCount] = useState(4);
   const [addressesOpen, setAddressesOpen] = useState(false); // collapsible toggle
   const [featuredCollab, setFeaturedCollab] = useState(null);
+  // Step state derived only from existing flags (UI-only)
+  const currentStep = razorpayOrderId ? 3 : 2; // 1 = Cart (previous page), 2 = Review, 3 = Payment
+
 
   useEffect(() => {
     const fetchCollab = async () => {
@@ -521,6 +597,7 @@ const Checkout = () => {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
+      <CheckoutProgress currentStep={currentStep} />
       <div className="flex flex-col justify-evenly lg:flex-row gap-10">
         {/* Left: Checkout Form */}
         {/* <div className="w-full lg:w-2/3 bg-gradient-to-br from-white to-gray-100 rounded-2xl shadow-2xl p-8 border border-gray-300"> */}

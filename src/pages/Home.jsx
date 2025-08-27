@@ -205,6 +205,50 @@ const Home = () => {
       .catch(() => setCollabActive(false));
   }, []);
 
+  // Unified countdown for both phases: before start and when live
+  useEffect(() => {
+    if (!activeOffer) return;
+
+    const start = new Date(activeOffer.startDate).getTime();
+    const end = new Date(activeOffer.endDate).getTime();
+
+    const tick = () => {
+      const labelEl = document.getElementById("offer-phase-label");
+      const timerEl = document.getElementById("offer-live-timer");
+      if (!labelEl || !timerEl) return;
+
+      const now = Date.now();
+
+      // Determine phase + remaining ms
+      let remaining = 0;
+      if (now < start) {
+        labelEl.textContent = "Sale starts in";
+        remaining = start - now;
+      } else if (now >= start && now <= end) {
+        labelEl.textContent = "SALE IS LIVE NOW — ending in";
+        remaining = end - now;
+      } else {
+        labelEl.textContent = "Sale ended";
+        timerEl.textContent = "";
+        return;
+      }
+
+      // Convert remaining to H:M:S (hours may exceed 24)
+      const totalSeconds = Math.max(0, Math.floor(remaining / 1000));
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const fmt2 = (n) => String(n).padStart(2, "0");
+      timerEl.textContent = `${fmt2(hours)}:${fmt2(minutes)}:${fmt2(seconds)}`;
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [activeOffer]);
+
+
   // *** If collab is active, show only FeaturedCollection ***
   // if (collabActive) {
   //   return (
@@ -228,17 +272,17 @@ const Home = () => {
 
   return (
     <>
-    <Helmet>
+      <Helmet>
         <title>Raphaaa | Premium Streetwear & Lifestyle</title>
         <meta
           name="description"
           content="Shop premium streetwear, sneakers, and exclusive collections from Raphaaa."
         />
       </Helmet>
-    <div>
-      {/* Hero section */}
-      {/* <Collab/> */}
-      {/* {showAlert && (
+      <div>
+        {/* Hero section */}
+        {/* <Collab/> */}
+        {/* {showAlert && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full relative">
             <h2 className="text-xl font-bold text-blue-700 mb-2">
@@ -263,93 +307,159 @@ const Home = () => {
         </div>
       )} */}
 
-      {activeOffer && (
-        <div className="relative w-full mb-8">
-          {/* Full Width Banner */}
-          {activeOffer.bannerImage && (
-            <img
-              src={activeOffer.bannerImage}
-              alt={activeOffer.title}
-              className="w-full h-[220px] md:h-[420px] object-cover"
-            />
-          )}
+        {activeOffer && (
+          <div className="relative w-full mb-8">
+            {/* Full Width Banner */}
+            {activeOffer.bannerImage && (
+              <img
+                src={activeOffer.bannerImage}
+                alt={activeOffer.title}
+                className="w-full h-[220px] md:h-[420px] object-cover"
+              />
+            )}
 
-          {/* Overlay Content */}
-          <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-6 bg-black/40 text-white">
-            <div
-              className="flex-1 mix-blend-screen"
-              style={{
-                textShadow: "1px 1px 3px rgba(0,0,0,0.8)",
-              }}
-            >
-              <h2 className="text-2xl md:text-4xl font-extrabold mb-2 uppercase">
-                {activeOffer.title}
-              </h2>
-              <p className="text-sm md:text-lg font-medium">
-                Save up to{" "}
-                <span className="bg-red-500 font-bold text-xl text-white px-5 py-1">
-                  {activeOffer.offerPercentage}% OFF
-                </span>{" "}
-                from{" "}
-                <span className="font-semibold text-amber-200">
-                  {new Date(activeOffer.startDate).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </span>{" "}
-                to{" "}
-                <span className="font-semibold text-amber-200">
-                  {new Date(activeOffer.endDate).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </span>
-              </p>
+            {/* Overlay Content */}
+            <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-6 bg-black/40 text-white">
+              <div
+                className="flex-1 mix-blend-screen"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0,0,0,0.8)",
+                }}
+              >
+                <h2 className="text-2xl md:text-4xl font-extrabold mb-2 uppercase">
+                  {activeOffer.title}
+                </h2>
+                <p className="text-sm md:text-lg font-medium">
+                  Save up to{" "}
+                  <span className="bg-red-500 font-bold text-xl text-white px-5 py-1">
+                    {activeOffer.offerPercentage}% OFF
+                  </span>{" "}
+                  from{" "}
+                  <span className="font-semibold text-amber-200">
+                    {new Date(activeOffer.startDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold text-amber-200">
+                    {new Date(activeOffer.endDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </p>
 
-              {/* Countdown Timer (only before start) */}
-              {new Date() < new Date(activeOffer.startDate) && (
-                <div className="mt-3 inline-block bg-amber-600 text-white px-4 py-1 rounded-full text-xs md:text-sm font-semibold tracking-wider">
-                  Starts in: <span id="offer-timer" className="ml-1" />
-                </div>
+                {/* Countdown Timer (only before start) */}
+                {new Date() < new Date(activeOffer.startDate) && (
+                  <div className="mt-3 inline-block bg-amber-600 text-white px-4 py-1 rounded-full text-xs md:text-sm font-semibold tracking-wider">
+                    Starts in: <span id="offer-timer" className="ml-1" />
+                  </div>
+                )}
+              </div>
+
+              {/* View Offers Button: Only when offer is active */}
+              {new Date() >= new Date(activeOffer.startDate) && (
+                <Link
+                  to="/offers"
+                  className="mt-6 md:mt-0 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg transition duration-200"
+                >
+                  View Offers
+                </Link>
               )}
             </div>
-
-            {/* View Offers Button: Only when offer is active */}
-            {new Date() >= new Date(activeOffer.startDate) && (
-              <Link
-                to="/offers"
-                className="mt-6 md:mt-0 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg transition duration-200"
-              >
-                View Offers
-              </Link>
-            )}
           </div>
-        </div>
-      )}
+        )}
+        {/* Countdown Section (Raphaaa theme) */}
+        {activeOffer && (
+          <div className="mx-4 md:mx-16 -mt-4 mb-10">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 via-fuchsia-500 to-pink-500 text-white shadow-xl">
+              {/* Aura glow */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-30 mix-blend-screen"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,0.35), transparent 60%)",
+                }}
+              />
+              <div className="relative z-10 px-6 py-6 md:px-10 md:py-8 flex flex-col md:flex-row items-center justify-between gap-5">
+                {/* Left copy */}
+                <div className="text-center md:text-left">
+                  <div
+                    id="offer-phase-label"
+                    className="text-xs md:text-sm uppercase tracking-widest text-white/90"
+                  >
+                    {/* filled by JS */}
+                  </div>
 
-      <Hero />
-      <CategorySection />
+                  <div className="mt-1 font-mono text-[32px] md:text-5xl font-extrabold tabular-nums">
+                    <span id="offer-live-timer">--:--:--</span>
+                  </div>
 
-      {/* Gender collection section */}
-      <GenderCollectionSection />
+                  <div className="mt-2 text-xs md:text-sm text-white/85">
+                    From{" "}
+                    <strong>
+                      {new Date(activeOffer.startDate).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                        timeZone: "Asia/Kolkata",
+                      })}
+                      {" IST"}
+                    </strong>{" "}
+                    to{" "}
+                    <strong>
+                      {new Date(activeOffer.endDate).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                        timeZone: "Asia/Kolkata",
+                      })}
+                      {" IST"}
+                    </strong>
+                  </div>
+                </div>
 
-      {/* New arrivals section */}
-      <NewArrivals />
+                {/* CTA (always visible) */}
+                <Link
+                  to="/offers"
+                  className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-700 shadow-lg transition hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Shop Now
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Features section */}
-      <FeaturesSection />
 
-      {/* Best Sellers */}
-      {/* <div className="text-center mb-8 pt-8">
+        <Hero />
+        <CategorySection />
+
+        {/* Gender collection section */}
+        <GenderCollectionSection />
+
+        {/* New arrivals section */}
+        <NewArrivals />
+
+        {/* Features section */}
+        <FeaturesSection />
+
+        {/* Best Sellers */}
+        {/* <div className="text-center mb-8 pt-8">
         <h2 className="text-3xl font-bold inline-block relative">
           Best Seller
           <div className="mt-2 h-1 w-24 mx-auto bg-gradient-to-r from-blue-500 to-blue-200 rounded-full" />
         </h2>
       </div> */}
 
-      {/* {bestSellerLoading ? (
+        {/* {bestSellerLoading ? (
         <p className="text-center">Loading Best seller product...</p>
       ) : bestSellerError ? (
         <p className="text-center text-red-500">Error: {bestSellerError}</p>
@@ -358,10 +468,10 @@ const Home = () => {
       ) : (
         <p className="text-center">No best seller product found</p>
       )} */}
-      <BestSellersSection />
+        <BestSellersSection />
 
-      {/* Top wears for women */}
-      {/* <div className="container mx-auto">
+        {/* Top wears for women */}
+        {/* <div className="container mx-auto">
         <div className="text-center mb-8 pt-8">
           <h2 className="text-3xl font-bold inline-block relative">
             Top Wears for Women
@@ -369,49 +479,49 @@ const Home = () => {
           </h2>
         </div> */}
 
-      {/* Products */}
-      {/* <ProductGrid products={products} loading={loading} error={error} />
+        {/* Products */}
+        {/* <ProductGrid products={products} loading={loading} error={error} />
       </div> */}
 
-      {/* Feature collections */}
-      <FeaturedCollection />
+        {/* Feature collections */}
+        <FeaturedCollection />
 
-      {activeOffer && showAlert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="relative bg-orange-100 border border-orange-300 shadow-lg rounded-lg overflow-hidden animate-popup p-4 max-w-xs md:max-w-sm w-full text-center">
-            <img
-              src={activeOffer.alertImage}
-              alt={activeOffer.title}
-              className="w-auto max-w-full max-h-[70vh] object-contain mx-auto mb-4"
-            />
+        {activeOffer && showAlert && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+            <div className="relative bg-orange-100 border border-orange-300 shadow-lg rounded-lg overflow-hidden animate-popup p-4 max-w-xs md:max-w-sm w-full text-center">
+              <img
+                src={activeOffer.alertImage}
+                alt={activeOffer.title}
+                className="w-auto max-w-full max-h-[70vh] object-contain mx-auto mb-4"
+              />
 
-            {/* Countdown Timer OR Shop Now */}
-            {new Date() < new Date(activeOffer.startDate) ? (
-              <div className="bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm inline-block mb-2">
-                Offer starts in: <span id="alert-offer-timer" className="ml-1" />
-              </div>
-            ) : (
-              <Link
-                to="/offers"
+              {/* Countdown Timer OR Shop Now */}
+              {new Date() < new Date(activeOffer.startDate) ? (
+                <div className="bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm inline-block mb-2">
+                  Offer starts in: <span id="alert-offer-timer" className="ml-1" />
+                </div>
+              ) : (
+                <Link
+                  to="/offers"
+                  onClick={() => setShowAlert(false)}
+                  className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full font-semibold text-sm transition mb-2"
+                >
+                  🛍 Shop Now
+                </Link>
+              )}
+
+              {/* Close Button */}
+              <button
                 onClick={() => setShowAlert(false)}
-                className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full font-semibold text-sm transition mb-2"
+                className="absolute top-2 right-2 text-orange-800 hover:text-red-500 text-xl font-bold bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
+                title="Close"
               >
-                🛍 Shop Now
-              </Link>
-            )}
-
-            {/* Close Button */}
-            <button
-              onClick={() => setShowAlert(false)}
-              className="absolute top-2 right-2 text-orange-800 hover:text-red-500 text-xl font-bold bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
-              title="Close"
-            >
-              ×
-            </button>
+                ×
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 };
