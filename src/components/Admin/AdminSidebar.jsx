@@ -7,6 +7,7 @@ import {
   FaStore,
   FaUser,
   FaCog,
+  FaLock,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
@@ -282,13 +283,43 @@ const AdminSidebar = () => {
           </NavLink>
         )} */}
 
-        {/* Users */}
         {(user?.role === "admin" || user?.role === "merchantise") && (
+          <div className="text-gray-300">
+            <details className="group">
+              <summary className="flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FaUsers className="text-lg" />
+                  <span>Users</span>
+                </span>
+                <svg
+                  className="w-4 h-4 ml-1 group-open:rotate-90 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </summary>
+              <div className="ml-6 mt-2 space-y-1">
+                <NavLink to="/admin/users" className={subLinkClass}>
+                  <FaUsers /> <span>Manage Users</span>
+                </NavLink>
+                <NavLink to="/admin/reset-password" className={subLinkClass}>
+                  <FaLock /> <span>Reset Password</span>
+                </NavLink>
+              </div>
+            </details>
+          </div>
+        )}
+
+        {/* Users */}
+        {/* {(user?.role === "admin" || user?.role === "merchantise") && (
           <NavLink to="/admin/users" className={navLinkClass}>
             <FaUsers />
             <span>Users</span>
           </NavLink>
-        )}
+        )} */}
 
         {/* Categories */}
         {(user?.role === "admin" || user?.role === "merchantise") && (

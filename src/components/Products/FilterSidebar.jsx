@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+
+const MIN_BOUND = 500;
+const MAX_BOUND = 10000;
+const STEP = 50; // adjust if you want finer steps
+const MIN_GAP = 0; // set to e.g. 100 if you want min & max to never overlap
 
 const FilterSidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,11 +18,13 @@ const FilterSidebar = () => {
     size: [],
     material: [],
     brand: [],
-    minPrice: 0,
-    maxPrice: 100,
+    minPrice: MIN_BOUND,
+    maxPrice: MAX_BOUND,
   });
 
-  const [priceRange, setPriceRange] = useState([0, 100]);
+  // local controlled range (two pointers)
+  const [priceRange, setPriceRange] = useState([MIN_BOUND, MAX_BOUND]);
+
   const [expandedSections, setExpandedSections] = useState({
     category: true,
     gender: true,
@@ -42,8 +49,13 @@ const FilterSidebar = () => {
   const brands = ["Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "fashionista", "ChicStyle"];
   const genders = ["Men", "Women", "Kids"];
 
+  // Sync from URL -> state on mount & whenever URL changes
   useEffect(() => {
     const params = Object.fromEntries([...searchParams]);
+
+    const minP = params.minPrice ? Number(params.minPrice) : MIN_BOUND;
+    const maxP = params.maxPrice ? Number(params.maxPrice) : MAX_BOUND;
+
     setFilters({
       category: params.category || "",
       gender: params.gender || "",
@@ -51,11 +63,35 @@ const FilterSidebar = () => {
       size: params.size ? params.size.split(",") : [],
       material: params.material ? params.material.split(",") : [],
       brand: params.brand ? params.brand.split(",") : [],
-      minPrice: params.minPrice || 0,
-      maxPrice: params.maxPrice || 100,
+      minPrice: isNaN(minP) ? MIN_BOUND : minP,
+      maxPrice: isNaN(maxP) ? MAX_BOUND : maxP,
     });
-    setPriceRange([0, params.maxPrice || 100]);
+
+    setPriceRange([
+      isNaN(minP) ? MIN_BOUND : Math.max(MIN_BOUND, Math.min(minP, MAX_BOUND)),
+      isNaN(maxP) ? MAX_BOUND : Math.max(MIN_BOUND, Math.min(maxP, MAX_BOUND)),
+    ]);
   }, [searchParams]);
+
+  const updateURLParams = (newFilters) => {
+    const params = new URLSearchParams();
+    Object.keys(newFilters).forEach((key) => {
+      const value = newFilters[key];
+      if (Array.isArray(value) && value.length > 0) {
+        params.append(key, value.join(","));
+      } else if (
+        value !== "" &&
+        value !== null &&
+        value !== undefined &&
+        !(key === "maxPrice" && Number(value) === MAX_BOUND) &&
+        !(key === "minPrice" && Number(value) === MIN_BOUND)
+      ) {
+        params.append(key, value);
+      }
+    });
+    setSearchParams(params);
+    navigate(`?${params.toString()}`);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -75,33 +111,46 @@ const FilterSidebar = () => {
     updateURLParams(newFilters);
   };
 
-  const updateURLParams = (newFilters) => {
-    const params = new URLSearchParams();
-    Object.keys(newFilters).forEach((key) => {
-      const value = newFilters[key];
-      if (Array.isArray(value) && value.length > 0) {
-        params.append(key, value.join(","));
-      } else if (
-        value !== "" &&
-        value !== null &&
-        value !== undefined &&
-        !(key === "maxPrice" && Number(value) === 100) &&
-        !(key === "minPrice" && Number(value) === 0)
-      ) {
-        params.append(key, value);
-      }
-    });
-    setSearchParams(params);
-    navigate(`?${params.toString()}`);
+  // --- Two-pointer range handlers (continuous updates) ---
+  const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+
+  const handleMinChange = (e) => {
+    const nextMin = clamp(Number(e.target.value), MIN_BOUND, priceRange[1] - MIN_GAP);
+    const next = [nextMin, priceRange[1]];
+    setPriceRange(next);
+
+    const newFilters = { ...filters, minPrice: next[0], maxPrice: next[1] };
+    setFilters(newFilters); // ✅ use the updated object, not the old state
+    updateURLParams(newFilters); // continuous apply
   };
 
-  const handlePriceChange = (e) => {
-    const newPrice = e.target.value;
-    setPriceRange([0, newPrice]);
-    const newFilters = { ...filters, minPrice: 0, maxPrice: newPrice };
-    // (logic unchanged)
-    setFilters(filters);
-    updateURLParams(newFilters);
+  const handleMaxChange = (e) => {
+    const nextMax = clamp(Number(e.target.value), priceRange[0] + MIN_GAP, MAX_BOUND);
+    const next = [priceRange[0], nextMax];
+    setPriceRange(next);
+
+    const newFilters = { ...filters, minPrice: next[0], maxPrice: next[1] };
+    setFilters(newFilters); // ✅ fix prior bug
+    updateURLParams(newFilters); // continuous apply
+  };
+
+  // Also allow precise numeric input (optional, kept minimal)
+  const onMinInput = (e) => {
+    const v = clamp(Number(e.target.value || MIN_BOUND), MIN_BOUND, priceRange[1] - MIN_GAP);
+    const next = [v, priceRange[1]];
+    setPriceRange(next);
+    const nf = { ...filters, minPrice: next[0], maxPrice: next[1] };
+    setFilters(nf);
+    updateURLParams(nf);
+  };
+
+  const onMaxInput = (e) => {
+    const v = clamp(Number(e.target.value || MAX_BOUND), priceRange[0] + MIN_GAP, MAX_BOUND);
+    const next = [priceRange[0], v];
+    setPriceRange(next);
+    const nf = { ...filters, minPrice: next[0], maxPrice: next[1] };
+    setFilters(nf);
+    updateURLParams(nf);
   };
 
   const pillClass = (isActive) =>
@@ -249,20 +298,73 @@ const FilterSidebar = () => {
         </div>
       </Section>
 
+      {/* --- NEW: Two-pointer Price Range (continuous) --- */}
       <Section label="Price Range" sectionKey="price">
         <div className="rounded-xl p-3 bg-gradient-to-b from-white to-sky-50 border border-sky-100">
-          <input
-            type="range"
-            name="priceRange"
-            value={priceRange[1]}
-            onChange={handlePriceChange}
-            min={0}
-            max={100}
-            className="w-full accent-sky-600 cursor-pointer"
-          />
-          <div className="flex justify-between text-sm text-gray-600 mt-1">
-            <span>₹0</span>
-            <span className="font-semibold text-sky-700">₹{priceRange[1]}</span>
+          <div className="relative py-3">
+            {/* track */}
+            <div className="h-1.5 bg-sky-100 rounded-full" />
+            {/* range highlight */}
+            <div
+              className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-sky-300"
+              style={{
+                left: `${((priceRange[0] - MIN_BOUND) / (MAX_BOUND - MIN_BOUND)) * 100}%`,
+                right: `${(1 - (priceRange[1] - MIN_BOUND) / (MAX_BOUND - MIN_BOUND)) * 100}%`,
+              }}
+            />
+            {/* min slider */}
+            <input
+              type="range"
+              min={MIN_BOUND}
+              max={MAX_BOUND}
+              step={STEP}
+              value={priceRange[0]}
+              onChange={handleMinChange}
+              className="absolute left-0 right-0 top-1/2 -translate-y-1/2 w-full appearance-none bg-transparent pointer-events-auto accent-sky-600 cursor-pointer"
+            />
+            {/* max slider */}
+            <input
+              type="range"
+              min={MIN_BOUND}
+              max={MAX_BOUND}
+              step={STEP}
+              value={priceRange[1]}
+              onChange={handleMaxChange}
+              className="absolute left-0 right-0 top-1/2 -translate-y-1/2 w-full appearance-none bg-transparent pointer-events-auto accent-sky-600 cursor-pointer"
+            />
+          </div>
+
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            <div className="flex items-center justify-between text-sm text-gray-700">
+              <span className="text-gray-500">Min</span>
+              <input
+                type="number"
+                min={MIN_BOUND}
+                max={priceRange[1] - MIN_GAP}
+                step={STEP}
+                value={priceRange[0]}
+                onChange={onMinInput}
+                className="w-28 px-2 py-1 rounded-md border border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-400 text-right"
+              />
+            </div>
+            <div className="flex items-center justify-between text-sm text-gray-700">
+              <span className="text-gray-500">Max</span>
+              <input
+                type="number"
+                min={priceRange[0] + MIN_GAP}
+                max={MAX_BOUND}
+                step={STEP}
+                value={priceRange[1]}
+                onChange={onMaxInput}
+                className="w-28 px-2 py-1 rounded-md border border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-400 text-right"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between text-sm text-gray-600 mt-2">
+            <span>₹{MIN_BOUND}</span>
+            <span className="font-semibold text-sky-700">₹{priceRange[0]} — ₹{priceRange[1]}</span>
+            <span>₹{MAX_BOUND}</span>
           </div>
         </div>
       </Section>

@@ -62,6 +62,7 @@ import UserHierarchy from "./pages/UserHierarchy";
 import CampaignTracker from "./pages/CampaignTracker";
 import MarketingBroadcast from "./pages/MarketingBroadcast";
 import Chatbot from "./components/Chatbot/Chatbot";
+import ResetPassword from "./pages/ResetPassword";
 // import AdminAboutSettings from "./pages/AdminAboutSettings";
 
 const App = () => {
@@ -212,6 +213,14 @@ const App = () => {
               element={
                 <ProtectedRoute role={["admin", "merchantise"]}>
                   <UserManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="reset-password"
+              element={
+                <ProtectedRoute role={["admin", "merchantise"]}>
+                  <ResetPassword />
                 </ProtectedRoute>
               }
             />
