@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import menImg from "../../assets/mens-collection.jpg";
 import womenImg from "../../assets/womens-collection.jpg";
 import product1 from "../../assets/product1.webp";
@@ -9,10 +9,12 @@ import useSmartLoader from "../../hooks/useSmartLoader";
 import axios from "axios";
 
 const GenderCollectionSection = () => {
+  // Smart skeleton (kept)
   const { loading } = useSmartLoader(async () => {
     await new Promise((res) => setTimeout(res, 300));
     return true;
   });
+
   const [collabActive, setCollabActive] = useState(false);
 
   useEffect(() => {
@@ -22,19 +24,40 @@ const GenderCollectionSection = () => {
       .catch(() => setCollabActive(false));
   }, []);
 
-  if (collabActive) return null; // ⛔ hide section when active
+  // ⛔ hide section when active
+  if (collabActive) return null;
 
+  // --- animation helpers ---
+  const cardVariants = useMemo(
+    () => ({
+      initial: { opacity: 0, y: 28, scale: 0.98 },
+      in: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: "easeOut" } },
+      hover: { y: -6, transition: { duration: 0.25 } },
+    }),
+    []
+  );
+
+  const ctaVariants = useMemo(
+    () => ({
+      hover: { scale: 1.02 },
+      tap: { scale: 0.98 },
+    }),
+    []
+  );
 
   if (loading) {
     return (
-      <section className="py-16 px-4 lg:px-0 bg-gray-50">
-        <div className="container mx-auto flex flex-col md:flex-row gap-8">
-          {/* Skeleton Card */}
-          {[1, 2].map((_, i) => (
+      <section className="py-16 px-4 lg:px-0 bg-gradient-to-b from-white to-sky-50">
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {[1, 2].map((i) => (
             <div
               key={i}
-              className="flex-1 animate-pulse bg-gray-200 rounded-xl h-[500px] md:h-[600px] lg:h-[700px]"
-            />
+              className="relative h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden rounded-2xl"
+            >
+              <div className="absolute inset-0 rounded-2xl border border-sky-100/80 bg-white/60" />
+              <div className="h-full w-full animate-pulse rounded-2xl bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 [background-size:200%_100%]" />
+              <div className="absolute inset-x-6 bottom-6 h-8 w-40 rounded-full bg-slate-200/80 animate-pulse" />
+            </div>
           ))}
         </div>
       </section>
@@ -42,63 +65,130 @@ const GenderCollectionSection = () => {
   }
 
   return (
-    <section className="py-16 px-4 lg:px-0 bg-gray-50">
-      <div className="container mx-auto flex flex-col md:flex-row gap-8">
-        {/* Women's Collection */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative flex-1 group overflow-hidden rounded-xl shadow-lg"
-        >
-          <img
-            src={product1}
-            alt="Women-collection-img"
-            width={1000}
-            height={700}
-            className="w-full h-[500px] md:h-[600px] lg:h-[700px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
-          <div className="absolute bottom-8 left-8 z-10 text-white">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              Women's Collection
-            </h2>
-            <Link
-              to="/collections/all?gender=Women"
-              className="inline-block px-5 py-2 bg-white text-black font-medium rounded hover:bg-gray-100 transition"
-            >
-              Shop Now
-            </Link>
-          </div>
-        </motion.div>
+    <section className="py-16 px-4 lg:px-0 bg-gradient-to-b from-white to-sky-50">
+      <div className="container mx-auto">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+            <span className="">
+              Shop by Gender
+            </span>
+          </h2>
+          <div className="mt-3 h-1 w-28 mx-auto rounded-full bg-gradient-to-r from-blue-600 via-sky-400 to-blue-500" />
+        </div>
 
-        {/* Men's Collection */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="relative flex-1 group overflow-hidden rounded-xl shadow-lg"
-        >
-          <img
-            src={product2}
-            alt="Men-collection-img"
-            width={1000}
-            height={700}
-            className="w-full h-[500px] md:h-[600px] lg:h-[800px] object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
-          <div className="absolute bottom-8 left-8 z-10 text-white">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              Men's Collection
-            </h2>
-            <Link
-              to="/collections/all?gender=Men"
-              className="inline-block px-5 py-2 bg-white text-black font-medium rounded hover:bg-gray-100 transition"
-            >
-              Shop Now
-            </Link>
-          </div>
-        </motion.div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Women's Collection */}
+          <motion.article
+            variants={cardVariants}
+            initial="initial"
+            whileInView="in"
+            whileHover="hover"
+            viewport={{ once: true, amount: 0.3 }}
+            className="relative overflow-hidden rounded-2xl shadow-lg group ring-1 ring-sky-100/80 bg-white"
+          >
+            {/* Image */}
+            <img
+              src={product1 || womenImg}
+              alt="Women collection"
+              width={1200}
+              height={800}
+              loading="lazy"
+              className="w-full h-[480px] md:h-[560px] lg:h-[640px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+
+            {/* Overlays */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-[radial-gradient(1200px_300px_at_50%_120%,rgba(14,165,233,0.18),transparent)]" />
+            </div>
+
+            {/* Badge */}
+            <div className="absolute top-5 left-5">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-sky-200 backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+                New Arrivals
+              </span>
+            </div>
+
+            {/* Content */}
+            <div className="absolute bottom-7 left-7 right-7 flex items-end justify-between gap-4">
+              <div className="text-white drop-shadow">
+                <h3 className="text-2xl md:text-3xl font-bold mb-2">Women&apos;s Collection</h3>
+                <p className="hidden md:block text-slate-100/90">
+                  Curated fits in fresh palettes and premium fabrics.
+                </p>
+              </div>
+
+              <motion.div variants={ctaVariants} whileHover="hover" whileTap="tap">
+                <Link
+                  to="/collections/all?gender=Women"
+                  className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white
+                  bg-gradient-to-r from-blue-600 to-sky-500 shadow-sm hover:shadow-md focus:outline-none
+                  focus-visible:ring-4 focus-visible:ring-sky-300/60 transition"
+                >
+                  Shop Now
+                </Link>
+              </motion.div>
+            </div>
+          </motion.article>
+
+          {/* Men's Collection */}
+          <motion.article
+            variants={cardVariants}
+            initial="initial"
+            whileInView="in"
+            whileHover="hover"
+            viewport={{ once: true, amount: 0.3 }}
+            className="relative overflow-hidden rounded-2xl shadow-lg group ring-1 ring-sky-100/80 bg-white"
+          >
+            {/* Image */}
+            <img
+              src={product2 || menImg}
+              alt="Men collection"
+              width={1200}
+              height={800}
+              loading="lazy"
+              className="w-full h-[520px] md:h-[560px] lg:h-[640px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+
+            {/* Overlays */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-[radial-gradient(1200px_300px_at_50%_120%,rgba(59,130,246,0.18),transparent)]" />
+            </div>
+
+            {/* Badge */}
+            <div className="absolute top-5 left-5">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-sky-200 backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                Trending Now
+              </span>
+            </div>
+
+            {/* Content */}
+            <div className="absolute bottom-7 left-7 right-7 flex items-end justify-between gap-4">
+              <div className="text-white drop-shadow">
+                <h3 className="text-2xl md:text-3xl font-bold mb-2">Men&apos;s Collection</h3>
+                <p className="hidden md:block text-slate-100/90">
+                  Elevated essentials built for everyday performance.
+                </p>
+              </div>
+
+              <motion.div variants={ctaVariants} whileHover="hover" whileTap="tap">
+                <Link
+                  to="/collections/all?gender=Men"
+                  className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white
+                  bg-gradient-to-r from-blue-600 to-sky-500 shadow-sm hover:shadow-md focus:outline-none
+                  focus-visible:ring-4 focus-visible:ring-sky-300/60 transition"
+                >
+                  Shop Now
+                </Link>
+              </motion.div>
+            </div>
+          </motion.article>
+        </div>
       </div>
     </section>
   );

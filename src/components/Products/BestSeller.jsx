@@ -1,3 +1,4 @@
+// BestSeller.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "./ProductCard";
@@ -9,7 +10,7 @@ const BestSellersSection = () => {
   const [error, setError] = useState("");
   const [bestSellers, setBestSellers] = useState([]);
 
-  // ✅ Always call this hook
+  // Check collab status
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/api/collabs/active`)
@@ -17,7 +18,7 @@ const BestSellersSection = () => {
       .catch(() => setCollabActive(false));
   }, []);
 
-  // ✅ Always call this hook
+  // Fetch best sellers when collab is NOT active
   useEffect(() => {
     if (collabActive === false) {
       const fetchBestSellers = async () => {
@@ -25,39 +26,70 @@ const BestSellersSection = () => {
           const { data } = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/api/products/best-seller`
           );
-          setBestSellers(data);
+          setBestSellers(data || []);
         } catch (err) {
           setError("Failed to load best sellers");
         } finally {
           setLoading(false);
         }
       };
-
       fetchBestSellers();
     }
   }, [collabActive]);
 
-  // ✅ Now safely handle UI conditions
-  if (collabActive === null) return null;        // waiting for status check
-  if (collabActive === true) return null;        // hide section when collab is active
-  if (loading) return <p className="text-center">Loading Best sellers...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (collabActive === null) return null; // waiting
+  if (collabActive === true) return null; // hide during collab
+
+  if (loading)
+    return (
+      <div className="mx-auto max-w-6xl px-6 md:px-12 py-12">
+        <div className="bs-skeleton">
+          <div className="bs-skel-title" />
+          <div className="bs-skel-row">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bs-skel-card" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <p className="text-center text-blue-700 bg-sky-50 border border-sky-200 rounded-xl px-4 py-3 mx-4">
+        {error}
+      </p>
+    );
+
   if (bestSellers.length === 0)
-    return <p className="text-center">No best sellers found.</p>;
+    return (
+      <p className="text-center text-slate-600 bg-white rounded-xl px-4 py-3 mx-4">
+        No best sellers found.
+      </p>
+    );
+
+  // Duplicate for seamless loop
+  const looped = [...bestSellers, ...bestSellers];
 
   return (
-    <>
-      <div className="text-center mb-8 pt-8">
-        <h2 className="text-3xl font-bold inline-block relative">
-          Best Seller
-          <div className="mt-2 h-1 w-24 mx-auto bg-gradient-to-r from-blue-500 to-blue-200 rounded-full" />
+    <section className="py-12">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 inline-block relative">
+          <span className="">
+            Best Seller
+          </span>
+          <span className="block h-1 w-24 mx-auto mt-3 rounded-full bg-gradient-to-r from-blue-600 to-sky-300" />
         </h2>
+        <p className="mt-3 text-slate-600">
+          Most-loved picks—hover to pause and explore.
+        </p>
       </div>
+
       <div className="p-4">
         <div className="best-seller-wrapper">
-          <div className="best-seller-marquee">
-            {[...bestSellers, ...bestSellers].map((item, idx) => (
-              <div key={idx} className="product-card-wrapper">
+          <div className="best-seller-marquee" aria-label="Best seller carousel">
+            {looped.map((item, idx) => (
+              <div key={idx} className="product-card-wrapper bs-card-fx">
                 <ProductCard
                   product={item}
                   badge={`Total ${item.totalSold} users buy this product. Now your turn!!`}
@@ -65,9 +97,12 @@ const BestSellersSection = () => {
               </div>
             ))}
           </div>
+          {/* gradient edge fades */}
+          <div className="bs-fade bs-fade-left" aria-hidden="true" />
+          <div className="bs-fade bs-fade-right" aria-hidden="true" />
         </div>
       </div>
-    </>
+    </section>
   );
 };
 

@@ -14,6 +14,7 @@ import CategorySection from "../components/Products/CategorySection";
 import Collab from "../components/Products/Collab";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import FAQ from "../components/Common/FAQ";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -469,6 +470,7 @@ const Home = () => {
         <p className="text-center">No best seller product found</p>
       )} */}
         <BestSellersSection />
+        <FAQ />
 
         {/* Top wears for women */}
         {/* <div className="container mx-auto">
