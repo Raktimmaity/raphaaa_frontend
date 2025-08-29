@@ -15,6 +15,7 @@ import { BsPatchCheckFill } from "react-icons/bs";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import axios from "axios";
 import { FiShoppingCart, FiZap } from "react-icons/fi";
+import { GoDotFill } from "react-icons/go";
 
 const ProductDetails = ({ productId }) => {
   // const { id } = useParams();
@@ -107,30 +108,6 @@ const ProductDetails = ({ productId }) => {
     return wishlistItems.some((item) => item._id === productId); // ✅ Correct
   };
 
-  //   const handleWishlistClick = async (product) => {
-  //   try {
-  //     const token = localStorage.getItem("userToken");
-
-  //     const alreadyWishlisted = isInWishlist(product._id);
-
-  //     const url = `${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${alreadyWishlisted ? "remove" : "add"}/${product._id}`;
-
-  //     await axios[alreadyWishlisted ? "delete" : "post"](url, {}, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-
-  //     toast.success(`${product.name} ${alreadyWishlisted ? "removed from" : "added to"} wishlist`);
-
-  //     setWishlistItems((prev) =>
-  //       alreadyWishlisted
-  //         ? prev.filter((item) => item._id !== product._id)
-  //         : [...prev, product]
-  //     );
-  //   } catch (error) {
-  //     toast.error("Failed to update wishlist.");
-  //     console.error("Wishlist error:", error);
-  //   }
-  // };
   const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("userToken");
@@ -285,7 +262,8 @@ const ProductDetails = ({ productId }) => {
         if (data.valid && selectedProduct) {
           const discount = data.discount || 0;
           const discounted =
-            selectedProduct.discountPrice - selectedProduct.discountPrice * (discount / 100);
+            selectedProduct.discountPrice -
+            selectedProduct.discountPrice * (discount / 100);
           setFinalPrice(Math.round(discounted));
           toast.success("Coupon applied successfully!");
         } else {
@@ -358,8 +336,7 @@ const ProductDetails = ({ productId }) => {
     const fetchReviews = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL
-          }/api/reviews/product/${productFetchId}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/reviews/product/${productFetchId}`
         );
         const data = await res.json();
         setReviews(data);
@@ -459,9 +436,7 @@ const ProductDetails = ({ productId }) => {
       setDeliveryInfo({
         isDeliverable,
         message: isDeliverable
-          ? `Delivery available -  (${distance.toFixed(
-            1
-          )}km away)`
+          ? `Delivery available -  (${distance.toFixed(1)}km away)`
           : `Not deliverable - beyond 80km radius (${distance.toFixed(
             1
           )}km away)`,
@@ -536,34 +511,6 @@ const ProductDetails = ({ productId }) => {
       toast.error("Please enter a pincode", { duration: 1500 });
     }
   };
-
-  // const handleAddToCart = () => {
-  //   if (!selectedSize || !selectedColor) {
-  //     toast.error("Please select a size and color before adding to cart.", {
-  //       duration: 1500,
-  //     });
-  //     return;
-  //   }
-  //   setIsButtonDisabled(true);
-  //   setIsAddingToCart(true); // <- start loading
-  //   dispatch(
-  //     addToCart({
-  //       productId: productFetchId,
-  //       quantity,
-  //       size: selectedSize,
-  //       color: selectedColor,
-  //       guestId,
-  //       userId: user?._id,
-  //     })
-  //   )
-  //     .then(() => {
-  //       toast.success("Product added to cart!!", { duration: 1000 });
-  //     })
-  //     .finally(() => {
-  //       setIsButtonDisabled(false);
-  //       setIsAddingToCart(false); // <- stop loading
-  //     });
-  // };
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -929,7 +876,9 @@ const ProductDetails = ({ productId }) => {
                   <button
                     onClick={() => handleQuantityChange("minus")}
                     disabled={quantity <= 1}
-                    className={`w-9 h-9 flex justify-center items-center rounded-full text-lg bg-white border ${quantity <= 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
+                    className={`w-9 h-9 flex justify-center items-center rounded-full text-lg bg-white border ${quantity <= 1
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-50"
                       }`}
                   >
                     −
@@ -940,7 +889,9 @@ const ProductDetails = ({ productId }) => {
                   <button
                     onClick={() => handleQuantityChange("plus")}
                     disabled={quantity >= 10}
-                    className={`w-9 h-9 flex justify-center items-center rounded-full text-lg bg-white border ${quantity >= 10 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
+                    className={`w-9 h-9 flex justify-center items-center rounded-full text-lg bg-white border ${quantity >= 10
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-50"
                       }`}
                   >
                     +
@@ -1041,7 +992,12 @@ const ProductDetails = ({ productId }) => {
                       }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`font-medium ${deliveryInfo.isDeliverable ? "text-emerald-700" : "text-red-700"}`}>
+                      <span
+                        className={`font-medium ${deliveryInfo.isDeliverable
+                          ? "text-emerald-700"
+                          : "text-red-700"
+                          }`}
+                      >
                         {deliveryInfo.message}
                       </span>
                     </div>
@@ -1077,47 +1033,110 @@ const ProductDetails = ({ productId }) => {
 
           {/* Reviews + Breakdown */}
           <div className="px-4 md:px-8 pb-10">
-            <div className="mt-6 mb-10 grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Rating Breakdown */}
-              <div className="lg:col-span-1 bg-white border border-sky-100 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-sky-800 mb-2">
-                  Rating Breakdown
-                </h3>
+            <div className="mt-6 mb-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* ⭐ Rating Summary (screenshot-style) */}
+              {(() => {
+                // Map stars → label and color
+                const LABELS = {
+                  5: "Excellent",
+                  4: "Very Good",
+                  3: "Good",
+                  2: "Average",
+                  1: "Poor",
+                };
+                const BAR_COLOR = (star) =>
+                  star >= 4
+                    ? "bg-emerald-500"
+                    : star === 3
+                      ? "bg-amber-400"
+                      : star === 2
+                        ? "bg-orange-400"
+                        : "bg-rose-500";
 
-                {/* ⭐ Static average rating display */}
-                {selectedProduct.rating > 0 && selectedProduct.numReviews > 0 && (
-                  <div className="text-2xl font-bold mb-4">
-                    {selectedProduct.rating.toFixed(1)}/5
-                    <span className="text-sm font-medium text-gray-500 ml-2">
-                      {selectedProduct.numReviews} review
-                      {selectedProduct.numReviews === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                )}
+                // Pull counts per star from your ratingCounts array
+                const byStar = (star) =>
+                  ratingCounts.find((r) => r.star === star)?.count || 0;
 
-                <div className="space-y-4">
-                  {ratingCounts.map(({ star, count, percentage }) => (
-                    <div key={star} className="space-y-1">
-                      <div className="flex justify-between items-center text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400">★</span>
-                          <span className="font-medium">{star}</span>
+                const totalRatings =
+                  selectedProduct?.numRatings ??
+                  ratingCounts.reduce((sum, r) => sum + (r.count || 0), 0);
+
+                const avg = selectedProduct?.rating || 0;
+                const totalReviews = selectedProduct?.numReviews || 0;
+
+                return (
+                  <div className="bg-white border border-sky-100 rounded-2xl p-6 shadow-sm self-start">
+                    <h3 className="text-lg font-semibold text-sky-800 mb-4">
+                      Rating Breakdown
+                    </h3>
+
+                    <div className="grid grid-cols-12 gap-6 items-start">
+                      {/* Left: Average rating block */}
+                      <div className="col-span-12 sm:col-span-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-4xl font-bold text-emerald-600">
+                            {avg.toFixed(1)}
+                          </span>
+                          <span className="text-emerald-600 text-2xl leading-none">
+                            ★
+                          </span>
                         </div>
-                        <span className="font-semibold">{count}</span>
+
+                        <div className="mt-3 text-sm text-slate-500 space-y-0.5">
+                          <div className="leading-none">
+                            <span className="font-medium">{totalRatings}</span>{" "}
+                            Ratings,
+                          </div>
+                          <div className="leading-none">
+                            <span className="font-medium">{totalReviews}</span>{" "}
+                            Reviews
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-yellow-400 rounded-full transition-all duration-300"
-                          style={{ width: `${percentage}%` }}
-                        />
+
+                      {/* Right: Bars */}
+                      <div className="col-span-12 sm:col-span-8 space-y-4">
+                        {[5, 4, 3, 2, 1].map((star) => {
+                          const count = byStar(star);
+                          const pct = totalRatings
+                            ? (count / totalRatings) * 100
+                            : 0;
+
+                          return (
+                            <div key={star} className="space-y-1">
+                              {/* Row header: label on left, count on right */}
+                              <div className="flex items-center justify-between text-sm text-slate-600">
+                                <span className="min-w-24">
+                                  {LABELS[star]}
+                                </span>
+                                <span className="font-semibold tabular-nums">
+                                  {count}
+                                </span>
+                              </div>
+
+                              {/* Progress bar */}
+                              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full ${BAR_COLOR(
+                                    star
+                                  )} rounded-full transition-all duration-500`}
+                                  style={{ width: `${pct}%` }}
+                                  aria-label={`${LABELS[star]}: ${count} (${pct.toFixed(
+                                    0
+                                  )}%)`}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                );
+              })()}
 
               {/* Reviews */}
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-2">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
                     Customer Reviews
@@ -1137,40 +1156,50 @@ const ProductDetails = ({ productId }) => {
 
                 {sortedReviews.length > 0 ? (
                   <>
-                    <div className="space-y-6">
-                      {sortedReviews.slice(0, 3).map((review, index) => (
+                    <div className="bg-white rounded-2xl shadow-sm">
+                      {(showAllReviews ? sortedReviews : sortedReviews.slice(0, 3)).map((review, index) => (
                         <div
                           key={index}
-                          className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                          className=" p-4 pl-5"
                         >
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-lg ring-1 ring-sky-200">
-                                {review.user?.name?.charAt(0).toUpperCase() || "U"}
+                                {review.user?.name?.charAt(0).toUpperCase() ||
+                                  "U"}
                               </div>
                               <div>
                                 <h4 className="text-base md:text-lg font-semibold text-gray-900">
                                   {review.user?.name || "Anonymous"}
                                 </h4>
                                 <div className="flex items-center gap-1 mt-1">
-                                  {Array.from({ length: 5 }, (_, i) => (
-                                    <span
-                                      key={i}
-                                      className={`text-lg ${i < review.rating ? "text-yellow-400" : "text-gray-300"
-                                        }`}
-                                    >
-                                      ★
+                                  <span
+                                    className={`text-white px-2 rounded text-sm ${review.rating >= 4
+                                        ? "bg-emerald-500"
+                                        : review.rating === 3
+                                          ? "bg-amber-400"
+                                          : review.rating === 2
+                                            ? "bg-orange-400"
+                                            : "bg-red-500"
+                                      }`}
+                                  >
+                                    {review.rating}.0 ★
+                                  </span>
+
+                                  <GoDotFill
+                                    size={10}
+                                    className="text-gray-600"
+                                  />
+                                  <span className="text-xs text-gray-500">
+                                    <span className="text-black/70">
+                                      Posted on:{" "}
                                     </span>
-                                  ))}
-                                  <span className="ml-2 text-sm text-gray-500">
-                                    {review.rating}/5
+                                    <span>
+                                      {new Date(review.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", })}
+                                    </span>
                                   </span>
                                 </div>
                               </div>
-                            </div>
-                            <div className="text-sm text-gray-600 font-medium">
-                              <span className="text-black/70">Posted on: </span>
-                              {new Date(review.createdAt).toLocaleDateString("en-IN")}
                             </div>
                           </div>
                           <p className="text-gray-700">{review.comment}</p>
@@ -1183,11 +1212,14 @@ const ProductDetails = ({ productId }) => {
                                   key={index}
                                   src={imgUrl}
                                   alt={`Review image ${index + 1}`}
-                                  className="w-24 h-24 rounded-lg object-cover"
+                                  onClick={() => handleImageClick(imgUrl)}   // ← open modal
+                                  className="w-18 h-18 rounded-lg object-cover cursor-zoom-in" // ← pointer + zoom cursor
                                 />
+
                               ))}
                             </div>
                           )}
+                          <hr className="mt-4 border-t-1 border-gray-400" />
                         </div>
                       ))}
                     </div>
@@ -1195,10 +1227,10 @@ const ProductDetails = ({ productId }) => {
                     {sortedReviews.length > 3 && (
                       <div className="text-center mt-6">
                         <button
-                          onClick={() => setShowAllReviews(true)}
+                          onClick={() => setShowAllReviews((v) => !v)}
                           className="px-4 py-2 text-sm font-semibold text-sky-700 border border-sky-400 rounded-lg hover:bg-sky-50 transition"
                         >
-                          View More Reviews
+                          {showAllReviews ? "Show Less" : "View More Reviews"}
                         </button>
                       </div>
                     )}
@@ -1223,7 +1255,9 @@ const ProductDetails = ({ productId }) => {
                       key={product._id}
                       onClick={() =>
                         navigate(
-                          `/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`
+                          `/product/${product.name
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`
                         )
                       }
                       className="cursor-pointer rounded-xl border border-gray-200 hover:shadow-lg transition bg-white"
@@ -1247,7 +1281,9 @@ const ProductDetails = ({ productId }) => {
                         </div>
                         <div className="mt-1 flex items-center gap-2">
                           <p className="text-base font-bold text-sky-700">
-                            ₹{Math.floor(product.discountPrice || product.price)}
+                            ₹{Math.floor(
+                              product.discountPrice || product.price
+                            )}
                           </p>
                           {product.discountPrice && (
                             <p className="text-xs line-through text-gray-500">
@@ -1255,7 +1291,9 @@ const ProductDetails = ({ productId }) => {
                             </p>
                           )}
                           <p className="text-sm text-green-600">
-                            {product.offerPercentage ? product.offerPercentage + "%" : ""}
+                            {product.offerPercentage
+                              ? product.offerPercentage + "%"
+                              : ""}
                           </p>
                         </div>
                       </div>
