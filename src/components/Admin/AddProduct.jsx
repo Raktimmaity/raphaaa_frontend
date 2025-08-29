@@ -396,7 +396,7 @@ const AddProduct = () => {
               onChange={handleProductChange}
               min="0"
               step="0.01"
-              placeholder="Discount price"
+              placeholder="Auto Generated"
               disabled
               className="w-full px-4 py-2 rounded-md border bg-gray-200 text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
             />
