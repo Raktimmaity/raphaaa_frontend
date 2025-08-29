@@ -148,7 +148,7 @@ const Hero = () => {
       </div>
       {/* <marquee behavior="scroll" direction="left">🔥 Limited Time Offer!</marquee> */}
       {/* USP strip */}
-      <div className="px-6 md:px-28 -mt-2 mb-8">
+      <div className="px-6 md:px-28 mt-20 mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="flex items-center gap-3 rounded-xl border border-sky-100 bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
             <span className="text-xl text-sky-600"><FaShippingFast /></span>
