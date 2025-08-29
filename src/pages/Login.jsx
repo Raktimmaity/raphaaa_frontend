@@ -28,6 +28,16 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
+      // ✅ show success toast exactly once per login
+    if (!sessionStorage.getItem("loginToastShown")) {
+      sessionStorage.setItem("loginToastShown", "1");
+      toast.success("Login successful!");
+    }
+
+      if (["admin", "merchantise", "marketing"].includes(user.role)) {
+        navigate("/admin");
+        return;
+      }
       if (cart?.products.length > 0 && guestId) {
         dispatch(mergecart({ guestId, user })).then(() => {
           navigate(isCheckoutRedirect ? "/checkout" : "/");
@@ -38,22 +48,25 @@ const Login = () => {
     }
   }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
-//   useEffect(() => {
-//   if (user) {
-//     if (!user.mobileVerified) {
-//       navigate("/verify-mobile");
-//       return;
-//     }
+  //   useEffect(() => {
+  //   if (user) {
+  //     if (!user.mobileVerified) {
+  //       navigate("/verify-mobile");
+  //       return;
+  //     }
 
-//     if (cart?.products.length > 0 && guestId) {
-//       dispatch(mergecart({ guestId, user })).then(() => {
-//         navigate(isCheckoutRedirect ? "/checkout" : "/");
-//       });
-//     } else {
-//       navigate(isCheckoutRedirect ? "/checkout" : "/");
-//     }
-//   }
-// }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
+  //     if (cart?.products.length > 0 && guestId) {
+  //       dispatch(mergecart({ guestId, user })).then(() => {
+  //         navigate(isCheckoutRedirect ? "/checkout" : "/");
+  //       });
+  //     } else {
+  //       navigate(isCheckoutRedirect ? "/checkout" : "/");
+  //     }
+  //   }
+  // }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
+  useEffect(() => {
+  sessionStorage.removeItem("loginToastShown");
+}, []);
 
   useEffect(() => {
     const a = Math.floor(Math.random() * 10) + 1;
@@ -202,8 +215,7 @@ const Login = () => {
                   const { name, email, picture } = decoded;
 
                   const { data } = await axios.post(
-                    `${
-                      import.meta.env.VITE_BACKEND_URL
+                    `${import.meta.env.VITE_BACKEND_URL
                     }/api/users/google-login`,
                     { name, email, photo: picture }
                   );

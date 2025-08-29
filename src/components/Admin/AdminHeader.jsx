@@ -8,6 +8,7 @@ import axios from "axios";
 import { FiChevronDown } from "react-icons/fi"; // ⬅️ for dropdown arrow
 import icon from "../../assets/man.png";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
+import { toast } from "sonner";
 
 const AdminHeader = () => {
     const { user } = useSelector((state) => state.auth);
@@ -26,7 +27,8 @@ const AdminHeader = () => {
     const handleLogout = () => {
         dispatch(logout());
         dispatch(clearCart());
-        navigate("/");
+        navigate("/login");
+        toast.success("Logout successful!");
     };
 
     useEffect(() => {

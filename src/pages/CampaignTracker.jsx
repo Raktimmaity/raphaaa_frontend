@@ -256,6 +256,12 @@ const CampaignTracker = () => {
                             <th className="p-4">Platform</th>
                             <th className="p-4">Status</th>
                             <th className="p-4">Budget</th>
+                            <th className="p-4">Clicks</th>
+                            <th className="p-4">Impr.</th>
+                            <th className="p-4">CTR %</th>
+                            <th className="p-4">Conv.</th>
+                            <th className="p-4">CVR %</th>
+                            <th className="p-4">Track URL</th>
                             <th className="p-4 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -266,21 +272,26 @@ const CampaignTracker = () => {
                                     key={c._id}
                                     className="border-b hover:bg-gray-50 transition"
                                 >
-                                    <td className="p-4">{c.name}</td>
-                                    <td className="p-4">{c.platform}</td>
+                                    <td className="p-4">{c.clicks ?? 0}</td>
+                                    <td className="p-4">{c.impressions ?? 0}</td>
+                                    <td className="p-4">{c.ctr?.toFixed?.(2) ?? ((c.impressions ? (c.clicks / c.impressions * 100) : 0).toFixed(2))}</td>
+                                    <td className="p-4">{c.conversions ?? 0}</td>
+                                    <td className="p-4">{c.conversionRate?.toFixed?.(2) ?? ((c.clicks ? (c.conversions / c.clicks * 100) : 0).toFixed(2))}</td>
                                     <td className="p-4">
-                                        <span
-                                            className={`px-3 py-1 text-xs font-semibold rounded-full
-      ${c.status === "Active" ? "bg-green-100 text-green-700" :
-                                                    c.status === "Draft" ? "bg-yellow-100 text-yellow-700" :
-                                                        c.status === "Paused" ? "bg-orange-100 text-orange-700" :
-                                                            "bg-gray-100 text-gray-700"}`}
-                                        >
-                                            {c.status}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                readOnly
+                                                value={`${import.meta.env.VITE_BACKEND_URL}/api/campaigns/r/${c._id}`}
+                                                className="w-56 rounded border px-2 py-1 text-xs"
+                                            />
+                                            <button
+                                                onClick={() => navigator.clipboard.writeText(`${import.meta.env.VITE_BACKEND_URL}/api/campaigns/r/${c._id}`)}
+                                                className="text-xs bg-gray-800 text-white px-2 py-1 rounded"
+                                            >
+                                                Copy
+                                            </button>
+                                        </div>
                                     </td>
-
-                                    <td className="p-4">₹{c.budget}</td>
                                     <td className="p-4 flex justify-center gap-3">
                                         <button
                                             onClick={() => handleEdit(c)}

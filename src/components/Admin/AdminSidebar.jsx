@@ -74,7 +74,8 @@ const AdminSidebar = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
-    navigate("/");
+    navigate("/login");
+    toast.success("Logout successful!");
   };
 
   // Active/hover link styling utility

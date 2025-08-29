@@ -80,7 +80,12 @@ const UserManagement = () => {
 
   const handleDeleteUser = (userId) => {
     openConfirm("Are you sure you want to delete this user?", () => {
-      dispatch(deleteUser(userId));
+      return dispatch(deleteUser(userId)).then(() => {
+        toast.success("User deleted successfully", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+        });
+      });
     });
   };
 
@@ -147,9 +152,9 @@ const UserManagement = () => {
       if (user?.role === "admin") return true;
       if (user?.role === "merchantise") {
         return (
-          u.role === "customer" ||
-          u.role === "delivery_boy" ||
-          u.role === "merchantise"
+          // u.role === "customer" ||
+          u.role === "delivery_boy"
+          // u.role === "merchantise"
         );
       }
       return false;
@@ -248,8 +253,8 @@ const UserManagement = () => {
                 {user?.role === "merchantise" && (
                   <>
                     <option value="">Select Role</option>
-                    <option value="merchantise">Merchantise</option>
-                    <option value="marketing">Marketing</option>
+                    {/* <option value="merchantise">Merchantise</option> */}
+                    {/* <option value="marketing">Marketing</option> */}
                     <option value="delivery_boy">Delivery Boy</option>
                   </>
                 )}
@@ -433,10 +438,16 @@ const UserManagement = () => {
             <div className="flex justify-center gap-4">
               <button
                 className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                onClick={() => {
-                  confirmModal.onConfirm?.();
-                  closeConfirm();
+                onClick={async () => {
+                  try {
+                    const maybePromise = confirmModal.onConfirm?.();
+                    // If onConfirm returned a promise (async), await it
+                    if (maybePromise?.then) await maybePromise;
+                  } finally {
+                    closeConfirm(); // always closes, even if onConfirm throws
+                  }
                 }}
+
               >
                 Confirm
               </button>
