@@ -188,7 +188,7 @@ const Footer = () => {
               <img src={mastercard} alt="MasterCard" className="h-5" />
               <img src={upi} alt="UPI" className="h-5" />
             </div>
-            <p className="text-gray-400 text-sm text-center md:text-left">Trusted & Secure Payment | 100% Satisfaction Guaranteed</p>
+            <p className="text-gray-400 text-sm text-center md:text-left">Trusted & Secure Payment | 100% Original Products</p>
           </div>
 
           {/* Perks Section */}
