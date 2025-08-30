@@ -16,6 +16,7 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import axios from "axios";
 import { FiShoppingCart, FiZap } from "react-icons/fi";
 import { GoDotFill } from "react-icons/go";
+import { FaCartShopping } from "react-icons/fa6";
 
 const ProductDetails = ({ productId }) => {
   // const { id } = useParams();
@@ -938,7 +939,7 @@ const ProductDetails = ({ productId }) => {
                     : "bg-sky-600 text-white hover:bg-sky-700"
                     }`}
                 >
-                  <FiShoppingCart className="text-xl" />
+                  < FaCartShopping className="text-xl" />
                   {isAddingToCart ? "Adding..." : "Add to Cart"}
                 </button>
 
