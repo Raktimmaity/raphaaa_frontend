@@ -1051,7 +1051,7 @@ const ProductDetails = ({ productId }) => {
                       ? "bg-amber-400"
                       : star === 2
                         ? "bg-orange-400"
-                        : "bg-rose-500";
+                        : "bg-red-500";
 
                 // Pull counts per star from your ratingCounts array
                 const byStar = (star) =>
