@@ -356,7 +356,7 @@ const AddressForm = () => {
                             setNewAddress({ ...newAddress, phone: e.target.value })
                         }
                         placeholder="Phone"
-                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none [-moz-appearance:textfield] [appearance:textfield]"
+                        className="bg-white w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none [-moz-appearance:textfield]"
                     />
                     <button
                         type="button"
