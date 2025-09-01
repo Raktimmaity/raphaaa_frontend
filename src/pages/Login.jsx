@@ -223,7 +223,7 @@ const Login = () => {
                   dispatch(
                     googleLoginSuccess({ user: data.user, token: data.token })
                   );
-                  toast.success("Login successful!");
+                  // toast.success("Login successful!");
                   navigate(redirect);
                 } catch (error) {
                   console.error(error);
