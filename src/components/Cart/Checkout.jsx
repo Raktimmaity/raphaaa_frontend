@@ -437,7 +437,7 @@ const Checkout = () => {
               );
               dispatch(clearCheckout());
               setOrderInitiated(false);
-              navigate("/order-status", {
+              navigate("/order-confirmation", {
                 state: { orderId: result.payload.orderId },
               });
             } else {

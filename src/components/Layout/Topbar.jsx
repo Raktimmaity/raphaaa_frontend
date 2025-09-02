@@ -98,10 +98,10 @@ const Topbar = () => {
           </div>
           <div className="hidden md:block">
             {contactInfo?.showTopText && (
-              <span>
+              <marquee behavior="scroll" direction="left" scrollamount="5" className="w-3/5">
                 {/* We ship worldwide — <span className="text-blue-700">Fast & Reliable Shipping!</span> */}
                 {contactInfo.topText}
-              </span>
+              </marquee>
             )}
           </div>
         </div>

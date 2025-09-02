@@ -69,7 +69,18 @@ const Hero = () => {
 
   return (
     <>
-      <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8  relative transition-all duration-700">
+    {/* Raphaaa Marquee Banner */}
+{/* <div className="relative overflow-hidden bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 py-3 shadow-lg rounded-lg">
+  <div className="whitespace-nowrap animate-marquee text-white font-semibold text-sm sm:text-base tracking-wide flex items-center gap-6">
+    <span className="px-4">🔥 Limited Time Offer! 🔥</span>
+    <span className="px-4">💬 If you face any issue, reach us at Contact Support</span>
+    <span className="px-4">✍️ Enter Title & Subject — we’ll reply soon</span>
+  </div>
+
+  <div className="pointer-events-none absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-purple-900 to-transparent"></div>
+  <div className="pointer-events-none absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-indigo-900 to-transparent"></div>
+</div> */}
+      <div className="md:h-[80vh] flex flex-col sm:flex-row justify-between gap-2 px-6 md:px-28 py-8 md:py-2 relative transition-all duration-700">
         {/* 🔥 Floating Offer Badge */}
         <div className="absolute top-4 md:top-12 right-4 sm:right-10 md:right-[500px] z-10">
           <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md animate-pulse">
