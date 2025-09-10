@@ -51,7 +51,7 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
           {cart && cart?.products?.length > 0 ? (
             <CartContents cart={cart} userId={userId} guestId={guestId} />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-gray-600 space-y-4">
+            <div className="flex flex-col items-center justify-center h-[70vh] text-center text-gray-600 space-y-4">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
                 alt="Empty Cart"
