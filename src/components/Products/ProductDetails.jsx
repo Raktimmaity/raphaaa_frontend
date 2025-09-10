@@ -20,7 +20,7 @@ import { FaCartShopping } from "react-icons/fa6";
 
 const ProductDetails = ({ productId }) => {
   // const { id } = useParams();
-  const { slug } = useParams();
+  const { slug, sku } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedProduct, loading, error, similarProducts } = useSelector(
@@ -157,16 +157,41 @@ const ProductDetails = ({ productId }) => {
   };
 
   useEffect(() => {
-    const fetchBySlug = async () => {
+    const fetchByParams = async () => {
       try {
         const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/products`
         );
 
-        // Convert product name to slug and match
-        const matchedProduct = data.find((p) =>
-          p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
-        );
+        // // Convert product name to slug and match
+        // const matchedProduct = data.find((p) =>
+        //   p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
+        // );
+
+        // if (matchedProduct) {
+        //   dispatch(fetchProductDetails(matchedProduct._id));
+        //   dispatch(fetchSimilarProducts(matchedProduct._id));
+        // } else {
+        //   toast.error("Product not found");
+        // }
+
+        // build slug from name the same way everywhere
+        const toSlug = (name = "") =>
+          name.toLowerCase().trim().replace(/\s+/g, "-");
+
+        // 1) prefer SKU if present
+        let matchedProduct = null;
+        if (sku) {
+          matchedProduct = data.find(
+            (p) =>
+              String(p.skuCode || p.sku || p._id) === String(sku)
+          );
+        }
+
+        // 2) fallback to slug match
+        if (!matchedProduct && slug) {
+          matchedProduct = data.find((p) => toSlug(p.name) === toSlug(slug));
+        }
 
         if (matchedProduct) {
           dispatch(fetchProductDetails(matchedProduct._id));
@@ -179,8 +204,10 @@ const ProductDetails = ({ productId }) => {
       }
     };
 
-    if (slug) fetchBySlug();
-  }, [slug, dispatch]);
+  //   if (slug) fetchBySlug();
+  // }, [slug, dispatch]);
+   fetchByParams();
+}, [slug, sku, dispatch]);
 
   const handleBuyNow = async () => {
     if (!selectedSize || !selectedColor) {
@@ -704,7 +731,8 @@ const ProductDetails = ({ productId }) => {
               </div>
 
               {/* Characteristics */}
-              <div className="mt-6">
+              {/* Characteristics */}
+              <div className="mt-6 hidden md:block">
                 <h3 className="text-lg font-semibold mb-2 text-gray-800">
                   Specifications
                 </h3>
@@ -751,6 +779,7 @@ const ProductDetails = ({ productId }) => {
                   </table>
                 </div>
               </div>
+
             </div>
 
             {/* Info Column */}
@@ -967,7 +996,7 @@ const ProductDetails = ({ productId }) => {
                   </p>
                 </div>
 
-                <div className="flex gap-3 mb-3">
+                <div className="flex flex-col md:flex-row gap-3 mb-3">
                   <input
                     type="text"
                     placeholder="Enter pincode"
@@ -1029,6 +1058,56 @@ const ProductDetails = ({ productId }) => {
                   </div>
                 )}
               </div>
+
+              {/* Specifications (mobile-only, shown after details) */}
+              <div className="mt-6 md:hidden">
+                <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                  Specifications
+                </h3>
+                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                  <table className="w-full text-sm text-gray-800">
+                    <thead className="bg-gray-50 text-left text-xs uppercase tracking-wider text-gray-600">
+                      <tr>
+                        <th className="px-4 py-3">Attribute</th>
+                        <th className="px-4 py-3">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-medium">Brand</td>
+                        <td className="px-4 py-3">{selectedProduct.brand}</td>
+                      </tr>
+                      <tr className="bg-gray-50 hover:bg-gray-100 transition">
+                        <td className="px-4 py-3 font-medium">Material</td>
+                        <td className="px-4 py-3">{selectedProduct.material}</td>
+                      </tr>
+                      <tr className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-medium">Gender</td>
+                        <td className="px-4 py-3">{selectedProduct.gender}</td>
+                      </tr>
+                      {selectedProduct.dimensions && (
+                        <tr className="hover:bg-gray-50 transition">
+                          <td className="px-4 py-3 font-medium">Dimensions</td>
+                          <td className="px-4 py-3">
+                            {selectedProduct.dimensions.length || 0} x{" "}
+                            {selectedProduct.dimensions.width || 0} x{" "}
+                            {selectedProduct.dimensions.height || 0} cm
+                          </td>
+                        </tr>
+                      )}
+                      {selectedProduct.weight && (
+                        <tr className="hover:bg-gray-50 transition">
+                          <td className="px-4 py-3 font-medium">Weight</td>
+                          <td className="px-4 py-3">
+                            {selectedProduct.weight} gm
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -1176,12 +1255,12 @@ const ProductDetails = ({ productId }) => {
                                 <div className="flex items-center gap-1 mt-1">
                                   <span
                                     className={`text-white px-2 rounded text-sm ${review.rating >= 4
-                                        ? "bg-emerald-500"
-                                        : review.rating === 3
-                                          ? "bg-amber-400"
-                                          : review.rating === 2
-                                            ? "bg-orange-400"
-                                            : "bg-red-500"
+                                      ? "bg-emerald-500"
+                                      : review.rating === 3
+                                        ? "bg-amber-400"
+                                        : review.rating === 2
+                                          ? "bg-orange-400"
+                                          : "bg-red-500"
                                       }`}
                                   >
                                     {review.rating}.0 ★

@@ -77,6 +77,7 @@ const AddMetaOption = () => {
                     <option value="category">Category</option>
                     <option value="collection">Collection</option>
                     <option value="gender">Gender</option>
+                    <option value="material">Fabric</option>
                 </select>
 
                 <input
@@ -94,8 +95,8 @@ const AddMetaOption = () => {
                 </button>
             </form>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                {["category", "collection", "gender"].map((t) => (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+                {["category", "collection", "gender", "material"].map((t) => (
                     <div
                         key={t}
                         className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition"

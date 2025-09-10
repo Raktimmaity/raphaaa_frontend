@@ -39,17 +39,59 @@ const AddProduct = () => {
   const { loading } = useSelector((state) => state.adminProducts);
   // const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [metaOptions, setMetaOptions] = useState({ category: [], collection: [], gender: [] });
+  // const [metaOptions, setMetaOptions] = useState({ category: [], collection: [], gender: [] });
+  // top of AddProduct.jsx
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000";
+
+  const [metaOptions, setMetaOptions] = useState({
+    category: [],
+    collection: [],
+    gender: [],
+    material: [],        // ← include material from your API
+  });
+  const [metaLoading, setMetaLoading] = useState(true);
+  const [metaError, setMetaError] = useState("");
 
   useEffect(() => {
     const fetchOptions = async () => {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
-      const categorized = { category: [], collection: [], gender: [] };
-      res.data.forEach((opt) => categorized[opt.type].push(opt.value));
-      setMetaOptions(categorized);
+      try {
+        setMetaLoading(true);
+        setMetaError("");
+
+        const { data } = await axios.get(`${API_BASE}/api/meta-options`);
+
+        // Map API -> state buckets; dedupe values just in case
+        const buckets = data.reduce(
+          (acc, { type, value }) => {
+            if (["category", "collection", "gender", "material"].includes(type)) {
+              if (!acc[type].includes(value)) acc[type].push(value);
+            }
+            return acc;
+          },
+          { category: [], collection: [], gender: [], material: [] }
+        );
+
+        setMetaOptions(buckets);
+      } catch (err) {
+        console.error("Failed to load meta options:", err);
+        setMetaError("Failed to load categories/collections/gender.");
+      } finally {
+        setMetaLoading(false);
+      }
     };
+
     fetchOptions();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchOptions = async () => {
+  //     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
+  //     const categorized = { category: [], collection: [], gender: [] };
+  //     res.data.forEach((opt) => categorized[opt.type].push(opt.value));
+  //     setMetaOptions(categorized);
+  //   };
+  //   fetchOptions();
+  // }, []);
 
 
   const handleProductChange = (e) => {
@@ -180,6 +222,49 @@ const AddProduct = () => {
       </div>
     ),
   }));
+
+  // Normalize a few common typos/synonyms (e.g., xll -> XXL, 2xl -> XXL)
+  const normalizeSize = (s) => {
+    const t = String(s).trim().toUpperCase().replace(/\s+/g, "");
+    if (t === "XLL") return "XXL";
+    if (t === "2XL") return "XXL";
+    if (t === "3XL" || t === "XXXL") return "3XL";
+    if (t === "4XL" || t === "XXXXL") return "4XL";
+    if (t === "5XL" || t === "XXXXXL") return "5XL";
+    return t;
+  };
+
+  // Build grouped options for react-select
+  const toOpts = (arr) => arr.map((v) => ({ value: v, label: v }));
+
+  // Curated size groups you can tweak anytime
+  const SIZE_GROUPED_OPTIONS = [
+    {
+      label: "Alpha (Adults)",
+      options: toOpts(["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"]),
+    },
+    {
+      label: "Women – Numeric (US)",
+      options: toOpts(["0", "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24"]),
+    },
+    {
+      label: "Men – Waist (in)",
+      options: toOpts(["26", "28", "29", "30", "31", "32", "33", "34", "36", "38", "40", "42", "44", "46", "48"]),
+    },
+    {
+      label: "Men – Shirt Neck (in)",
+      options: toOpts(["14", "14.5", "15", "15.5", "16", "16.5", "17", "17.5", "18"]),
+    },
+    {
+      label: "Kids / Baby",
+      options: toOpts([
+        "NB", "0-3M", "3-6M", "6-9M", "9-12M", "12-18M", "18-24M",
+        "2T", "3T", "4T", "5T",
+        "4", "5", "6", "7", "8", "10", "12", "14", "16"
+      ]),
+    },
+  ];
+
 
 
   const handleProductSubmit = async (e) => {
@@ -496,16 +581,27 @@ const AddProduct = () => {
           {/* Sizes and Colors with react-select */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-gray-700 mb-1 font-medium">Sizes {" "} <span className="text-red-600">*</span></label>
+              <label className="block text-gray-700 mb-1 font-medium">
+                Sizes <span className="text-red-600">*</span>
+              </label>
               <Select
                 isMulti
                 name="sizes"
-                options={["XS", "S", "M", "L", "XL", "XXL"].map(size => ({ value: size, label: size }))}
-                value={productData.sizes.map(size => ({ value: size, label: size }))}
-                onChange={(selected) => handleMultiSelect(selected, "sizes")}
+                options={SIZE_GROUPED_OPTIONS}
+                value={productData.sizes.map((s) => {
+                  const v = normalizeSize(s);
+                  return { value: v, label: v };
+                })}
+                onChange={(selected) =>
+                  setProductData((prev) => ({
+                    ...prev,
+                    sizes: (selected || []).map((opt) => normalizeSize(opt.value)),
+                  }))
+                }
                 className="basic-multi-select"
                 classNamePrefix="select"
               />
+
             </div>
 
             <div>
@@ -524,19 +620,23 @@ const AddProduct = () => {
           </div>
 
           {/* Material */}
-          <div>
-            <label className="block text-gray-700 mb-1 font-medium">
-              Material
-            </label>
-            <input
-              type="text"
+          <div className="md: mt-3">
+            <label className="block text-gray-700 mb-1 font-medium">Material</label>
+            <select
               name="material"
               value={productData.material}
               onChange={handleProductChange}
-              placeholder="Enter material"
               className="w-full px-4 py-2 rounded-md border bg-white text-gray-800 border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
-            />
+            >
+              <option value="">Select Material</option>
+              {metaOptions.material.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
+
 
           {/* Weight */}
           <div>

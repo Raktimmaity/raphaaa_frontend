@@ -10,6 +10,54 @@ const MIN_GAP = 0; // set to e.g. 100 if you want min & max to never overlap
 const FilterSidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [genders, setGenders] = useState([]);
+  const [materials, setMaterials] = useState([]);
+
+  // Fetch the genders
+  useEffect(() => {
+    const fetchGenders = async () => {
+      try {
+        const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
+        const data = await res.json();
+        const genderOptions = data.filter(opt => opt.type === "gender").map(opt => opt.value);
+        setGenders(genderOptions);
+      } catch (error) {
+        console.error("Error fetching gender options:", error);
+      }
+    };
+    fetchGenders();
+  }, []);
+
+  // Fetch the categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
+        const data = await res.json();
+        const categoryOptions = data.filter(opt => opt.type === "category").map(opt => opt.value);
+        setCategories(categoryOptions);
+      } catch (error) {
+        console.error("Error fetching category options:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch the materials
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/meta-options`);
+        const data = await res.json();
+        const materialOptions = data.filter(opt => opt.type === "material").map(opt => opt.value);
+        setMaterials(materialOptions);
+      } catch (error) {
+        console.error("Error fetching material options:", error);
+      }
+    };
+    fetchMaterials();
+  }, []);
 
   const [filters, setFilters] = useState({
     category: "",
@@ -42,12 +90,12 @@ const FilterSidebar = () => {
     }));
   };
 
-  const categories = ["Top Wear", "Bottom Wear"];
+  // const categories = ["Top Wear", "Bottom Wear"];
   const colors = ["Red", "Blue", "Black", "Green", "Yellow", "Gray", "White", "Pink", "Beige", "Navy"];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const materials = ["Cotton", "Wool", "Denim", "Polyester", "Silk", "Linen", "Viscose", "Fleece"];
+  // const materials = ["Cotton", "Wool", "Denim", "Polyester", "Silk", "Linen", "Viscose", "Fleece"];
   const brands = ["Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "fashionista", "ChicStyle"];
-  const genders = ["Men", "Women", "Kids"];
+  // const genders = ["Men", "Women", "Kids"];
 
   // Sync from URL -> state on mount & whenever URL changes
   useEffect(() => {
@@ -280,7 +328,7 @@ const FilterSidebar = () => {
         </div>
       </Section>
 
-      <Section label="Brand" sectionKey="brand">
+      {/* <Section label="Brand" sectionKey="brand">
         <div className="grid grid-cols-1 gap-2">
           {brands.map((brand) => (
             <label key={brand} className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600">
@@ -296,7 +344,7 @@ const FilterSidebar = () => {
             </label>
           ))}
         </div>
-      </Section>
+      </Section> */}
 
       {/* --- NEW: Two-pointer Price Range (continuous) --- */}
       <Section label="Price Range" sectionKey="price">

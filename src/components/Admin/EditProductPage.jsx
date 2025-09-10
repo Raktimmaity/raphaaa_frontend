@@ -450,6 +450,49 @@ const EditProductPage = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">
+            Update Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={uploading}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
+                   file:rounded-md file:border-0 file:font-semibold 
+                   file:bg-green-100 file:text-green-700 hover:file:bg-green-200 
+                   transition-all duration-200"
+          />
+          {uploading && (
+            <p className="text-blue-600 text-sm mt-2 animate-pulse">Uploading Image...</p>
+          )}
+          <div className="flex gap-4 mt-4 flex-wrap">
+            {productData.images.map((image, index) => (
+              <div key={index} className="relative w-24 h-24 group">
+                <img
+                  src={image.url}
+                  alt={image.altText || "Product"}
+                  className="w-full h-full object-cover rounded-md shadow border"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleImageRemove(index, image.url)}
+                  disabled={deleting === index}
+                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 
+                         text-white rounded-full w-6 h-6 flex items-center justify-center 
+                         text-xs font-bold shadow-md transition-all duration-200"
+                >
+                  {deleting === index ? (
+                    <span className="animate-spin">⟳</span>
+                  ) : (
+                    "×"
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">
             Product Name
           </label>
           <input
@@ -523,7 +566,7 @@ const EditProductPage = () => {
               name="discountPrice"
               value={productData.discountPrice || 0}
               readOnly
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
+              className="w-full border bg-gray-200 border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition-all duration-200 hover:shadow-md"
             />
           </div>
         </div>
@@ -685,49 +728,7 @@ const EditProductPage = () => {
           </div>
         </div>
 
-        <div>
-          <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">
-            Upload Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={uploading}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                   file:rounded-md file:border-0 file:font-semibold 
-                   file:bg-green-100 file:text-green-700 hover:file:bg-green-200 
-                   transition-all duration-200"
-          />
-          {uploading && (
-            <p className="text-blue-600 text-sm mt-2 animate-pulse">Uploading Image...</p>
-          )}
-          <div className="flex gap-4 mt-4 flex-wrap">
-            {productData.images.map((image, index) => (
-              <div key={index} className="relative w-24 h-24 group">
-                <img
-                  src={image.url}
-                  alt={image.altText || "Product"}
-                  className="w-full h-full object-cover rounded-md shadow border"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleImageRemove(index, image.url)}
-                  disabled={deleting === index}
-                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 
-                         text-white rounded-full w-6 h-6 flex items-center justify-center 
-                         text-xs font-bold shadow-md transition-all duration-200"
-                >
-                  {deleting === index ? (
-                    <span className="animate-spin">⟳</span>
-                  ) : (
-                    "×"
-                  )}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        
 
         <button
           type="submit"

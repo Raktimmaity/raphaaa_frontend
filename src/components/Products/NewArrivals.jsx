@@ -80,7 +80,7 @@ const NewArrivals = () => {
     };
   }, [newArrivals]);
 
-    const [collabActive, setCollabActive] = useState(false);
+  const [collabActive, setCollabActive] = useState(false);
 
   useEffect(() => {
     axios
@@ -145,7 +145,9 @@ const NewArrivals = () => {
                   )}
               </div>
               <div className="p-4 text-left">
-                <Link to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`} className="block">
+                <Link to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}/p/${encodeURIComponent(
+                  product.skuCode || product.sku || product._id
+                )}`} className="block">
                   <h4 className="font-semibold text-blue-900 group-hover:text-sky-600 transition-colors truncate">
                     {product.name}
                   </h4>

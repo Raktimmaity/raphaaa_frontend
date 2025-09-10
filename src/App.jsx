@@ -111,6 +111,7 @@ const App = () => {
               element={<CollectionPage />}
             />
             <Route path="product/:slug" element={<ProductDetails />} />
+            <Route path="product/:slug/p/:sku" element={<ProductDetails />} />
             <Route path="checkout" element={<Checkout />} />
             <Route
               path="order-confirmation"

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import demoImg from "../../assets/login.jpg";
 import { IoFlash } from "react-icons/io5";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
@@ -12,6 +12,19 @@ const ProductGrid = ({ products = [], loading, error }) => {
     window.innerWidth < 640 ? 10 : 9
   );
   const navigate = useNavigate();
+  const { search } = useLocation();
+  const sortBy = useMemo(() => new URLSearchParams(search).get("sortBy"), [search]);
+
+  // Fisher–Yates shuffle (non-mutating)
+  const shuffleArray = (arr) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
 
   // Dynamic resizing
   useEffect(() => {
@@ -24,12 +37,24 @@ const ProductGrid = ({ products = [], loading, error }) => {
 
   // ✅ Guard in case products is not a valid array
   const safeProducts = Array.isArray(products) ? products : [];
+  const shouldShuffle = !sortBy || sortBy === "default" || sortBy === "none";
+
+  // const shuffledProducts = useMemo(() => shuffleArray(safeProducts), [safeProducts]);
+
+  const sourceProducts = useMemo(
+    () => (shouldShuffle ? shuffleArray(safeProducts) : safeProducts),
+    [safeProducts, shouldShuffle]
+  );
 
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
-  const currentProducts = safeProducts.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(safeProducts.length / productsPerPage);
+  const currentProducts = sourceProducts.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sourceProducts.length / productsPerPage);
   const [wishlistItems, setWishlistItems] = useState([]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, productsPerPage, safeProducts.length]);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -158,9 +183,16 @@ const ProductGrid = ({ products = [], loading, error }) => {
     <>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 md:gap-4">
         {currentProducts.map((product, index) => (
+          // <Link
+          //   key={index}
+          //   to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
+          //   className="block group will-change-transform"
+          // >
           <Link
-            key={index}
-            to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
+            key={product._id || index}
+            to={`/product/${product.name.toLowerCase().replace(/\s+/g, "-")}/p/${encodeURIComponent(
+              product.skuCode || product.sku || product._id
+            )}`}
             className="block group will-change-transform"
           >
             <div
@@ -179,10 +211,10 @@ const ProductGrid = ({ products = [], loading, error }) => {
                 {/* NEW Badge */}
                 {new Date() - new Date(product.createdAt) <
                   2 * 24 * 60 * 60 * 1000 && (
-                  <div className="absolute bottom-3 left-3 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md tracking-wide uppercase animate-[pulse_1.8s_ease-in-out_infinite]">
-                    New
-                  </div>
-                )}
+                    <div className="absolute bottom-3 left-3 bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-[10px] font-bold px-2 py-[2px] rounded-full shadow-md tracking-wide uppercase animate-[pulse_1.8s_ease-in-out_infinite]">
+                      New
+                    </div>
+                  )}
 
                 {/* Raphaaa Assured */}
                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-sky-700 text-[10px] font-bold px-2 py-[2px] rounded-full shadow-sm tracking-wide flex items-center gap-1 border border-sky-100">
